@@ -24,10 +24,14 @@ public class Config
 
     public void reloadConfig()
     {
+        javaPlugin.getLogger().info("(Re)Loading config!");
         ensureFileExists();
         javaPlugin.reloadConfig();
-        final FileConfiguration config = javaPlugin.getConfig();
+        setValues(javaPlugin.getConfig());
+    }
 
+    private void setValues(FileConfiguration config)
+    {
         this.infoMaterial = readMaterial(config, "infoMaterial", Material.FEATHER);
         this.whipMaterial = readMaterial(config, "whipMaterial", Material.BLAZE_ROD);
     }
