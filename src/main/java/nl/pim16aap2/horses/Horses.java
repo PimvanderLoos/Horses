@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
+@SuppressWarnings("unused")
 public class Horses extends JavaPlugin
 {
     private final HorseListener horseListener;
@@ -12,19 +13,25 @@ public class Horses extends JavaPlugin
 
     public Horses()
     {
-        config = new Config();
+        config = new Config(this);
         horseListener = new HorseListener(config);
-    }
-
-    @Override
-    public void onDisable()
-    {
-        Bukkit.getPluginManager().registerEvents(horseListener, this);
     }
 
     @Override
     public void onEnable()
     {
+        config.reloadConfig();
+        Bukkit.getPluginManager().registerEvents(horseListener, this);
+    }
+
+    @Override
+    public void onDisable()
+    {
         HandlerList.unregisterAll(horseListener);
+    }
+
+    public Config getHorsesConfig()
+    {
+        return config;
     }
 }
