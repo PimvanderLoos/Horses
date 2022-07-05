@@ -1,0 +1,5 @@
+name: Horses
+main: nl.pim16aap2.horses.Horses
+version: ${project.version}
+author: pim16aap2
+api-version: 1.17
