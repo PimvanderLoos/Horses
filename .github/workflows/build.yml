@@ -1,0 +1,29 @@
+name: Test, build, and check Horses
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up JDK 16
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '16'
+          cache: 'maven'
+
+      - name: Build the project and run the tests
+        run: mvn --batch-mode clean test package
+
+      - name: Upload Horses.jar
+        uses: actions/upload-artifact@v3
+        with:
+          name: Horses
+          path: target/Horses.jar
