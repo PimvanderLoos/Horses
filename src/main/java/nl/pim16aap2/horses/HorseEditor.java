@@ -47,8 +47,8 @@ public final class HorseEditor
             + addInfo("Name", Objects.requireNonNullElse(horse.getCustomName(), horse.getType().getName()))
             + addInfo("Gender", config.getGenderName(getGender(horse)))
             + addInfo("Gait", getGait(horse))
-            + addInfo("Speed", String.format("%.3f", getBaseSpeed(horse)))
-            + addInfo("Jump", String.format("%.3f", horse.getJumpStrength()))
+            + addInfo("Speed", String.format("%.2f", getBaseSpeed(horse) * 43.17f))
+            + addInfo("Jump", String.format("%.2f", horse.getJumpStrength()))
             + addInfo("Health", String.format("%.0f", horse.getHealth()))
             + addInfo("Owner", getOwnerName(horse))
             + ChatColor.DARK_GRAY + ">>>>>>--------------------------<<<<<<<\n";
