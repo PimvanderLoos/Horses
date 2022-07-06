@@ -72,7 +72,7 @@ public class HorseListener implements Listener
             !(event.getEntity() instanceof AbstractHorse child))
             return;
         final boolean canBreed = horseEditor.canBreed(horseA, horseB);
-        event.setCancelled(canBreed);
+        event.setCancelled(!canBreed);
         if (canBreed)
             horseEditor.ensureHorseManaged(child);
     }
