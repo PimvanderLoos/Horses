@@ -7,6 +7,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.AbstractHorse;
+import org.bukkit.entity.AnimalTamer;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
@@ -43,14 +44,27 @@ public final class HorseEditor
 
         //noinspection deprecation
         final String msg = ChatColor.DARK_GRAY + ">>>>>>--------------------------<<<<<<<\n"
-            + ChatColor.GOLD + "Name: " + ChatColor.GRAY + Objects.requireNonNullElse(horse.getCustomName(),
-                                                                                      horse.getType().getName()) + "\n"
-            + ChatColor.GOLD + "Speed: " + ChatColor.GRAY + getBaseSpeed(horse) + "\n"
-            + ChatColor.GOLD + "Gender: " + ChatColor.GRAY + config.getGenderName(getGender(horse)) + "\n"
-            + ChatColor.GOLD + "Gait: " + ChatColor.GRAY + getGait(horse) + "\n"
+            + addInfo("Name", Objects.requireNonNullElse(horse.getCustomName(), horse.getType().getName()))
+            + addInfo("Gender", config.getGenderName(getGender(horse)))
+            + addInfo("Gait", getGait(horse))
+            + addInfo("Speed", String.format("%.3f", getBaseSpeed(horse)))
+            + addInfo("Jump", String.format("%.3f", horse.getJumpStrength()))
+            + addInfo("Health", String.format("%.0f", horse.getHealth()))
+            + addInfo("Owner", getOwnerName(horse))
             + ChatColor.DARK_GRAY + ">>>>>>--------------------------<<<<<<<\n";
 
         player.sendMessage(msg);
+    }
+
+    private String getOwnerName(AbstractHorse horse)
+    {
+        final @Nullable AnimalTamer owner = horse.getOwner();
+        return owner == null ? "Unowned" : owner.getName();
+    }
+
+    private String addInfo(String name, Object value)
+    {
+        return ChatColor.GOLD + name + ": " + ChatColor.GRAY + value.toString() + "\n";
     }
 
     private void communicateSpeedChange(Player player, int newSpeed)
