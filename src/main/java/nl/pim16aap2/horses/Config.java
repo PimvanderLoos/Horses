@@ -20,6 +20,7 @@ public class Config
     private Material whipMaterial = Material.BLAZE_ROD;
     private Gaits gaits;
     private int defaultGait = 100;
+    private String[] genderNames = new String[]{HorseGender.MALE.name(), HorseGender.FEMALE.name()};
 
     private final Path path;
 
@@ -35,18 +36,23 @@ public class Config
         javaPlugin.getLogger().info("(Re)Loading config!");
         ensureFileExists();
         javaPlugin.reloadConfig();
-        setValues(javaPlugin.getConfig());
+        readValues(javaPlugin.getConfig());
     }
 
-    private void setValues(FileConfiguration config)
+    private void readValues(FileConfiguration config)
     {
         this.infoMaterial = readMaterial(config, "infoMaterial", Material.FEATHER);
         this.whipMaterial = readMaterial(config, "whipMaterial", Material.BLAZE_ROD);
 
         this.gaits = parseGaits(config.getString("gaits", DEFAULT_GAITS));
         this.defaultGait = parseInt(config, "defaultGait", 100);
+
+        this.genderNames = new String[2];
+        this.genderNames[0] = config.getString("nameMale", "Stallion");
+        this.genderNames[1] = config.getString("nameFemale", "Mare");
     }
 
+    @SuppressWarnings("SameParameterValue")
     private int parseInt(FileConfiguration configuration, String optionName, int fallback)
     {
         final @Nullable String value = configuration.getString(optionName);
@@ -127,5 +133,10 @@ public class Config
     public int getDefaultGait()
     {
         return defaultGait;
+    }
+
+    public String getGenderName(HorseGender gender)
+    {
+        return genderNames[gender.ordinal()];
     }
 }

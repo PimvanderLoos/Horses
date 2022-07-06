@@ -40,7 +40,7 @@ public final class HorseEditor
 
         final String msg = ChatColor.DARK_GRAY + ">>>>>>--------------------------<<<<<<<\n"
             + ChatColor.GOLD + "Speed: " + ChatColor.GRAY + getBaseSpeed(horse) + "\n"
-            + ChatColor.GOLD + "Gender: " + ChatColor.GRAY + getGender(horse) + "\n"
+            + ChatColor.GOLD + "Gender: " + ChatColor.GRAY + config.getGenderName(getGender(horse)) + "\n"
             + ChatColor.GOLD + "Gait: " + ChatColor.GRAY + getGait(horse) + "\n"
             + ChatColor.DARK_GRAY + ">>>>>>--------------------------<<<<<<<\n";
 

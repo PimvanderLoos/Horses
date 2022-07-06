@@ -9,3 +9,7 @@ gaits: 0,25,35,50,75,100
 
 # The default gait to use for new horses.
 defaultGait: 100
+
+# The names of the genders
+nameMale: Stallion
+nameFemale: Mare
