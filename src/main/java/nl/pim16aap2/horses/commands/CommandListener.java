@@ -1,6 +1,7 @@
 package nl.pim16aap2.horses.commands;
 
 import nl.pim16aap2.horses.Horses;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -29,6 +30,8 @@ public class CommandListener implements CommandExecutor
         if (command.getName().equalsIgnoreCase("ReloadHorses"))
         {
             horses.getHorsesConfig().reloadConfig();
+            final String color = sender instanceof Player ? ChatColor.GREEN.toString() : "";
+            sender.sendMessage(color + "Plugin has been reloaded!");
             return true;
         }
 
@@ -47,19 +50,23 @@ public class CommandListener implements CommandExecutor
             final @Nullable HorseAttribute attribute = HorseAttribute.getAttribute(args[0]);
             if (attribute == null)
             {
-                player.sendMessage("Could not find attribute " + args[0]);
+                player.sendMessage(ChatColor.RED + "Could not find attribute " + args[0]);
                 return false;
             }
 
             final List<AbstractHorse> leadHorses = getHorsesLeadBy(player);
             if (leadHorses.isEmpty())
             {
-                player.sendMessage("You are not currently leading any horses!");
+                player.sendMessage(ChatColor.RED + "You are not currently leading any horses!");
                 return true;
             }
 
             if (!attribute.apply(horses, horses.getHorseEditor(), leadHorses, args[1]))
-                player.sendMessage(attribute.getErrorString(args[1]));
+                player.sendMessage(ChatColor.RED + attribute.getErrorString(args[1]));
+            else
+                player.sendMessage(ChatColor.GREEN + "Attribute '" +
+                                       ChatColor.GOLD + attribute.getName() +
+                                       ChatColor.GREEN + "' has been updated!");
             return true;
         }
         return false;

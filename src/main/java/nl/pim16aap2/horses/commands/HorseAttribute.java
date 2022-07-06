@@ -124,9 +124,12 @@ enum HorseAttribute
             {
                 try
                 {
-                    final double health = Double.parseDouble(input);
+                    final double health = Math.max(0, Double.parseDouble(input));
                     for (final AbstractHorse horse : horses)
+                    {
+                        horseEditor.setMaxHealth(horse, health);
                         horse.setHealth(health);
+                    }
                     return true;
                 }
                 catch (NumberFormatException exception)

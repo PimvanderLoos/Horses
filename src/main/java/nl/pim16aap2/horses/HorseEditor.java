@@ -185,6 +185,17 @@ public final class HorseEditor
         horse.getPersistentDataContainer().set(keyGender, PersistentDataType.BYTE, (byte) gender.ordinal());
     }
 
+    public void setMaxHealth(AbstractHorse horse, double maxHealth)
+    {
+        final @Nullable AttributeInstance attribute = horse.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+        if (attribute == null)
+        {
+            javaPlugin.getLogger().severe("Failed to set max health for horse!");
+            return;
+        }
+        attribute.setBaseValue(maxHealth);
+    }
+
     private double assignBaseSpeed(AbstractHorse horse)
     {
         final @Nullable AttributeInstance movementSpeedAttr = horse.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED);
