@@ -3,6 +3,7 @@ package nl.pim16aap2.horses.listeners;
 
 import nl.pim16aap2.horses.Config;
 import nl.pim16aap2.horses.HorseEditor;
+import org.bukkit.Material;
 import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -12,6 +13,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityBreedEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -75,5 +77,13 @@ public class HorseListener implements Listener
         event.setCancelled(!canBreed);
         if (canBreed)
             horseEditor.ensureHorseManaged(child);
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onDeath(EntityDeathEvent event)
+    {
+        if (!monitoredTypes.contains(event.getEntityType()))
+            return;
+        event.getDrops().removeIf(itemStack -> itemStack.getType().equals(Material.LEATHER));
     }
 }
