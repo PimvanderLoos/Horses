@@ -6,3 +6,6 @@ whipMaterial: BLAZE_ROD
 
 # List of comma-separated values. Each value represents a percentage of the original speed of the horse.
 gaits: 0,25,35,50,75,100
+
+# The default gait to use for new horses.
+defaultGait: 100

@@ -19,6 +19,7 @@ public class Config
     private Material infoMaterial = Material.FEATHER;
     private Material whipMaterial = Material.BLAZE_ROD;
     private Gaits gaits;
+    private int defaultGait = 100;
 
     private final Path path;
 
@@ -43,21 +44,43 @@ public class Config
         this.whipMaterial = readMaterial(config, "whipMaterial", Material.BLAZE_ROD);
 
         this.gaits = parseGaits(config.getString("gaits", DEFAULT_GAITS));
+        this.defaultGait = parseInt(config, "defaultGait", 100);
+    }
+
+    private int parseInt(FileConfiguration configuration, String optionName, int fallback)
+    {
+        final @Nullable String value = configuration.getString(optionName);
+        if (value == null)
+        {
+            javaPlugin.getLogger().severe("No value provided for option '" +
+                                              optionName + "'! Using fallback: " + fallback);
+            return fallback;
+        }
+        try
+        {
+            return Integer.parseInt(value);
+        }
+        catch (NumberFormatException e)
+        {
+            javaPlugin.getLogger().severe("Invalid integer '" + value + "' provided for option '" +
+                                              optionName + "'! Using fallback: " + fallback);
+        }
+        return fallback;
     }
 
     private Gaits parseGaits(String line)
     {
         final String[] parts = line.split(",");
         final List<Integer> values = new ArrayList<>();
-        for (int idx = 0; idx < parts.length; ++idx)
+        for (final String part : parts)
         {
             try
             {
-                values.add(Integer.parseInt(parts[idx]));
+                values.add(Integer.parseInt(part));
             }
             catch (NumberFormatException e)
             {
-                javaPlugin.getLogger().severe("Failed to parse number '" + parts[idx] + "'");
+                javaPlugin.getLogger().severe("Failed to parse number '" + part + "'");
             }
         }
         return new Gaits(values);
@@ -99,5 +122,10 @@ public class Config
     public Gaits getGaits()
     {
         return gaits;
+    }
+
+    public int getDefaultGait()
+    {
+        return defaultGait;
     }
 }

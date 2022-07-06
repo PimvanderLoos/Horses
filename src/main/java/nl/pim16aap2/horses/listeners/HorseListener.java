@@ -58,9 +58,9 @@ public class HorseListener implements Listener
             return;
 
         if (event.getAction() == Action.LEFT_CLICK_AIR)
-            horseEditor.increaseSpeed(event.getPlayer(), horse);
+            horseEditor.increaseGait(event.getPlayer(), horse);
         else if (event.getAction() == Action.RIGHT_CLICK_AIR)
-            horseEditor.decreaseSpeed(event.getPlayer(), horse);
+            horseEditor.decreaseGait(event.getPlayer(), horse);
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -74,6 +74,6 @@ public class HorseListener implements Listener
         final boolean canBreed = horseEditor.canBreed(horseA, horseB);
         event.setCancelled(canBreed);
         if (canBreed)
-            horseEditor.generateGender(child);
+            horseEditor.ensureHorseManaged(child);
     }
 }
