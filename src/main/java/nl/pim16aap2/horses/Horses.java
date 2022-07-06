@@ -18,7 +18,8 @@ public class Horses extends JavaPlugin
     public Horses()
     {
         config = new Config(this);
-        horseListener = new HorseListener(config);
+        final HorseEditor horseEditor = new HorseEditor(config);
+        horseListener = new HorseListener(config, horseEditor);
     }
 
     @Override
