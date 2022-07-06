@@ -13,6 +13,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
 import java.util.Random;
 
 public final class HorseEditor
@@ -40,7 +41,10 @@ public final class HorseEditor
     {
         ensureHorseManaged(horse);
 
+        //noinspection deprecation
         final String msg = ChatColor.DARK_GRAY + ">>>>>>--------------------------<<<<<<<\n"
+            + ChatColor.GOLD + "Name: " + ChatColor.GRAY + Objects.requireNonNullElse(horse.getCustomName(),
+                                                                                      horse.getType().getName()) + "\n"
             + ChatColor.GOLD + "Speed: " + ChatColor.GRAY + getBaseSpeed(horse) + "\n"
             + ChatColor.GOLD + "Gender: " + ChatColor.GRAY + config.getGenderName(getGender(horse)) + "\n"
             + ChatColor.GOLD + "Gait: " + ChatColor.GRAY + getGait(horse) + "\n"
