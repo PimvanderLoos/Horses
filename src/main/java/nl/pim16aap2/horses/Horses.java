@@ -1,24 +1,33 @@
 package nl.pim16aap2.horses;
 
-import nl.pim16aap2.horses.listeners.CommandListener;
+import nl.pim16aap2.horses.commands.CommandListener;
 import nl.pim16aap2.horses.listeners.HorseListener;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.EntityType;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 @SuppressWarnings("unused")
 public class Horses extends JavaPlugin
 {
+    public static final Set<EntityType> MONITORED_TYPES =
+        EnumSet.of(EntityType.HORSE, EntityType.MULE, EntityType.DONKEY);
+
     private final HorseListener horseListener;
     private final Config config;
+    private final HorseEditor horseEditor;
     private @Nullable CommandListener commandListener;
 
     public Horses()
     {
         config = new Config(this);
-        final HorseEditor horseEditor = new HorseEditor(this, config);
+        horseEditor = new HorseEditor(this, config);
         horseListener = new HorseListener(config, horseEditor);
     }
 
@@ -35,10 +44,16 @@ public class Horses extends JavaPlugin
     private void initCommandListener()
     {
         commandListener = new CommandListener(this);
-        initCommand("reloadhorses");
+        initCommand("ReloadHorses");
+        initCommand("EditHorse", new CommandListener.EditHorseTabComplete(this));
     }
 
     private void initCommand(@SuppressWarnings("SameParameterValue") String name)
+    {
+        initCommand(name, null);
+    }
+
+    private void initCommand(String name, @Nullable TabCompleter tabCompleter)
     {
         final @Nullable PluginCommand command = getCommand(name);
         if (command == null)
@@ -47,6 +62,8 @@ public class Horses extends JavaPlugin
             return;
         }
         command.setExecutor(commandListener);
+        if (tabCompleter != null)
+            command.setTabCompleter(tabCompleter);
     }
 
     @Override
@@ -58,5 +75,10 @@ public class Horses extends JavaPlugin
     public Config getHorsesConfig()
     {
         return config;
+    }
+
+    public HorseEditor getHorseEditor()
+    {
+        return horseEditor;
     }
 }

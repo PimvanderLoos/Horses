@@ -1,16 +1,19 @@
 package nl.pim16aap2.horses;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
 public final class Gaits
 {
     private final int[] gaits;
+    private final List<Integer> gaitsList;
 
     public Gaits(List<Integer> values)
     {
         gaits = toArray(new ArrayList<>(values));
+        gaitsList = Collections.unmodifiableList(asList(gaits));
     }
 
     public int getHigherGait(int currentValue)
@@ -98,6 +101,11 @@ public final class Gaits
         return ret;
     }
 
+    public List<Integer> gaitsAsList()
+    {
+        return gaitsList;
+    }
+
     private static int[] toArray(List<Integer> values)
     {
         final List<Integer> filtered =
@@ -107,5 +115,13 @@ public final class Gaits
         for (final Integer value : filtered)
             arr[idx++] = value;
         return arr;
+    }
+
+    private static List<Integer> asList(int[] values)
+    {
+        final ArrayList<Integer> ret = new ArrayList<>(values.length);
+        for (int value : values)
+            ret.add(value);
+        return ret;
     }
 }

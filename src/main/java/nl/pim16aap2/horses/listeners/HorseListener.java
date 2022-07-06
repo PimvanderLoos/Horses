@@ -3,10 +3,10 @@ package nl.pim16aap2.horses.listeners;
 
 import nl.pim16aap2.horses.Config;
 import nl.pim16aap2.horses.HorseEditor;
+import nl.pim16aap2.horses.Horses;
 import org.bukkit.Material;
 import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -18,12 +18,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.EnumSet;
-import java.util.Set;
-
 public class HorseListener implements Listener
 {
-    private final Set<EntityType> monitoredTypes = EnumSet.of(EntityType.HORSE, EntityType.MULE, EntityType.DONKEY);
     private final Config config;
     private final HorseEditor horseEditor;
 
@@ -36,7 +32,7 @@ public class HorseListener implements Listener
     @EventHandler(ignoreCancelled = true)
     public void onInfoClick(EntityDamageByEntityEvent event)
     {
-        if (!(monitoredTypes.contains(event.getEntityType())) ||
+        if (!(Horses.MONITORED_TYPES.contains(event.getEntityType())) ||
             !(event.getDamager() instanceof Player player) ||
             !(event.getEntity() instanceof AbstractHorse horse))
             return;
@@ -68,7 +64,7 @@ public class HorseListener implements Listener
     @EventHandler(ignoreCancelled = true)
     public void onBreed(EntityBreedEvent event)
     {
-        if (!monitoredTypes.contains(event.getMother().getType()) ||
+        if (!Horses.MONITORED_TYPES.contains(event.getMother().getType()) ||
             !(event.getFather() instanceof AbstractHorse horseA) ||
             !(event.getMother() instanceof AbstractHorse horseB) ||
             !(event.getEntity() instanceof AbstractHorse child))
@@ -82,7 +78,7 @@ public class HorseListener implements Listener
     @EventHandler(ignoreCancelled = true)
     public void onDeath(EntityDeathEvent event)
     {
-        if (!monitoredTypes.contains(event.getEntityType()))
+        if (!Horses.MONITORED_TYPES.contains(event.getEntityType()))
             return;
         event.getDrops().removeIf(itemStack -> itemStack.getType().equals(Material.LEATHER));
     }

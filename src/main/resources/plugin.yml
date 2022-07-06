@@ -7,3 +7,7 @@ commands:
   reloadhorses:
     description: Reloads the horses plugin.
     permission: horses.admin.reload
+  edithorse:
+    description: Edits an attribute of a horse.
+    permission: horses.admin.edit
+    usage: /EditHorse <Attribute> <Value>

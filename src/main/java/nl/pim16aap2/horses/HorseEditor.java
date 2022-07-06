@@ -124,12 +124,32 @@ public final class HorseEditor
         attribute.setBaseValue(effectiveSpeed);
     }
 
+    public void setName(AbstractHorse horse, String name)
+    {
+        horse.setCustomName(name);
+    }
+
     public double getBaseSpeed(AbstractHorse horse)
     {
         final @Nullable Double speed = horse.getPersistentDataContainer().get(keyBaseSpeed, PersistentDataType.DOUBLE);
         if (speed == null)
             return assignBaseSpeed(horse);
         return speed;
+    }
+
+    /**
+     * Sets the base speed of a horse.
+     *
+     * @param horse
+     *     The horse whose base speed to change.
+     * @param speed
+     *     The new speed value, in blocks per second.
+     */
+    public void setBaseSpeed(AbstractHorse horse, double speed)
+    {
+        final double baseSpeed = speed / 43.17f;
+        horse.getPersistentDataContainer().set(keyBaseSpeed, PersistentDataType.DOUBLE, baseSpeed);
+        updateEffectiveSpeed(horse, getGait(horse));
     }
 
     public boolean canBreed(AbstractHorse horseA, AbstractHorse horseB)
@@ -143,15 +163,20 @@ public final class HorseEditor
 
         final @Nullable Byte genderIdx = horse.getPersistentDataContainer().get(keyGender, PersistentDataType.BYTE);
         if (genderIdx == null)
-            return assignGender(horse.getPersistentDataContainer());
+            return assignGender(horse);
         return GENDERS[genderIdx];
     }
 
-    private HorseGender assignGender(PersistentDataContainer container)
+    private HorseGender assignGender(AbstractHorse horse)
     {
         final HorseGender gender = random.nextBoolean() ? HorseGender.MALE : HorseGender.FEMALE;
-        container.set(keyGender, PersistentDataType.BYTE, (byte) gender.ordinal());
+        setGender(horse, gender);
         return gender;
+    }
+
+    public void setGender(AbstractHorse horse, HorseGender gender)
+    {
+        horse.getPersistentDataContainer().set(keyGender, PersistentDataType.BYTE, (byte) gender.ordinal());
     }
 
     private double assignBaseSpeed(AbstractHorse horse)
@@ -178,9 +203,8 @@ public final class HorseEditor
 
         horse.setCustomNameVisible(false);
 
-        assignGender(container);
+        assignGender(horse);
         assignBaseSpeed(horse);
-
 
         final int gait = config.getDefaultGait();
         container.set(keyGait, PersistentDataType.INTEGER, gait);
