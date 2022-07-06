@@ -2,6 +2,7 @@ package nl.pim16aap2.horses;
 
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
@@ -12,6 +13,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.ScoreboardManager;
+import org.bukkit.scoreboard.Team;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -27,6 +31,8 @@ public final class HorseEditor
     private final NamespacedKey keyGender;
     private final NamespacedKey keyGait;
     private final NamespacedKey keyBaseSpeed;
+
+    private @Nullable Team team;
 
     public HorseEditor(JavaPlugin javaPlugin, Config config)
     {
@@ -187,6 +193,14 @@ public final class HorseEditor
         return baseSpeed;
     }
 
+    private void assignToTeam(AbstractHorse horse)
+    {
+        final @Nullable Team team = getTeam();
+        if (team == null)
+            return;
+        team.addEntry(horse.getUniqueId().toString());
+    }
+
     /**
      * Ensures this horse is 'managed', i.e. it has all required data set.
      * <p>
@@ -197,10 +211,13 @@ public final class HorseEditor
      */
     public void ensureHorseManaged(AbstractHorse horse)
     {
+        assignToTeam(horse);
+
         final PersistentDataContainer container = horse.getPersistentDataContainer();
         if (container.get(keyGender, PersistentDataType.BYTE) != null)
             return;
 
+        assignToTeam(horse);
         horse.setCustomNameVisible(false);
 
         assignGender(horse);
@@ -208,5 +225,22 @@ public final class HorseEditor
 
         final int gait = config.getDefaultGait();
         container.set(keyGait, PersistentDataType.INTEGER, gait);
+    }
+
+    private @Nullable Team getTeam()
+    {
+        if (team != null)
+            return team;
+
+        final @Nullable ScoreboardManager scoreboardManager = Bukkit.getScoreboardManager();
+        if (scoreboardManager == null)
+            return null;
+
+        final Scoreboard scoreboard = scoreboardManager.getMainScoreboard();
+        team = scoreboard.getTeam("horses_noNameTag");
+        if (team == null)
+            team = scoreboard.registerNewTeam("horses_noNameTag");
+        team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
+        return team;
     }
 }
