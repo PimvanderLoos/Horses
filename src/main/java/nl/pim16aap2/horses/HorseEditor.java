@@ -1,5 +1,7 @@
 package nl.pim16aap2.horses;
 
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
@@ -49,7 +51,8 @@ public final class HorseEditor
 
     private void communicateSpeedChange(Player player, int newSpeed)
     {
-        player.sendMessage(ChatColor.RED + "NEW SPEED: " + newSpeed);
+        player.spigot().sendMessage(ChatMessageType.ACTION_BAR,
+                                    new TextComponent(ChatColor.RED + "Speed: " + newSpeed));
     }
 
     public void increaseGait(Player player, AbstractHorse horse)
@@ -155,8 +158,11 @@ public final class HorseEditor
         if (container.get(keyGender, PersistentDataType.BYTE) != null)
             return;
 
+        horse.setCustomNameVisible(false);
+
         assignGender(container);
         assignBaseSpeed(horse);
+
 
         final int gait = config.getDefaultGait();
         container.set(keyGait, PersistentDataType.INTEGER, gait);
