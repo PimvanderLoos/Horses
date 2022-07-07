@@ -77,7 +77,8 @@ public class CommandListener implements CommandExecutor
         return player.getNearbyEntities(10, 10, 10).stream()
                      .filter(entity -> Horses.MONITORED_TYPES.contains(entity.getType()))
                      .map(AbstractHorse.class::cast)
-                     .filter(horse -> horse.getLeashHolder().equals(player))
+                     .filter(AbstractHorse::isLeashed)
+                     .filter(horse -> player.equals(horse.getLeashHolder()))
                      .toList();
     }
 
