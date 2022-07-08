@@ -51,6 +51,11 @@ final class HorseStatus
         this.energy = Math.min(maxEnergy, this.energy + recoveryStep);
     }
 
+    public void setEnergyPercentage(float percentage)
+    {
+        this.energy = (int) Math.min(maxEnergy, Math.max(0, this.maxEnergy * percentage));
+    }
+
     public List<Player> getRiders()
     {
         return horse.getPassengers().stream()
@@ -82,5 +87,17 @@ final class HorseStatus
     public int hashCode()
     {
         return Objects.hash(horse, energy);
+    }
+
+    @Override
+    public String toString()
+    {
+        return "HorseStatus{" +
+            "horse=" + horse +
+            ", maxEnergy=" + maxEnergy +
+            ", drainStep=" + drainStep +
+            ", recoveryStep=" + recoveryStep +
+            ", energy=" + energy +
+            '}';
     }
 }

@@ -30,7 +30,7 @@ public class CommandListener implements CommandExecutor
     {
         if (command.getName().equalsIgnoreCase("ReloadHorses"))
         {
-            horses.getHorsesConfig().reloadConfig();
+            horses.reload();
             final String color = sender instanceof Player ? ChatColor.GREEN.toString() : "";
             sender.sendMessage(color + "Plugin has been reloaded!");
             return true;

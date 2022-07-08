@@ -47,6 +47,12 @@ public class Horses extends JavaPlugin
             initCommandListener();
     }
 
+    public void reload()
+    {
+        config.reloadConfig();
+        horseTracker.onEnable();
+    }
+
     public Communicator getCommunicator()
     {
         return communicator;
