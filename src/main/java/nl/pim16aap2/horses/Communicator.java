@@ -71,6 +71,7 @@ public class Communicator
     public void sendEnergyPercentage(Player player, float percentage)
     {
         player.spigot().sendMessage(
-            ChatMessageType.CHAT, new TextComponent(ChatColor.GREEN + "ENERGY: " + percentage));
+            ChatMessageType.CHAT,
+            new TextComponent(ChatColor.GREEN + String.format("ENERGY: %3.2f%%", (100 * percentage))));
     }
 }

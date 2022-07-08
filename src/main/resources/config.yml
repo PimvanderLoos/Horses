@@ -19,7 +19,7 @@ nameMale: Stallion
 nameFemale: Mare
 nameGelding: Gelding
 
-# The speed penalty to give when a horse is exhausted. Use a value of 0 to disable this feature.
+# The speed penalty (percentage) to give when a horse is exhausted. Use a value of 0 to disable this feature.
 exhaustionPenalty: 35
 
 # The amount of time (in seconds) a horse can run at >= 100% speed before getting exhausted.
