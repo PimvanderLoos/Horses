@@ -16,14 +16,15 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class HorseTracker
 {
     private final Horses plugin;
     private final Config config;
     private final HorseEditor horseEditor;
-    private final Map<UUID, HorseStatus> trackedHorses = new HashMap<>();
     private final Communicator communicator;
+    private Map<UUID, HorseStatus> trackedHorses = new HashMap<>();
     private @Nullable BukkitTask task;
 
     @Inject
@@ -88,6 +89,22 @@ public class HorseTracker
             task = Bukkit.getScheduler().runTaskTimer(plugin, this::processTrackedHorses, 0L, 1L);
             findHorsesWithRiders();
         }
+        else
+            updateTrackedHorses();
+    }
+
+    private void updateTrackedHorses()
+    {
+        trackedHorses = trackedHorses.entrySet().stream().collect(Collectors.toMap(
+            Map.Entry::getKey,
+            entry ->
+            {
+                final HorseStatus oldStatus = entry.getValue();
+                final HorseStatus newStatus =
+                    new HorseStatus(oldStatus.getHorse(), config.getEnergyDrainTime(), config.getEnergyRecoveryTime());
+                newStatus.setEnergyPercentage(oldStatus.getEnergyPercentage());
+                return newStatus;
+            }));
     }
 
     private void findHorsesWithRiders()

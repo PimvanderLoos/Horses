@@ -51,6 +51,12 @@ public class Horses extends JavaPlugin
         return horsesComponent;
     }
 
+    public void reload()
+    {
+        horsesComponent.getConfig().reloadConfig();
+        horsesComponent.getHorseTracker().onEnable();
+    }
+
     private void initCommandListener()
     {
         initCommand("ReloadHorses");
