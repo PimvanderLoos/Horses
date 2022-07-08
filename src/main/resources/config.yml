@@ -10,6 +10,10 @@ gaits: 0,25,35,50,75,100
 # The default gait to use for new horses.
 defaultGait: 100
 
+# The gait to reset a horse to when its rider dismounts it.
+# Use -1 to not reset the gait and remember the last-used gait instead.
+resetGait: -1
+
 # The names of the genders
 nameMale: Stallion
 nameFemale: Mare

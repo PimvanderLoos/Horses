@@ -17,6 +17,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
+import org.spigotmc.event.entity.EntityDismountEvent;
 
 public class HorseListener implements Listener
 {
@@ -81,5 +82,16 @@ public class HorseListener implements Listener
         if (!Horses.MONITORED_TYPES.contains(event.getEntityType()))
             return;
         event.getDrops().removeIf(itemStack -> itemStack.getType().equals(Material.LEATHER));
+    }
+
+    @EventHandler
+    public void onDismount(EntityDismountEvent event)
+    {
+        if (config.getResetGait() < 0)
+            return;
+        if (!Horses.MONITORED_TYPES.contains(event.getDismounted().getType()) ||
+            !(event.getDismounted() instanceof AbstractHorse horse))
+            return;
+        horseEditor.setGait(horse, config.getResetGait());
     }
 }
