@@ -10,4 +10,4 @@ commands:
   edithorse:
     description: Edits an attribute of a horse.
     permission: horses.admin.edit
-    usage: /EditHorse <Attribute> <Value>
+    usage: /EditHorse <Attribute> [Value]

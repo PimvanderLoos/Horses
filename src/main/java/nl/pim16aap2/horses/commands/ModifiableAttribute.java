@@ -14,39 +14,42 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-enum HorseAttribute
+enum ModifiableAttribute
 {
-    NAME("name")
+    NAME("name", false)
         {
             @Override
-            public boolean apply(Horses plugin, HorseEditor horseEditor, List<AbstractHorse> horses, String input)
+            public boolean apply(
+                Horses plugin, HorseEditor horseEditor, List<AbstractHorse> horses, @Nullable String input)
             {
                 for (final AbstractHorse horse : horses)
                     horseEditor.setName(horse, input);
                 return true;
             }
         },
-    GENDER("gender")
+    GENDER("gender", true)
         {
             private final List<String> suggestions =
                 Stream.of(HorseGender.values()).map(gender -> gender.name().toLowerCase(Locale.ROOT)).toList();
 
             @Override
-            public boolean apply(Horses plugin, HorseEditor horseEditor, List<AbstractHorse> horses, String input)
+            public boolean apply(
+                Horses plugin, HorseEditor horseEditor, List<AbstractHorse> horses, @Nullable String input)
             {
                 try
                 {
-                    final HorseGender gender = HorseGender.valueOf(input.toUpperCase(Locale.ROOT));
+                    final HorseGender gender = HorseGender.valueOf(
+                        Objects.requireNonNull(input).toUpperCase(Locale.ROOT));
                     for (final AbstractHorse horse : horses)
                         horseEditor.setGender(horse, gender);
                     return true;
                 }
                 catch (IllegalArgumentException exception)
                 {
-
                     return false;
                 }
             }
@@ -57,14 +60,15 @@ enum HorseAttribute
                 return suggestions;
             }
         },
-    GAIT("gait")
+    GAIT("gait", true)
         {
             @Override
-            public boolean apply(Horses plugin, HorseEditor horseEditor, List<AbstractHorse> horses, String input)
+            public boolean apply(
+                Horses plugin, HorseEditor horseEditor, List<AbstractHorse> horses, @Nullable String input)
             {
                 try
                 {
-                    final int gait = Integer.parseInt(input);
+                    final int gait = Integer.parseInt(Objects.requireNonNull(input));
                     for (final AbstractHorse horse : horses)
                         horseEditor.setGait(horse, gait);
                     return true;
@@ -81,14 +85,15 @@ enum HorseAttribute
                 return plugin.getHorsesConfig().getGaits().gaitsAsList().stream().map(Object::toString).toList();
             }
         },
-    SPEED("speed")
+    SPEED("speed", true)
         {
             @Override
-            public boolean apply(Horses plugin, HorseEditor horseEditor, List<AbstractHorse> horses, String input)
+            public boolean apply(
+                Horses plugin, HorseEditor horseEditor, List<AbstractHorse> horses, @Nullable String input)
             {
                 try
                 {
-                    final double speed = Double.parseDouble(input);
+                    final double speed = Double.parseDouble(Objects.requireNonNull(input));
                     for (final AbstractHorse horse : horses)
                         horseEditor.setBaseSpeed(horse, speed);
                     return true;
@@ -99,14 +104,15 @@ enum HorseAttribute
                 }
             }
         },
-    JUMP("jump")
+    JUMP("jump", true)
         {
             @Override
-            public boolean apply(Horses plugin, HorseEditor horseEditor, List<AbstractHorse> horses, String input)
+            public boolean apply(
+                Horses plugin, HorseEditor horseEditor, List<AbstractHorse> horses, @Nullable String input)
             {
                 try
                 {
-                    final double jumpStrength = Double.parseDouble(input);
+                    final double jumpStrength = Double.parseDouble(Objects.requireNonNull(input));
                     for (final AbstractHorse horse : horses)
                         horse.setJumpStrength(jumpStrength);
                     return true;
@@ -117,14 +123,15 @@ enum HorseAttribute
                 }
             }
         },
-    HEALTH("health")
+    HEALTH("health", true)
         {
             @Override
-            public boolean apply(Horses plugin, HorseEditor horseEditor, List<AbstractHorse> horses, String input)
+            public boolean apply(
+                Horses plugin, HorseEditor horseEditor, List<AbstractHorse> horses, @Nullable String input)
             {
                 try
                 {
-                    final double health = Math.max(0, Double.parseDouble(input));
+                    final double health = Math.max(0, Double.parseDouble(Objects.requireNonNull(input)));
                     for (final AbstractHorse horse : horses)
                     {
                         horseEditor.setMaxHealth(horse, health);
@@ -138,22 +145,25 @@ enum HorseAttribute
                 }
             }
         },
-    OWNER("owner")
+    OWNER("owner", false)
         {
-            @Override
-            public boolean apply(Horses plugin, HorseEditor horseEditor, List<AbstractHorse> horses, String input)
+            private @Nullable OfflinePlayer parsePlayer(String input)
             {
-                @Nullable OfflinePlayer player;
                 try
                 {
-                    player = Bukkit.getOfflinePlayer(UUID.fromString(input));
+                    return Bukkit.getOfflinePlayer(UUID.fromString(input));
                 }
                 catch (IllegalArgumentException exception)
                 {
-                    player = Bukkit.getPlayer(input);
+                    return Bukkit.getPlayer(input);
                 }
-                if (player == null)
-                    return false;
+            }
+
+            @Override
+            public boolean apply(
+                Horses plugin, HorseEditor horseEditor, List<AbstractHorse> horses, @Nullable String input)
+            {
+                final @Nullable OfflinePlayer player = input == null ? null : parsePlayer(input);
                 for (final AbstractHorse horse : horses)
                     horse.setOwner(player);
                 return true;
@@ -166,31 +176,33 @@ enum HorseAttribute
             }
 
             @Override
-            public String getErrorString(String input)
+            public String getErrorString(@Nullable String input)
             {
                 return "Could not find player '" + input + "'! Are they online? Or try their UUID!";
             }
         },
     ;
 
-    private static final Map<String, HorseAttribute> NAME_MAPPER;
+    private static final Map<String, ModifiableAttribute> NAME_MAPPER;
 
     static
     {
-        final HorseAttribute[] values = values();
+        final ModifiableAttribute[] values = values();
         NAME_MAPPER = new HashMap<>(values.length);
-        for (final HorseAttribute attribute : values())
+        for (final ModifiableAttribute attribute : values())
             NAME_MAPPER.put(attribute.name.toLowerCase(Locale.ROOT), attribute);
     }
 
     private final String name;
+    private final boolean parameterRequired;
 
-    HorseAttribute(String name)
+    ModifiableAttribute(String name, boolean parameterRequired)
     {
         this.name = name;
+        this.parameterRequired = parameterRequired;
     }
 
-    public static @Nullable HorseAttribute getAttribute(String input)
+    public static @Nullable ModifiableAttribute getAttribute(String input)
     {
         return NAME_MAPPER.get(input.toLowerCase(Locale.ROOT));
     }
@@ -200,9 +212,15 @@ enum HorseAttribute
         return name;
     }
 
-    public abstract boolean apply(Horses plugin, HorseEditor horseEditor, List<AbstractHorse> horses, String input);
+    public boolean isParameterRequired()
+    {
+        return parameterRequired;
+    }
 
-    public String getErrorString(String input)
+    public abstract boolean apply(
+        Horses plugin, HorseEditor horseEditor, List<AbstractHorse> horses, @Nullable String input);
+
+    public String getErrorString(@Nullable String input)
     {
         return "Failed to parse input '" + input + "'";
     }

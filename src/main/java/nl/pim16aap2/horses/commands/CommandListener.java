@@ -41,16 +41,23 @@ public class CommandListener implements CommandExecutor
             return true;
         }
 
-        // /EditHorse <attribute> <value>
+        // /EditHorse <attribute> [value]
         if (command.getName().equalsIgnoreCase("EditHorse"))
         {
-            if (args.length != 2)
+            if (args.length == 0 || args.length > 2)
                 return false;
 
-            final @Nullable HorseAttribute attribute = HorseAttribute.getAttribute(args[0]);
+            final @Nullable String value = args.length < 2 ? null : args[1];
+            final @Nullable ModifiableAttribute attribute = ModifiableAttribute.getAttribute(args[0]);
             if (attribute == null)
             {
                 player.sendMessage(ChatColor.RED + "Could not find attribute " + args[0]);
+                return false;
+            }
+
+            if (attribute.isParameterRequired() && value == null)
+            {
+                player.sendMessage(ChatColor.RED + "Required command value not provided!");
                 return false;
             }
 
@@ -61,8 +68,8 @@ public class CommandListener implements CommandExecutor
                 return true;
             }
 
-            if (!attribute.apply(horses, horses.getHorseEditor(), leadHorses, args[1]))
-                player.sendMessage(ChatColor.RED + attribute.getErrorString(args[1]));
+            if (!attribute.apply(horses, horses.getHorseEditor(), leadHorses, value))
+                player.sendMessage(ChatColor.RED + attribute.getErrorString(value));
             else
                 player.sendMessage(ChatColor.GREEN + "Attribute '" +
                                        ChatColor.GOLD + attribute.getName() +
@@ -90,7 +97,7 @@ public class CommandListener implements CommandExecutor
         public EditHorseTabComplete(Horses plugin)
         {
             this.plugin = plugin;
-            attributeNames = Stream.of(HorseAttribute.values()).map(HorseAttribute::getName).toList();
+            attributeNames = Stream.of(ModifiableAttribute.values()).map(ModifiableAttribute::getName).toList();
         }
 
         @Override
@@ -103,7 +110,7 @@ public class CommandListener implements CommandExecutor
                 return attributeNames.stream()
                                      .filter(name -> name.startsWith(args[0].toLowerCase(Locale.ROOT))).toList();
 
-            final @Nullable HorseAttribute attribute = HorseAttribute.getAttribute(args[0]);
+            final @Nullable ModifiableAttribute attribute = ModifiableAttribute.getAttribute(args[0]);
             final List<String> ret = attribute == null ? Collections.emptyList() : attribute.getSuggestions(plugin);
 
             if (args.length == 2)

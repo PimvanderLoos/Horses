@@ -130,7 +130,7 @@ public final class HorseEditor
         attribute.setBaseValue(effectiveSpeed);
     }
 
-    public void setName(AbstractHorse horse, String name)
+    public void setName(AbstractHorse horse, @Nullable String name)
     {
         horse.setCustomName(name);
     }
