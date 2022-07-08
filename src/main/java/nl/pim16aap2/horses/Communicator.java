@@ -50,6 +50,7 @@ public class Communicator
             + addInfo(localizer.get("horse.attribute.jump"),
                       String.format(Locale.ROOT, "%.2f", horse.getJumpStrength()))
             + addInfo(localizer.get("horse.attribute.health"), String.format(Locale.ROOT, "%.0f", horse.getHealth()))
+            + addInfo("Exhausted", Boolean.toString(horseEditor.isExhausted(horse)))
             + addInfo(localizer.get("horse.attribute.owner"), getOwnerName(horse))
             + ChatColor.DARK_GRAY + ">>>>>>--------------------------<<<<<<<\n";
 
@@ -65,5 +66,11 @@ public class Communicator
     private String addInfo(String name, Object value)
     {
         return ChatColor.GOLD + name + ": " + ChatColor.GRAY + value + "\n";
+    }
+
+    public void sendEnergyPercentage(Player player, float percentage)
+    {
+        player.spigot().sendMessage(
+            ChatMessageType.CHAT, new TextComponent(ChatColor.GREEN + "ENERGY: " + percentage));
     }
 }

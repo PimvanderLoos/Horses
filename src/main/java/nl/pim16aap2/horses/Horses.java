@@ -36,6 +36,8 @@ public class Horses extends JavaPlugin
         horsesComponent.getConfig().reload();
         Bukkit.getPluginManager().registerEvents(horsesComponent.getHorseListener(), this);
         initCommandListener();
+
+        horsesComponent.getHorseTracker().onEnable();
     }
 
     @Override
