@@ -20,7 +20,7 @@ jobs:
           cache: 'maven'
 
       - name: Build the project and run the tests
-        run: mvn --batch-mode clean test package
+        run: mvn --batch-mode clean test package checkstyle:checkstyle pmd:check
 
       - name: Upload Horses.jar
         uses: actions/upload-artifact@v3

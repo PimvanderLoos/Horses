@@ -19,6 +19,9 @@
         <dependency.version.errorprone>2.14.0</dependency.version.errorprone>
         <dependency.version.nullaway>0.9.8</dependency.version.nullaway>
         <dependency.version.checker-framework>3.22.2</dependency.version.checker-framework>
+        <dependency.version.checkstyle>10.3.1</dependency.version.checkstyle>
+        <dependency.version.maven-checkstyle>3.1.2</dependency.version.maven-checkstyle>
+        <dependency.version.pmd>3.17.0</dependency.version.pmd>
         <dependency.version.mockito>4.6.1</dependency.version.mockito>
         <dependency.version.junit>5.8.2</dependency.version.junit>
         <dependency.version.surefire>3.0.0-M7</dependency.version.surefire>
@@ -87,6 +90,13 @@
             <version>${dependency.version.checker-framework}</version>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>com.puppycrawl.tools</groupId>
+            <artifactId>checkstyle</artifactId>
+            <version>${dependency.version.checkstyle}</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -145,6 +155,53 @@
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>${dependency.version.maven-checkstyle}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.puppycrawl.tools</groupId>
+                        <artifactId>checkstyle</artifactId>
+                        <version>${dependency.version.checkstyle}</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <sourceDirectories>
+                        <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
+                    </sourceDirectories>
+                    <configLocation>${user.dir}/rules/checkstyle.xml</configLocation>
+                    <encoding>UTF-8</encoding>
+                    <consoleOutput>true</consoleOutput>
+                    <failsOnError>true</failsOnError>
+                    <linkXRef>true</linkXRef>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>${dependency.version.pmd}</version>
+                <configuration>
+                    <rulesets>
+                        <ruleset>${user.dir}/rules/pmd-ruleset.xml</ruleset>
+                    </rulesets>
+                    <linkXRef>true</linkXRef>
+                    <failOnViolation>true</failOnViolation>
+                    <showPmdLog>true</showPmdLog>
+                    <detail>true</detail>
+                    <printFailingErrors>true</printFailingErrors>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
