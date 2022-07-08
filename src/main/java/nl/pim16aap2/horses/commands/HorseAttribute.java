@@ -173,14 +173,14 @@ enum HorseAttribute
         },
     ;
 
-    private static final Map<String, HorseAttribute> nameMapper;
+    private static final Map<String, HorseAttribute> NAME_MAPPER;
 
     static
     {
         final HorseAttribute[] values = values();
-        nameMapper = new HashMap<>(values.length);
+        NAME_MAPPER = new HashMap<>(values.length);
         for (final HorseAttribute attribute : values())
-            nameMapper.put(attribute.name.toLowerCase(Locale.ROOT), attribute);
+            NAME_MAPPER.put(attribute.name.toLowerCase(Locale.ROOT), attribute);
     }
 
     private final String name;
@@ -192,7 +192,7 @@ enum HorseAttribute
 
     public static @Nullable HorseAttribute getAttribute(String input)
     {
-        return nameMapper.get(input.toLowerCase(Locale.ROOT));
+        return NAME_MAPPER.get(input.toLowerCase(Locale.ROOT));
     }
 
     public String getName()
