@@ -1,6 +1,7 @@
 package nl.pim16aap2.horses;
 
 import nl.pim16aap2.horses.commands.CommandListener;
+import nl.pim16aap2.horses.horsetracker.HorseTracker;
 import nl.pim16aap2.horses.listeners.HorseListener;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
@@ -23,6 +24,7 @@ public class Horses extends JavaPlugin
     private final Config config;
     private final HorseEditor horseEditor;
     private final Communicator communicator;
+    private final HorseTracker horseTracker;
     private @Nullable CommandListener commandListener;
 
     public Horses()
@@ -30,7 +32,8 @@ public class Horses extends JavaPlugin
         config = new Config(this);
         horseEditor = new HorseEditor(this, config);
         communicator = new Communicator(config, horseEditor);
-        horseListener = new HorseListener(this, config, horseEditor);
+        horseTracker = new HorseTracker(this, config, horseEditor, communicator);
+        horseListener = new HorseListener(this, config, horseEditor, horseTracker);
     }
 
     @Override
@@ -39,6 +42,7 @@ public class Horses extends JavaPlugin
         config.reloadConfig();
         Bukkit.getPluginManager().registerEvents(horseListener, this);
 
+        horseTracker.onEnable();
         if (commandListener == null)
             initCommandListener();
     }

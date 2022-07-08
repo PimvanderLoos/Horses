@@ -4,6 +4,7 @@ package nl.pim16aap2.horses.listeners;
 import nl.pim16aap2.horses.Config;
 import nl.pim16aap2.horses.HorseEditor;
 import nl.pim16aap2.horses.Horses;
+import nl.pim16aap2.horses.horsetracker.HorseTracker;
 import org.bukkit.Material;
 import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.Entity;
@@ -18,18 +19,21 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.spigotmc.event.entity.EntityDismountEvent;
+import org.spigotmc.event.entity.EntityMountEvent;
 
 public class HorseListener implements Listener
 {
     private final Horses plugin;
     private final Config config;
     private final HorseEditor horseEditor;
+    private final HorseTracker horseTracker;
 
-    public HorseListener(Horses plugin, Config config, HorseEditor horseEditor)
+    public HorseListener(Horses plugin, Config config, HorseEditor horseEditor, HorseTracker horseTracker)
     {
         this.plugin = plugin;
         this.config = config;
         this.horseEditor = horseEditor;
+        this.horseTracker = horseTracker;
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -120,5 +124,16 @@ public class HorseListener implements Listener
             !(event.getDismounted() instanceof AbstractHorse horse))
             return;
         horseEditor.setGait(horse, config.getResetGait());
+    }
+
+    @EventHandler
+    public void onMount(EntityMountEvent event)
+    {
+        if (config.getExhaustionPenalty() <= 0)
+            return;
+        if (!Horses.MONITORED_TYPES.contains(event.getMount().getType()) ||
+            !(event.getMount() instanceof AbstractHorse horse))
+            return;
+        horseTracker.trackHorse(horse);
     }
 }

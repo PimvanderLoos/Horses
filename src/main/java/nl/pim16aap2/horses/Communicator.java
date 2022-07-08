@@ -39,6 +39,7 @@ public class Communicator
             + addInfo("Speed", String.format("%.2f", horseEditor.getBaseSpeed(horse) * 43.17f))
             + addInfo("Jump", String.format("%.2f", horse.getJumpStrength()))
             + addInfo("Health", String.format("%.0f", horse.getHealth()))
+            + addInfo("Exhausted", Boolean.toString(horseEditor.isExhausted(horse)))
             + addInfo("Owner", getOwnerName(horse))
             + ChatColor.DARK_GRAY + ">>>>>>--------------------------<<<<<<<\n";
 
@@ -54,5 +55,11 @@ public class Communicator
     private String addInfo(String name, Object value)
     {
         return ChatColor.GOLD + name + ": " + ChatColor.GRAY + value + "\n";
+    }
+
+    public void sendEnergyPercentage(Player player, float percentage)
+    {
+        player.spigot().sendMessage(
+            ChatMessageType.CHAT, new TextComponent(ChatColor.GREEN + "ENERGY: " + percentage));
     }
 }
