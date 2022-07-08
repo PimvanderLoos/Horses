@@ -21,11 +21,13 @@ import org.spigotmc.event.entity.EntityDismountEvent;
 
 public class HorseListener implements Listener
 {
+    private final Horses plugin;
     private final Config config;
     private final HorseEditor horseEditor;
 
-    public HorseListener(Config config, HorseEditor horseEditor)
+    public HorseListener(Horses plugin, Config config, HorseEditor horseEditor)
     {
+        this.plugin = plugin;
         this.config = config;
         this.horseEditor = horseEditor;
     }
@@ -43,7 +45,7 @@ public class HorseListener implements Listener
             return;
 
         event.setCancelled(true);
-        horseEditor.printInfo(player, horse);
+        plugin.getCommunicator().printInfo(player, horse);
     }
 
     @EventHandler

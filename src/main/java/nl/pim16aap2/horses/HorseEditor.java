@@ -1,24 +1,18 @@
 package nl.pim16aap2.horses;
 
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.AbstractHorse;
-import org.bukkit.entity.AnimalTamer;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
 import java.util.Random;
 
 public final class HorseEditor
@@ -27,70 +21,35 @@ public final class HorseEditor
 
     private final Random random = new Random();
     private final Config config;
-    private final JavaPlugin javaPlugin;
+    private final Horses plugin;
     private final NamespacedKey keyGender;
     private final NamespacedKey keyGait;
     private final NamespacedKey keyBaseSpeed;
 
     private @Nullable Team team;
 
-    public HorseEditor(JavaPlugin javaPlugin, Config config)
+    public HorseEditor(Horses plugin, Config config)
     {
         this.config = config;
-        this.javaPlugin = javaPlugin;
+        this.plugin = plugin;
 
-        keyGender = new NamespacedKey(javaPlugin, "gender");
-        keyGait = new NamespacedKey(javaPlugin, "gait");
-        keyBaseSpeed = new NamespacedKey(javaPlugin, "baseSpeed");
-    }
-
-    public void printInfo(Player player, AbstractHorse horse)
-    {
-        ensureHorseManaged(horse);
-
-        //noinspection deprecation
-        final String msg = ChatColor.DARK_GRAY + ">>>>>>--------------------------<<<<<<<\n"
-            + addInfo("Name", Objects.requireNonNullElse(horse.getCustomName(), horse.getType().getName()))
-            + addInfo("Gender", config.getGenderName(getGender(horse)))
-            + addInfo("Gait", getGait(horse))
-            + addInfo("Speed", String.format("%.2f", getBaseSpeed(horse) * 43.17f))
-            + addInfo("Jump", String.format("%.2f", horse.getJumpStrength()))
-            + addInfo("Health", String.format("%.0f", horse.getHealth()))
-            + addInfo("Owner", getOwnerName(horse))
-            + ChatColor.DARK_GRAY + ">>>>>>--------------------------<<<<<<<\n";
-
-        player.sendMessage(msg);
-    }
-
-    private String getOwnerName(AbstractHorse horse)
-    {
-        final @Nullable AnimalTamer owner = horse.getOwner();
-        return owner == null ? "Unowned" : owner.getName();
-    }
-
-    private String addInfo(String name, Object value)
-    {
-        return ChatColor.GOLD + name + ": " + ChatColor.GRAY + value.toString() + "\n";
-    }
-
-    private void communicateSpeedChange(Player player, int newSpeed)
-    {
-        player.spigot().sendMessage(ChatMessageType.ACTION_BAR,
-                                    new TextComponent(ChatColor.RED + "Speed: " + newSpeed));
+        keyGender = new NamespacedKey(plugin, "gender");
+        keyGait = new NamespacedKey(plugin, "gait");
+        keyBaseSpeed = new NamespacedKey(plugin, "baseSpeed");
     }
 
     public void increaseGait(Player player, AbstractHorse horse)
     {
         final int newSpeed = config.getGaits().getHigherGait(getGait(horse));
         setGait(horse, newSpeed);
-        communicateSpeedChange(player, newSpeed);
+        plugin.getCommunicator().communicateSpeedChange(player, newSpeed);
     }
 
     public void decreaseGait(Player player, AbstractHorse horse)
     {
         final int newSpeed = config.getGaits().getLowerGait(getGait(horse));
         setGait(horse, newSpeed);
-        communicateSpeedChange(player, newSpeed);
+        plugin.getCommunicator().communicateSpeedChange(player, newSpeed);
     }
 
     public int getGait(AbstractHorse horse)
@@ -124,7 +83,7 @@ public final class HorseEditor
         final @Nullable AttributeInstance attribute = horse.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED);
         if (attribute == null)
         {
-            javaPlugin.getLogger().severe("Failed to set movement speed for horse!");
+            plugin.getLogger().severe("Failed to set movement speed for horse!");
             return;
         }
         attribute.setBaseValue(effectiveSpeed);
@@ -194,7 +153,7 @@ public final class HorseEditor
         final @Nullable AttributeInstance attribute = horse.getAttribute(Attribute.GENERIC_MAX_HEALTH);
         if (attribute == null)
         {
-            javaPlugin.getLogger().severe("Failed to set max health for horse!");
+            plugin.getLogger().severe("Failed to set max health for horse!");
             return;
         }
         attribute.setBaseValue(maxHealth);

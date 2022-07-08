@@ -22,13 +22,15 @@ public class Horses extends JavaPlugin
     private final HorseListener horseListener;
     private final Config config;
     private final HorseEditor horseEditor;
+    private final Communicator communicator;
     private @Nullable CommandListener commandListener;
 
     public Horses()
     {
         config = new Config(this);
         horseEditor = new HorseEditor(this, config);
-        horseListener = new HorseListener(config, horseEditor);
+        communicator = new Communicator(config, horseEditor);
+        horseListener = new HorseListener(this, config, horseEditor);
     }
 
     @Override
@@ -39,6 +41,11 @@ public class Horses extends JavaPlugin
 
         if (commandListener == null)
             initCommandListener();
+    }
+
+    public Communicator getCommunicator()
+    {
+        return communicator;
     }
 
     private void initCommandListener()
