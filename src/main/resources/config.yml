@@ -17,3 +17,4 @@ resetGait: -1
 # The names of the genders
 nameMale: Stallion
 nameFemale: Mare
+nameGelding: Gelding

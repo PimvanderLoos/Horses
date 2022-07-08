@@ -160,7 +160,11 @@ public final class HorseEditor
 
     public boolean canBreed(AbstractHorse horseA, AbstractHorse horseB)
     {
-        return getGender(horseA) != getGender(horseB);
+        final HorseGender genderA = getGender(horseA);
+        if (genderA == HorseGender.GELDING)
+            return false;
+        final HorseGender genderB = getGender(horseB);
+        return genderB != HorseGender.GELDING && genderA != genderB;
     }
 
     public HorseGender getGender(AbstractHorse horse)
@@ -175,7 +179,7 @@ public final class HorseEditor
 
     private HorseGender assignGender(AbstractHorse horse)
     {
-        final HorseGender gender = random.nextBoolean() ? HorseGender.MALE : HorseGender.FEMALE;
+        final HorseGender gender = GENDERS[random.nextInt(GENDERS.length)];
         setGender(horse, gender);
         return gender;
     }

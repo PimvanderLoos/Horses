@@ -21,7 +21,7 @@ public class Config
     private Gaits gaits;
     private int defaultGait = 100;
     private int resetGait = -1;
-    private String[] genderNames = new String[]{HorseGender.MALE.name(), HorseGender.FEMALE.name()};
+    private String[] genderNames;
 
     private final Path path;
 
@@ -30,6 +30,11 @@ public class Config
         this.javaPlugin = javaPlugin;
         gaits = parseGaits(DEFAULT_GAITS);
         this.path = javaPlugin.getDataFolder().toPath().resolve("config.yml");
+
+        final HorseGender[] genders = HorseGender.values();
+        genderNames = new String[genders.length];
+        for (int idx = 0; idx < genders.length; ++idx)
+            genderNames[idx] = Util.capitalizeFirstLetter(genders[idx].name());
     }
 
     public void reloadConfig()
@@ -49,9 +54,19 @@ public class Config
         this.defaultGait = parseInt(config, "defaultGait", 100);
         this.resetGait = parseInt(config, "resetGait", 100);
 
-        this.genderNames = new String[2];
-        this.genderNames[0] = config.getString("nameMale", "Stallion");
-        this.genderNames[1] = config.getString("nameFemale", "Mare");
+        this.genderNames = readGenderNames(config);
+    }
+
+    private static String[] readGenderNames(FileConfiguration config)
+    {
+        final HorseGender[] genders = HorseGender.values();
+        final String[] names = new String[genders.length];
+        for (int idx = 0; idx < genders.length; ++idx)
+        {
+            final String baseName = Util.capitalizeFirstLetter(genders[idx].name());
+            names[idx] = config.getString("name" + baseName, baseName);
+        }
+        return names;
     }
 
     private int parseInt(FileConfiguration configuration, String optionName, int fallback)
