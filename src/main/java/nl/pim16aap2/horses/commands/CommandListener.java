@@ -55,6 +55,15 @@ public class CommandListener implements CommandExecutor
                 return false;
             }
 
+            final String permission = getAttributePermission(attribute.getName());
+            if (!player.hasPermission(permission))
+            {
+                horses.getLogger()
+                      .info("Player '" + player.getName() + "' does not have permission node '" + permission + "'!");
+                player.sendMessage(ChatColor.RED + "You do not have permission to execute this command!");
+                return true;
+            }
+
             if (attribute.isParameterRequired() && value == null)
             {
                 player.sendMessage(ChatColor.RED + "Required command value not provided!");
@@ -79,6 +88,11 @@ public class CommandListener implements CommandExecutor
         return false;
     }
 
+    static String getAttributePermission(String attributeName)
+    {
+        return "horses.editattribute." + attributeName;
+    }
+
     private List<AbstractHorse> getHorsesLeadBy(Player player)
     {
         return player.getNearbyEntities(10, 10, 10).stream()
@@ -101,14 +115,18 @@ public class CommandListener implements CommandExecutor
         }
 
         @Override
-        public @Nullable List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args)
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args)
         {
             if (args.length == 0)
                 return attributeNames;
 
             if (args.length == 1)
-                return attributeNames.stream()
-                                     .filter(name -> name.startsWith(args[0].toLowerCase(Locale.ROOT))).toList();
+            {
+                var stream = attributeNames.stream().filter(name -> name.startsWith(args[0].toLowerCase(Locale.ROOT)));
+                if (sender instanceof Player player)
+                    stream = stream.filter(name -> player.hasPermission(getAttributePermission(name)));
+                return stream.toList();
+            }
 
             final @Nullable ModifiableAttribute attribute = ModifiableAttribute.getAttribute(args[0]);
             final List<String> ret = attribute == null ? Collections.emptyList() : attribute.getSuggestions(plugin);
