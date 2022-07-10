@@ -6,9 +6,11 @@ import nl.pim16aap2.horses.Horses;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.AbstractHorse;
+import org.bukkit.entity.Horse;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -179,6 +181,78 @@ enum ModifiableAttribute
             public String getErrorString(@Nullable String input)
             {
                 return "Could not find player '" + input + "'! Are they online? Or try their UUID!";
+            }
+        },
+    STYLE("style", false)
+        {
+            private static final List<String> SUGGESTIONS =
+                Arrays.stream(Horse.Style.values()).map(style -> style.name().toLowerCase(Locale.ROOT)).toList();
+
+            @Override
+            public boolean apply(
+                Horses plugin, HorseEditor horseEditor, List<AbstractHorse> horses, @Nullable String input)
+            {
+                try
+                {
+                    final Horse.Style style = Horse.Style.valueOf(
+                        Objects.requireNonNull(input).toUpperCase(Locale.ROOT));
+                    for (final AbstractHorse abstractHorse : horses)
+                        if (abstractHorse instanceof Horse horse)
+                            horse.setStyle(style);
+                    return true;
+                }
+                catch (IllegalArgumentException exception)
+                {
+                    return false;
+                }
+            }
+
+            @Override
+            public List<String> getSuggestions(Horses plugin)
+            {
+                return SUGGESTIONS;
+            }
+
+            @Override
+            public String getErrorString(@Nullable String input)
+            {
+                return "Could not find style '" + input + "'!";
+            }
+        },
+    COLOR("color", false)
+        {
+            private static final List<String> SUGGESTIONS =
+                Arrays.stream(Horse.Color.values()).map(color -> color.name().toLowerCase(Locale.ROOT)).toList();
+
+            @Override
+            public boolean apply(
+                Horses plugin, HorseEditor horseEditor, List<AbstractHorse> horses, @Nullable String input)
+            {
+                try
+                {
+                    final Horse.Color color = Horse.Color.valueOf(
+                        Objects.requireNonNull(input).toUpperCase(Locale.ROOT));
+                    for (final AbstractHorse abstractHorse : horses)
+                        if (abstractHorse instanceof Horse horse)
+                            horse.setColor(color);
+                    return true;
+                }
+                catch (IllegalArgumentException exception)
+                {
+                    return false;
+                }
+            }
+
+            @Override
+            public List<String> getSuggestions(Horses plugin)
+            {
+                return SUGGESTIONS;
+            }
+
+            @Override
+            public String getErrorString(@Nullable String input)
+            {
+                return "Could not find color '" + input + "'!";
             }
         },
     ;
