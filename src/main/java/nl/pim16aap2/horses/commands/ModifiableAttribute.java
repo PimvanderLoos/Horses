@@ -183,7 +183,7 @@ enum ModifiableAttribute
                 return "Could not find player '" + input + "'! Are they online? Or try their UUID!";
             }
         },
-    STYLE("style", false)
+    STYLE("style", true)
         {
             private static final List<String> SUGGESTIONS =
                 Arrays.stream(Horse.Style.values()).map(style -> style.name().toLowerCase(Locale.ROOT)).toList();
@@ -219,7 +219,7 @@ enum ModifiableAttribute
                 return "Could not find style '" + input + "'!";
             }
         },
-    COLOR("color", false)
+    COLOR("color", true)
         {
             private static final List<String> SUGGESTIONS =
                 Arrays.stream(Horse.Color.values()).map(color -> color.name().toLowerCase(Locale.ROOT)).toList();
