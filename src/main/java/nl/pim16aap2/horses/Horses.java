@@ -90,6 +90,7 @@ public class Horses extends JavaPlugin
     public void onDisable()
     {
         HandlerList.unregisterAll(horseListener);
+        staminaNotifierManager.removeAll();
     }
 
     public Config getHorsesConfig()
