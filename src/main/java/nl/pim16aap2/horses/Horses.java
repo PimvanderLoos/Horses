@@ -13,6 +13,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumSet;
+import java.util.Objects;
 import java.util.Set;
 
 @SuppressWarnings("unused")
@@ -20,6 +21,8 @@ public class Horses extends JavaPlugin
 {
     public static final Set<EntityType> MONITORED_TYPES =
         EnumSet.of(EntityType.HORSE, EntityType.MULE, EntityType.DONKEY);
+
+    private static @Nullable Horses instance;
 
     private final HorseListener horseListener;
     private final Config config;
@@ -32,11 +35,17 @@ public class Horses extends JavaPlugin
 
     public Horses()
     {
+        instance = this;
         config = new Config(this);
         horseEditor = new HorseEditor(this, config);
         communicator = new Communicator(config, horseEditor);
         horseTracker = new HorseTracker(this, config, horseEditor, staminaNotifierManager);
         horseListener = new HorseListener(this, config, horseEditor, horseTracker, staminaNotifierManager);
+    }
+
+    public static Horses instance()
+    {
+        return Objects.requireNonNull(instance);
     }
 
     @Override

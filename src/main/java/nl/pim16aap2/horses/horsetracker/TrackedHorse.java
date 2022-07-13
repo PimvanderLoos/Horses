@@ -1,6 +1,7 @@
 package nl.pim16aap2.horses.horsetracker;
 
 import nl.pim16aap2.horses.HorseEditor;
+import nl.pim16aap2.horses.Util;
 import nl.pim16aap2.horses.staminabar.IStaminaNotifier;
 import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.Player;
@@ -89,6 +90,8 @@ final class TrackedHorse
 
     public void setExhausted(boolean exhausted)
     {
+        if (exhausted != this.exhausted)
+            onExhaustionChange(exhausted);
         horseEditor.setExhausted(horse, exhausted);
         this.exhausted = exhausted;
     }
@@ -108,6 +111,12 @@ final class TrackedHorse
         return horse.getTicksLived();
     }
 
+    private void onExhaustionChange(boolean newValue)
+    {
+        if (newValue)
+            Util.spawnSmoke(horse);
+    }
+
     /**
      * Creates a new tracked horse that has its energy drain time and recovery time remapped to new values.
      * <p>
@@ -121,7 +130,8 @@ final class TrackedHorse
      */
     public TrackedHorse remap(int energyDrainTime, int energyRecoveryTime)
     {
-        final TrackedHorse ret = new TrackedHorse(horseEditor, horse, notifier, energyDrainTime, energyRecoveryTime);
+        final TrackedHorse ret =
+            new TrackedHorse(horseEditor, horse, notifier, energyDrainTime, energyRecoveryTime);
         ret.setEnergyPercentage(getEnergyPercentage());
         return ret;
     }
