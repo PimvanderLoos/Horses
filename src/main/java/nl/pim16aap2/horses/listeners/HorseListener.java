@@ -35,17 +35,42 @@ public class HorseListener implements Listener
     @EventHandler(ignoreCancelled = true)
     public void onInfoClick(EntityDamageByEntityEvent event)
     {
-        if (!(Horses.MONITORED_TYPES.contains(event.getEntityType())) ||
-            !(event.getDamager() instanceof Player player) ||
-            !(event.getEntity() instanceof AbstractHorse horse))
+        if (event.getDamager() instanceof Player player && processInfoClick(player, event.getEntity()))
+            event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onMountedInfoClick(PlayerInteractEvent event)
+    {
+        final @Nullable Entity vehicle = event.getPlayer().getVehicle();
+        if (vehicle == null)
             return;
+
+        if (processInfoClick(event.getPlayer(), vehicle))
+            event.setCancelled(true);
+    }
+
+    /**
+     * Processes an info click caused by a player with a target entity.
+     *
+     * @param player
+     *     The player that caused the info click.
+     * @param target
+     *     The target entity of the info click. If this is not a type of horse, nothing happens.
+     * @return If the info click was processed successfully.
+     */
+    private boolean processInfoClick(Player player, Entity target)
+    {
+        if (!(Horses.MONITORED_TYPES.contains(target.getType())) ||
+            !(target instanceof AbstractHorse horse))
+            return false;
 
         final ItemStack holding = player.getInventory().getItemInMainHand();
         if (holding.getType() != config.getInfoMaterial())
-            return;
+            return false;
 
-        event.setCancelled(true);
         plugin.getCommunicator().printInfo(player, horse);
+        return true;
     }
 
     @EventHandler
