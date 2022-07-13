@@ -147,9 +147,8 @@ public class HorseListener implements Listener
         if (config.getExhaustionPenalty() <= 0)
             return;
         if (!Horses.MONITORED_TYPES.contains(event.getMount().getType()) ||
-            !(event.getMount() instanceof AbstractHorse horse))
-            return;
-        if (!(event.getEntity() instanceof Player player))
+            !(event.getMount() instanceof AbstractHorse horse) ||
+            !(event.getEntity() instanceof Player player))
             return;
         horseTracker.trackHorse(player, horse);
     }

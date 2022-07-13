@@ -3,6 +3,7 @@ package nl.pim16aap2.horses.horsetracker;
 import nl.pim16aap2.horses.Config;
 import nl.pim16aap2.horses.HorseEditor;
 import nl.pim16aap2.horses.Horses;
+import nl.pim16aap2.horses.staminabar.IStaminaNotifier;
 import nl.pim16aap2.horses.staminabar.StaminaNotifierManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.AbstractHorse;
@@ -39,10 +40,25 @@ public class HorseTracker
     {
         if (task == null)
             return;
-        trackedHorses.computeIfAbsent(horse.getUniqueId(), uuid ->
-            new TrackedHorse(
-                horse, staminaNotifierManager.getNewNotifier(rider), config.getEnergyDrainTime(),
-                config.getEnergyRecoveryTime()));
+
+        trackedHorses.compute(horse.getUniqueId(), (uuid, trackedHorse) ->
+        {
+            final @Nullable IStaminaNotifier notifier = staminaNotifierManager.getNewNotifier(rider);
+
+            final TrackedHorse result;
+            if (trackedHorse == null)
+            {
+                return new TrackedHorse(horse, notifier, config.getEnergyDrainTime(), config.getEnergyRecoveryTime());
+            }
+            else
+            {
+                trackedHorse.setStaminaNotifier(notifier);
+                result = trackedHorse;
+            }
+
+            notifyRiders(trackedHorse);
+            return result;
+        });
     }
 
     private void processTrackedHorses()
@@ -75,13 +91,18 @@ public class HorseTracker
             horseEditor.setExhausted(trackedHorse.getHorse(), true);
 
         if (trackedHorse.getHorse().getTicksLived() % 4 == 0)
-        {
-            final float percentage = trackedHorse.getEnergyPercentage();
-            for (final Player player : trackedHorse.getRiders())
-                if (trackedHorse.getStaminaNotifier() != null)
-                    trackedHorse.getStaminaNotifier().notifyStaminaChange(
-                        player, percentage, horseEditor.isExhausted(trackedHorse.getHorse()));
-        }
+            notifyRiders(trackedHorse);
+    }
+
+    private void notifyRiders(TrackedHorse trackedHorse)
+    {
+        final @Nullable IStaminaNotifier notifier = trackedHorse.getStaminaNotifier();
+        if (notifier == null)
+            return;
+
+        final float percentage = trackedHorse.getEnergyPercentage();
+        for (final Player player : trackedHorse.getRiders())
+            notifier.notifyStaminaChange(player, percentage, horseEditor.isExhausted(trackedHorse.getHorse()));
     }
 
     private void startTask()

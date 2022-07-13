@@ -12,7 +12,7 @@ final class TrackedHorse
 {
     private final AbstractHorse horse;
     private final int maxEnergy;
-    private final @Nullable IStaminaNotifier staminaNotifier;
+    private @Nullable IStaminaNotifier staminaNotifier;
     private final int drainStep;
     private final int recoveryStep;
     private int energy;
@@ -80,6 +80,11 @@ final class TrackedHorse
     public @Nullable IStaminaNotifier getStaminaNotifier()
     {
         return staminaNotifier;
+    }
+
+    public void setStaminaNotifier(@Nullable IStaminaNotifier staminaNotifier)
+    {
+        this.staminaNotifier = staminaNotifier;
     }
 
     @Override
