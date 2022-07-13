@@ -10,14 +10,20 @@ public class StaminaBar implements IStaminaNotifier
 {
     private final BossBar bossBar;
 
-    StaminaBar(Player player)
+    StaminaBar(Player player, double percentage, boolean exhausted)
     {
         this.bossBar = Bukkit.createBossBar("Stamina", BarColor.GREEN, BarStyle.SOLID);
+        setStamina(percentage, exhausted);
         this.bossBar.addPlayer(player);
     }
 
     @Override
     public void notifyStaminaChange(Player player, double percentage, boolean exhausted)
+    {
+        setStamina(percentage, exhausted);
+    }
+
+    private void setStamina(double percentage, boolean exhausted)
     {
         this.bossBar.setProgress(percentage);
         this.updateColor(percentage, exhausted);

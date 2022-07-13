@@ -10,13 +10,13 @@ public class StaminaNotifierManager
 {
     private final Map<Player, IStaminaNotifier> notifierMap = new HashMap<>();
 
-    public @Nullable IStaminaNotifier getNewNotifier(Player player)
+    public @Nullable IStaminaNotifier getNewNotifier(Player player, double staminaPercentage, boolean exhausted)
     {
         //noinspection SpellCheckingInspection
         if (!player.hasPermission("horses.user.staminabar"))
             return null;
 
-        final IStaminaNotifier notifier = new StaminaBar(player);
+        final IStaminaNotifier notifier = new StaminaBar(player, staminaPercentage, exhausted);
         final @Nullable IStaminaNotifier oldNotifier = notifierMap.put(player, notifier);
         if (oldNotifier != null)
             oldNotifier.kill();
