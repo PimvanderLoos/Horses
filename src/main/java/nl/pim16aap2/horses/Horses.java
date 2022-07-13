@@ -1,5 +1,6 @@
 package nl.pim16aap2.horses;
 
+import nl.pim16aap2.horses.staminabar.StaminaNotifierManager;
 import nl.pim16aap2.horses.util.IReloadable;
 import nl.pim16aap2.horses.util.Localizer;
 import org.bukkit.Bukkit;
@@ -23,6 +24,8 @@ public class Horses extends JavaPlugin
 
     private final HorsesComponent horsesComponent;
     private final List<IReloadable> reloadables = new ArrayList<>();
+
+    private final StaminaNotifierManager staminaNotifierManager = new StaminaNotifierManager();
 
     public Horses()
     {
@@ -49,12 +52,6 @@ public class Horses extends JavaPlugin
     public HorsesComponent getHorsesComponent()
     {
         return horsesComponent;
-    }
-
-    public void reload()
-    {
-        horsesComponent.getConfig().reloadConfig();
-        horsesComponent.getHorseTracker().onEnable();
     }
 
     private void initCommandListener()
