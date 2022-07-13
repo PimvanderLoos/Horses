@@ -1,5 +1,6 @@
 package nl.pim16aap2.horses.horsetracker;
 
+import nl.pim16aap2.horses.staminabar.IStaminaNotifier;
 import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
@@ -7,17 +8,20 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Objects;
 
-final class HorseStatus
+final class TrackedHorse
 {
     private final AbstractHorse horse;
     private final int maxEnergy;
+    private final @Nullable IStaminaNotifier staminaNotifier;
     private final int drainStep;
     private final int recoveryStep;
     private int energy;
 
-    public HorseStatus(AbstractHorse horse, int drainTime, int recoveryTime)
+    public TrackedHorse(
+        AbstractHorse horse, @Nullable IStaminaNotifier staminaNotifier, int drainTime, int recoveryTime)
     {
         this.horse = horse;
+        this.staminaNotifier = staminaNotifier;
 
         this.drainStep = 20 * recoveryTime;
         this.recoveryStep = 20 * drainTime;
@@ -36,7 +40,7 @@ final class HorseStatus
         return energy == maxEnergy;
     }
 
-    public boolean isExhausted()
+    public boolean outOfEnergy()
     {
         return energy == 0;
     }
@@ -73,12 +77,17 @@ final class HorseStatus
         return horse;
     }
 
+    public @Nullable IStaminaNotifier getStaminaNotifier()
+    {
+        return staminaNotifier;
+    }
+
     @Override
     public boolean equals(@Nullable Object o)
     {
         if (this == o)
             return true;
-        if (!(o instanceof HorseStatus other))
+        if (!(o instanceof TrackedHorse other))
             return false;
         return energy == other.energy && horse.equals(other.horse);
     }

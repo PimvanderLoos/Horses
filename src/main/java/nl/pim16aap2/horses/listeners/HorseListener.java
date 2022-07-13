@@ -5,6 +5,7 @@ import nl.pim16aap2.horses.Config;
 import nl.pim16aap2.horses.HorseEditor;
 import nl.pim16aap2.horses.Horses;
 import nl.pim16aap2.horses.horsetracker.HorseTracker;
+import nl.pim16aap2.horses.staminabar.StaminaNotifierManager;
 import org.bukkit.Material;
 import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.Entity;
@@ -16,6 +17,7 @@ import org.bukkit.event.entity.EntityBreedEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.spigotmc.event.entity.EntityDismountEvent;
@@ -27,13 +29,17 @@ public class HorseListener implements Listener
     private final Config config;
     private final HorseEditor horseEditor;
     private final HorseTracker horseTracker;
+    private final StaminaNotifierManager staminaNotifierManager;
 
-    public HorseListener(Horses plugin, Config config, HorseEditor horseEditor, HorseTracker horseTracker)
+    public HorseListener(
+        Horses plugin, Config config, HorseEditor horseEditor, HorseTracker horseTracker,
+        StaminaNotifierManager staminaNotifierManager)
     {
         this.plugin = plugin;
         this.config = config;
         this.horseEditor = horseEditor;
         this.horseTracker = horseTracker;
+        this.staminaNotifierManager = staminaNotifierManager;
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -118,12 +124,21 @@ public class HorseListener implements Listener
     @EventHandler
     public void onDismount(EntityDismountEvent event)
     {
-        if (config.getResetGait() < 0)
-            return;
         if (!Horses.MONITORED_TYPES.contains(event.getDismounted().getType()) ||
             !(event.getDismounted() instanceof AbstractHorse horse))
             return;
-        horseEditor.setGait(horse, config.getResetGait());
+
+        if (config.getResetGait() >= 0)
+            horseEditor.setGait(horse, config.getResetGait());
+
+        if (event.getEntity() instanceof Player player)
+            staminaNotifierManager.removeNotifier(player);
+    }
+
+    @EventHandler
+    public void onLogout(PlayerQuitEvent event)
+    {
+        staminaNotifierManager.removeNotifier(event.getPlayer());
     }
 
     @EventHandler
@@ -134,6 +149,8 @@ public class HorseListener implements Listener
         if (!Horses.MONITORED_TYPES.contains(event.getMount().getType()) ||
             !(event.getMount() instanceof AbstractHorse horse))
             return;
-        horseTracker.trackHorse(horse);
+        if (!(event.getEntity() instanceof Player player))
+            return;
+        horseTracker.trackHorse(player, horse);
     }
 }

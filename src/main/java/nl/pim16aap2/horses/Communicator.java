@@ -2,6 +2,7 @@ package nl.pim16aap2.horses;
 
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
+import nl.pim16aap2.horses.staminabar.IStaminaNotifier;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.AnimalTamer;
@@ -10,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
-public class Communicator
+public class Communicator implements IStaminaNotifier
 {
     private final Config config;
     private final HorseEditor horseEditor;
@@ -57,7 +58,8 @@ public class Communicator
         return ChatColor.GOLD + name + ": " + ChatColor.GRAY + value + "\n";
     }
 
-    public void sendEnergyPercentage(Player player, float percentage)
+    @Override
+    public void notifyStaminaChange(Player player, double percentage, boolean exhausted)
     {
         player.spigot().sendMessage(
             ChatMessageType.CHAT,

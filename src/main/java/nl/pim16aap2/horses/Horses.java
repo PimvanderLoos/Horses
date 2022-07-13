@@ -3,6 +3,7 @@ package nl.pim16aap2.horses;
 import nl.pim16aap2.horses.commands.CommandListener;
 import nl.pim16aap2.horses.horsetracker.HorseTracker;
 import nl.pim16aap2.horses.listeners.HorseListener;
+import nl.pim16aap2.horses.staminabar.StaminaNotifierManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabCompleter;
@@ -27,13 +28,15 @@ public class Horses extends JavaPlugin
     private final HorseTracker horseTracker;
     private @Nullable CommandListener commandListener;
 
+    private final StaminaNotifierManager staminaNotifierManager = new StaminaNotifierManager();
+
     public Horses()
     {
         config = new Config(this);
         horseEditor = new HorseEditor(this, config);
         communicator = new Communicator(config, horseEditor);
-        horseTracker = new HorseTracker(this, config, horseEditor, communicator);
-        horseListener = new HorseListener(this, config, horseEditor, horseTracker);
+        horseTracker = new HorseTracker(this, config, horseEditor, staminaNotifierManager);
+        horseListener = new HorseListener(this, config, horseEditor, horseTracker, staminaNotifierManager);
     }
 
     @Override
@@ -97,5 +100,10 @@ public class Horses extends JavaPlugin
     public HorseEditor getHorseEditor()
     {
         return horseEditor;
+    }
+
+    public StaminaNotifierManager getStaminaNotifierManager()
+    {
+        return staminaNotifierManager;
     }
 }
