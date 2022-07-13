@@ -10,6 +10,7 @@ import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -95,12 +96,21 @@ public class CommandListener implements CommandExecutor
 
     private List<AbstractHorse> getHorsesLeadBy(Player player)
     {
-        return player.getNearbyEntities(10, 10, 10).stream()
-                     .filter(entity -> Horses.MONITORED_TYPES.contains(entity.getType()))
-                     .map(AbstractHorse.class::cast)
-                     .filter(AbstractHorse::isLeashed)
-                     .filter(horse -> player.equals(horse.getLeashHolder()))
-                     .toList();
+        var ret = player.getNearbyEntities(10, 10, 10).stream()
+                        .filter(entity -> Horses.MONITORED_TYPES.contains(entity.getType()))
+                        .map(AbstractHorse.class::cast)
+                        .filter(AbstractHorse::isLeashed)
+                        .filter(horse -> player.equals(horse.getLeashHolder()))
+                        .toList();
+
+        if (player.getVehicle() != null &&
+            Horses.MONITORED_TYPES.contains(player.getVehicle().getType()) &&
+            player.getVehicle() instanceof AbstractHorse horse)
+        {
+            ret = new ArrayList<>(ret);
+            ret.add(horse);
+        }
+        return ret;
     }
 
     public static final class EditHorseTabComplete implements TabCompleter
