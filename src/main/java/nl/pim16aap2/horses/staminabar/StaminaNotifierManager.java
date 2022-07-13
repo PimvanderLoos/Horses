@@ -35,4 +35,9 @@ public class StaminaNotifierManager
         if (notifier != null)
             notifier.kill();
     }
+
+    public void removeAll()
+    {
+        notifierMap.values().forEach(IStaminaNotifier::kill);
+    }
 }
