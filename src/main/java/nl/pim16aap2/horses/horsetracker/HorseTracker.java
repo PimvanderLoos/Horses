@@ -49,12 +49,13 @@ public class HorseTracker
             if (trackedHorse == null)
             {
                 final @Nullable IStaminaNotifier notifier = staminaNotifierManager.getNewNotifier(rider, 1D, false);
-                return new TrackedHorse(horse, notifier, config.getEnergyDrainTime(), config.getEnergyRecoveryTime());
+                return new TrackedHorse(
+                    horseEditor, horse, notifier, config.getEnergyDrainTime(), config.getEnergyRecoveryTime());
             }
             else
             {
                 final @Nullable IStaminaNotifier notifier = staminaNotifierManager.getNewNotifier(
-                    rider, trackedHorse.getEnergyPercentage(), horseEditor.isExhausted(trackedHorse.getHorse()));
+                    rider, trackedHorse.getEnergyPercentage(), trackedHorse.isExhausted());
                 trackedHorse.setStaminaNotifier(notifier);
                 return trackedHorse;
             }
@@ -69,7 +70,7 @@ public class HorseTracker
             final TrackedHorse trackedHorse = it.next();
             if (trackedHorse.isEnergyFull())
             {
-                horseEditor.setExhausted(trackedHorse.getHorse(), false);
+                trackedHorse.setExhausted(false);
                 if (trackedHorse.isRiderless())
                 {
                     it.remove();
@@ -82,15 +83,15 @@ public class HorseTracker
 
     private void doStatusTick(TrackedHorse trackedHorse)
     {
-        if (horseEditor.getGait(trackedHorse.getHorse()) >= 100 && !trackedHorse.isRiderless())
+        if (trackedHorse.getGait() >= 100 && !trackedHorse.isRiderless())
             trackedHorse.decreaseEnergy();
         else
             trackedHorse.increaseEnergy();
 
         if (trackedHorse.outOfEnergy())
-            horseEditor.setExhausted(trackedHorse.getHorse(), true);
+            trackedHorse.setExhausted(true);
 
-        if (trackedHorse.getHorse().getTicksLived() % 4 == 0)
+        if (trackedHorse.getTicksLived() % 4 == 0)
             notifyRiders(trackedHorse);
     }
 
@@ -102,7 +103,7 @@ public class HorseTracker
 
         final float percentage = trackedHorse.getEnergyPercentage();
         for (final Player player : trackedHorse.getRiders())
-            notifier.notifyStaminaChange(player, percentage, horseEditor.isExhausted(trackedHorse.getHorse()));
+            notifier.notifyStaminaChange(player, percentage, trackedHorse.isExhausted());
     }
 
     private void startTask()
@@ -120,15 +121,7 @@ public class HorseTracker
     {
         trackedHorses = trackedHorses.entrySet().stream().collect(Collectors.toMap(
             Map.Entry::getKey,
-            entry ->
-            {
-                final TrackedHorse oldStatus = entry.getValue();
-                final TrackedHorse newStatus =
-                    new TrackedHorse(oldStatus.getHorse(), oldStatus.getStaminaNotifier(),
-                                     config.getEnergyDrainTime(), config.getEnergyRecoveryTime());
-                newStatus.setEnergyPercentage(oldStatus.getEnergyPercentage());
-                return newStatus;
-            }));
+            entry -> entry.getValue().remap(config.getEnergyDrainTime(), config.getEnergyRecoveryTime())));
     }
 
     private void findHorsesWithRiders()
@@ -148,7 +141,7 @@ public class HorseTracker
         if (task != null)
         {
             task.cancel();
-            trackedHorses.values().forEach(trackedHorse -> horseEditor.setExhausted(trackedHorse.getHorse(), false));
+            trackedHorses.values().forEach(trackedHorse -> trackedHorse.setExhausted(false));
             trackedHorses.clear();
             task = null;
         }

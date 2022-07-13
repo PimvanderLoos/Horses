@@ -1,5 +1,6 @@
 package nl.pim16aap2.horses.horsetracker;
 
+import nl.pim16aap2.horses.HorseEditor;
 import nl.pim16aap2.horses.staminabar.IStaminaNotifier;
 import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.Player;
@@ -10,18 +11,22 @@ import java.util.Objects;
 
 final class TrackedHorse
 {
+    private final HorseEditor horseEditor;
     private final AbstractHorse horse;
     private final int maxEnergy;
-    private @Nullable IStaminaNotifier staminaNotifier;
+    private @Nullable IStaminaNotifier notifier;
     private final int drainStep;
     private final int recoveryStep;
     private int energy;
+    private boolean exhausted;
 
     public TrackedHorse(
-        AbstractHorse horse, @Nullable IStaminaNotifier staminaNotifier, int drainTime, int recoveryTime)
+        HorseEditor horseEditor, AbstractHorse horse, @Nullable IStaminaNotifier staminaNotifier, int drainTime,
+        int recoveryTime)
     {
+        this.horseEditor = horseEditor;
         this.horse = horse;
-        this.staminaNotifier = staminaNotifier;
+        this.notifier = staminaNotifier;
 
         this.drainStep = 20 * recoveryTime;
         this.recoveryStep = 20 * drainTime;
@@ -72,19 +77,53 @@ final class TrackedHorse
         return horse.getPassengers().isEmpty();
     }
 
-    public AbstractHorse getHorse()
-    {
-        return horse;
-    }
-
     public @Nullable IStaminaNotifier getStaminaNotifier()
     {
-        return staminaNotifier;
+        return notifier;
     }
 
     public void setStaminaNotifier(@Nullable IStaminaNotifier staminaNotifier)
     {
-        this.staminaNotifier = staminaNotifier;
+        this.notifier = staminaNotifier;
+    }
+
+    public void setExhausted(boolean exhausted)
+    {
+        horseEditor.setExhausted(horse, exhausted);
+        this.exhausted = exhausted;
+    }
+
+    public boolean isExhausted()
+    {
+        return exhausted;
+    }
+
+    public int getGait()
+    {
+        return horseEditor.getGait(horse);
+    }
+
+    public int getTicksLived()
+    {
+        return horse.getTicksLived();
+    }
+
+    /**
+     * Creates a new tracked horse that has its energy drain time and recovery time remapped to new values.
+     * <p>
+     * All other parameters such as the underlying horse or the current energy percentage are copied over.
+     *
+     * @param energyDrainTime
+     *     The new amount of time it takes for the horse's energy to go from 100% to 0% measured in seconds.
+     * @param energyRecoveryTime
+     *     The new amount of time it takes for the horse's energy to go from 0% to 100% measured in seconds.
+     * @return The new tracked horse, with its drain and recovery times remapped to new values.
+     */
+    public TrackedHorse remap(int energyDrainTime, int energyRecoveryTime)
+    {
+        final TrackedHorse ret = new TrackedHorse(horseEditor, horse, notifier, energyDrainTime, energyRecoveryTime);
+        ret.setEnergyPercentage(getEnergyPercentage());
+        return ret;
     }
 
     @Override
