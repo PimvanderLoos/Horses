@@ -22,6 +22,9 @@ public class Config
     private int defaultGait = 100;
     private int resetGait = -1;
     private String[] genderNames;
+    private int exhaustionPenalty = 35;
+    private int energyDrainTime = 5;
+    private int energyRecoveryTime = 7;
 
     private final Path path;
 
@@ -55,6 +58,10 @@ public class Config
         this.resetGait = parseInt(config, "resetGait", 100);
 
         this.genderNames = readGenderNames(config);
+
+        this.exhaustionPenalty = parseInt(config, "exhaustionPenalty", 25);
+        this.energyDrainTime = parseInt(config, "energyDrainTime", 5);
+        this.energyRecoveryTime = parseInt(config, "energyRecoveryTime", 7);
     }
 
     private static String[] readGenderNames(FileConfiguration config)
@@ -159,5 +166,20 @@ public class Config
     public String getGenderName(HorseGender gender)
     {
         return genderNames[gender.ordinal()];
+    }
+
+    public int getExhaustionPenalty()
+    {
+        return exhaustionPenalty;
+    }
+
+    public int getEnergyDrainTime()
+    {
+        return energyDrainTime;
+    }
+
+    public int getEnergyRecoveryTime()
+    {
+        return energyRecoveryTime;
     }
 }

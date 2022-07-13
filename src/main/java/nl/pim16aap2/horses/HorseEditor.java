@@ -25,6 +25,7 @@ public final class HorseEditor
     private final NamespacedKey keyGender;
     private final NamespacedKey keyGait;
     private final NamespacedKey keyBaseSpeed;
+    private final NamespacedKey keyExhausted;
 
     private @Nullable Team team;
 
@@ -36,6 +37,7 @@ public final class HorseEditor
         keyGender = new NamespacedKey(plugin, "gender");
         keyGait = new NamespacedKey(plugin, "gait");
         keyBaseSpeed = new NamespacedKey(plugin, "baseSpeed");
+        keyExhausted = new NamespacedKey(plugin, "exhausted");
     }
 
     public void increaseGait(Player player, AbstractHorse horse)
@@ -72,13 +74,14 @@ public final class HorseEditor
 
         final PersistentDataContainer container = horse.getPersistentDataContainer();
         container.set(keyGait, PersistentDataType.INTEGER, gait);
-        updateEffectiveSpeed(horse, gait);
+        updateEffectiveSpeed(horse, gait, isExhausted(horse));
     }
 
-    private void updateEffectiveSpeed(AbstractHorse horse, int gait)
+    private void updateEffectiveSpeed(AbstractHorse horse, int gait, boolean isExhausted)
     {
         final double baseSpeed = getBaseSpeed(horse);
-        final double effectiveSpeed = baseSpeed * (gait / 100f);
+        final float exhaustionPenalty = isExhausted ? (1 - config.getExhaustionPenalty() / 100f) : 1f;
+        final double effectiveSpeed = Math.max(0, baseSpeed * (gait / 100f) * exhaustionPenalty);
 
         final @Nullable AttributeInstance attribute = horse.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED);
         if (attribute == null)
@@ -87,6 +90,24 @@ public final class HorseEditor
             return;
         }
         attribute.setBaseValue(effectiveSpeed);
+    }
+
+    public boolean isExhausted(AbstractHorse horse)
+    {
+        final @Nullable Byte exhausted = horse.getPersistentDataContainer().get(keyExhausted, PersistentDataType.BYTE);
+        if (exhausted != null)
+            return exhausted == 1;
+        setExhausted(horse, false);
+        return false;
+    }
+
+    public void setExhausted(AbstractHorse horse, boolean exhausted)
+    {
+        ensureHorseManaged(horse);
+
+        final PersistentDataContainer container = horse.getPersistentDataContainer();
+        container.set(keyExhausted, PersistentDataType.BYTE, (byte) (exhausted ? 1 : 0));
+        updateEffectiveSpeed(horse, getGait(horse), exhausted);
     }
 
     public void setName(AbstractHorse horse, @Nullable String name)
@@ -114,7 +135,7 @@ public final class HorseEditor
     {
         final double baseSpeed = speed / 43.17f;
         horse.getPersistentDataContainer().set(keyBaseSpeed, PersistentDataType.DOUBLE, baseSpeed);
-        updateEffectiveSpeed(horse, getGait(horse));
+        updateEffectiveSpeed(horse, getGait(horse), isExhausted(horse));
     }
 
     public boolean canBreed(AbstractHorse horseA, AbstractHorse horseB)

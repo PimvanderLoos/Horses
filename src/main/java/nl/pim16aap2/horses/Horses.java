@@ -1,7 +1,9 @@
 package nl.pim16aap2.horses;
 
 import nl.pim16aap2.horses.commands.CommandListener;
+import nl.pim16aap2.horses.horsetracker.HorseTracker;
 import nl.pim16aap2.horses.listeners.HorseListener;
+import nl.pim16aap2.horses.staminabar.StaminaNotifierManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabCompleter;
@@ -11,6 +13,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumSet;
+import java.util.Objects;
 import java.util.Set;
 
 @SuppressWarnings("unused")
@@ -19,18 +22,30 @@ public class Horses extends JavaPlugin
     public static final Set<EntityType> MONITORED_TYPES =
         EnumSet.of(EntityType.HORSE, EntityType.MULE, EntityType.DONKEY);
 
+    private static @Nullable Horses instance;
+
     private final HorseListener horseListener;
     private final Config config;
     private final HorseEditor horseEditor;
     private final Communicator communicator;
+    private final HorseTracker horseTracker;
     private @Nullable CommandListener commandListener;
+
+    private final StaminaNotifierManager staminaNotifierManager = new StaminaNotifierManager();
 
     public Horses()
     {
+        instance = this;
         config = new Config(this);
         horseEditor = new HorseEditor(this, config);
         communicator = new Communicator(config, horseEditor);
-        horseListener = new HorseListener(this, config, horseEditor);
+        horseTracker = new HorseTracker(this, config, horseEditor, staminaNotifierManager);
+        horseListener = new HorseListener(this, config, horseEditor, horseTracker, staminaNotifierManager);
+    }
+
+    public static Horses instance()
+    {
+        return Objects.requireNonNull(instance);
     }
 
     @Override
@@ -39,8 +54,15 @@ public class Horses extends JavaPlugin
         config.reloadConfig();
         Bukkit.getPluginManager().registerEvents(horseListener, this);
 
+        horseTracker.onEnable();
         if (commandListener == null)
             initCommandListener();
+    }
+
+    public void reload()
+    {
+        config.reloadConfig();
+        horseTracker.onEnable();
     }
 
     public Communicator getCommunicator()
@@ -77,6 +99,7 @@ public class Horses extends JavaPlugin
     public void onDisable()
     {
         HandlerList.unregisterAll(horseListener);
+        staminaNotifierManager.removeAll();
     }
 
     public Config getHorsesConfig()
@@ -87,5 +110,10 @@ public class Horses extends JavaPlugin
     public HorseEditor getHorseEditor()
     {
         return horseEditor;
+    }
+
+    public StaminaNotifierManager getStaminaNotifierManager()
+    {
+        return staminaNotifierManager;
     }
 }

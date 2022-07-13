@@ -2,6 +2,7 @@ package nl.pim16aap2.horses;
 
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
+import nl.pim16aap2.horses.staminabar.IStaminaNotifier;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.AnimalTamer;
@@ -10,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
-public class Communicator
+public class Communicator implements IStaminaNotifier
 {
     private final Config config;
     private final HorseEditor horseEditor;
@@ -39,6 +40,7 @@ public class Communicator
             + addInfo("Speed", String.format("%.2f", horseEditor.getBaseSpeed(horse) * 43.17f))
             + addInfo("Jump", String.format("%.2f", horse.getJumpStrength()))
             + addInfo("Health", String.format("%.0f", horse.getHealth()))
+            + addInfo("Exhausted", Boolean.toString(horseEditor.isExhausted(horse)))
             + addInfo("Owner", getOwnerName(horse))
             + ChatColor.DARK_GRAY + ">>>>>>--------------------------<<<<<<<\n";
 
@@ -54,5 +56,13 @@ public class Communicator
     private String addInfo(String name, Object value)
     {
         return ChatColor.GOLD + name + ": " + ChatColor.GRAY + value + "\n";
+    }
+
+    @Override
+    public void notifyStaminaChange(Player player, double percentage, boolean exhausted)
+    {
+        player.spigot().sendMessage(
+            ChatMessageType.CHAT,
+            new TextComponent(ChatColor.GREEN + String.format("ENERGY: %3.2f%%", (100 * percentage))));
     }
 }
