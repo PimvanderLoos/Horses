@@ -46,21 +46,18 @@ public class HorseTracker
 
         trackedHorses.compute(horse.getUniqueId(), (uuid, trackedHorse) ->
         {
-            final @Nullable IStaminaNotifier notifier = staminaNotifierManager.getNewNotifier(rider);
-
-            final TrackedHorse result;
             if (trackedHorse == null)
             {
+                final @Nullable IStaminaNotifier notifier = staminaNotifierManager.getNewNotifier(rider, 1D, false);
                 return new TrackedHorse(horse, notifier, config.getEnergyDrainTime(), config.getEnergyRecoveryTime());
             }
             else
             {
+                final @Nullable IStaminaNotifier notifier = staminaNotifierManager.getNewNotifier(
+                    rider, trackedHorse.getEnergyPercentage(), horseEditor.isExhausted(trackedHorse.getHorse()));
                 trackedHorse.setStaminaNotifier(notifier);
-                result = trackedHorse;
+                return trackedHorse;
             }
-
-            notifyRiders(trackedHorse);
-            return result;
         });
     }
 
