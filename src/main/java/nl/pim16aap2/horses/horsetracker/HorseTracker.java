@@ -1,6 +1,5 @@
 package nl.pim16aap2.horses.horsetracker;
 
-import nl.pim16aap2.horses.Communicator;
 import nl.pim16aap2.horses.Config;
 import nl.pim16aap2.horses.HorseEditor;
 import nl.pim16aap2.horses.Horses;
@@ -31,7 +30,7 @@ public class HorseTracker
 
     @Inject
     public HorseTracker(
-        Horses plugin, Config config, HorseEditor horseEditor, Communicator communicator, StaminaNotifierManager staminaNotifierManager)
+        Horses plugin, Config config, HorseEditor horseEditor, StaminaNotifierManager staminaNotifierManager)
     {
         this.plugin = plugin;
         this.config = config;
