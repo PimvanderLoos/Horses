@@ -2,6 +2,7 @@ package nl.pim16aap2.horses.commands;
 
 import nl.pim16aap2.horses.HorseEditor;
 import nl.pim16aap2.horses.Horses;
+import nl.pim16aap2.horses.util.Localizer;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -24,12 +25,14 @@ public class CommandListener implements CommandExecutor
 {
     private final Horses horses;
     private final HorseEditor horseEditor;
+    private final Localizer localizer;
 
     @Inject
-    public CommandListener(Horses horses, HorseEditor horseEditor)
+    public CommandListener(Horses horses, HorseEditor horseEditor, Localizer localizer)
     {
         this.horses = horses;
         this.horseEditor = horseEditor;
+        this.localizer = localizer;
     }
 
     @Override
@@ -39,7 +42,7 @@ public class CommandListener implements CommandExecutor
         {
             horses.reload();
             final String color = sender instanceof Player ? ChatColor.GREEN.toString() : "";
-            sender.sendMessage(color + "Plugin has been reloaded!");
+            sender.sendMessage(color + localizer.get("commands.success.plugin_reloaded"));
             return true;
         }
 
@@ -59,7 +62,7 @@ public class CommandListener implements CommandExecutor
             final @Nullable ModifiableAttribute attribute = ModifiableAttribute.getAttribute(args[0]);
             if (attribute == null)
             {
-                player.sendMessage(ChatColor.RED + "Could not find attribute " + args[0]);
+                player.sendMessage(ChatColor.RED + localizer.get("commands.error.attribute_not_found"), args[0]);
                 return false;
             }
 
@@ -68,29 +71,32 @@ public class CommandListener implements CommandExecutor
             {
                 horses.getLogger()
                       .info("Player '" + player.getName() + "' does not have permission node '" + permission + "'!");
-                player.sendMessage(ChatColor.RED + "You do not have permission to execute this command!");
+                player.sendMessage(ChatColor.RED + localizer.get("commands.error.no_permission"));
                 return true;
             }
 
             if (attribute.isParameterRequired() && value == null)
             {
-                player.sendMessage(ChatColor.RED + "Required command value not provided!");
+                player.sendMessage(ChatColor.RED + localizer.get("commands.error.missing_required_value"));
                 return false;
             }
 
             final List<AbstractHorse> leadHorses = getHorsesLeadBy(player);
             if (leadHorses.isEmpty())
             {
-                player.sendMessage(ChatColor.RED + "You are not currently leading any horses!");
+                player.sendMessage(ChatColor.RED + localizer.get("commands.error.no_horses_targeted"));
                 return true;
             }
 
             if (!attribute.apply(horses, horseEditor, leadHorses, value))
-                player.sendMessage(ChatColor.RED + attribute.getErrorString(value));
+                player.sendMessage(ChatColor.RED + attribute.getErrorString(horses, value));
             else
-                player.sendMessage(ChatColor.GREEN + "Attribute '" +
-                                       ChatColor.GOLD + attribute.getName() +
-                                       ChatColor.GREEN + "' has been updated!");
+            {
+                final String attributeName = localizer.get(
+                    ChatColor.GOLD + "horse.attribute." + attribute.getName() + ChatColor.GREEN);
+                player.sendMessage(
+                    ChatColor.GREEN + localizer.get("commands.success.attribute_updated"), attributeName);
+            }
             return true;
         }
         return false;

@@ -179,9 +179,10 @@ enum ModifiableAttribute
             }
 
             @Override
-            public String getErrorString(@Nullable String input)
+            public String getErrorString(Horses plugin, @Nullable String input)
             {
-                return "Could not find player '" + input + "'! Are they online? Or try their UUID!";
+                return plugin.getHorsesComponent().getLocalizer()
+                             .get("commands.error.player_not_found", input == null ? "NULL" : input);
             }
         },
     STYLE("style", true)
@@ -215,9 +216,10 @@ enum ModifiableAttribute
             }
 
             @Override
-            public String getErrorString(@Nullable String input)
+            public String getErrorString(Horses plugin, @Nullable String input)
             {
-                return "Could not find style '" + input + "'!";
+                return plugin.getHorsesComponent().getLocalizer()
+                             .get("commands.error.style_not_found", input == null ? "NULL" : input);
             }
         },
     COLOR("color", true)
@@ -251,9 +253,10 @@ enum ModifiableAttribute
             }
 
             @Override
-            public String getErrorString(@Nullable String input)
+            public String getErrorString(Horses plugin, @Nullable String input)
             {
-                return "Could not find color '" + input + "'!";
+                return plugin.getHorsesComponent().getLocalizer()
+                             .get("commands.error.color_not_found", input == null ? "NULL" : input);
             }
         },
     ;
@@ -295,7 +298,7 @@ enum ModifiableAttribute
     public abstract boolean apply(
         Horses plugin, HorseEditor horseEditor, List<AbstractHorse> horses, @Nullable String input);
 
-    public String getErrorString(@Nullable String input)
+    public String getErrorString(Horses plugin, @Nullable String input)
     {
         return "Failed to parse input '" + input + "'";
     }
