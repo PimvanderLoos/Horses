@@ -13,6 +13,8 @@ import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
 import org.jetbrains.annotations.Nullable;
 
+import javax.inject.Inject;
+import javax.inject.Provider;
 import java.util.Random;
 
 public final class HorseEditor
@@ -25,10 +27,12 @@ public final class HorseEditor
     private final NamespacedKey keyGender;
     private final NamespacedKey keyGait;
     private final NamespacedKey keyBaseSpeed;
+    private final Provider<Communicator> communicatorProvider;
 
     private @Nullable Team team;
 
-    public HorseEditor(Horses plugin, Config config)
+    @Inject
+    public HorseEditor(Horses plugin, Config config, Provider<Communicator> communicatorProvider)
     {
         this.config = config;
         this.plugin = plugin;
@@ -36,20 +40,21 @@ public final class HorseEditor
         keyGender = new NamespacedKey(plugin, "gender");
         keyGait = new NamespacedKey(plugin, "gait");
         keyBaseSpeed = new NamespacedKey(plugin, "baseSpeed");
+        this.communicatorProvider = communicatorProvider;
     }
 
     public void increaseGait(Player player, AbstractHorse horse)
     {
         final int newSpeed = config.getGaits().getHigherGait(getGait(horse));
         setGait(horse, newSpeed);
-        plugin.getCommunicator().communicateSpeedChange(player, newSpeed);
+        communicatorProvider.get().communicateSpeedChange(player, newSpeed);
     }
 
     public void decreaseGait(Player player, AbstractHorse horse)
     {
         final int newSpeed = config.getGaits().getLowerGait(getGait(horse));
         setGait(horse, newSpeed);
-        plugin.getCommunicator().communicateSpeedChange(player, newSpeed);
+        communicatorProvider.get().communicateSpeedChange(player, newSpeed);
     }
 
     public int getGait(AbstractHorse horse)

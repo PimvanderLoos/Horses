@@ -8,6 +8,7 @@ import org.bukkit.entity.AnimalTamer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
+import javax.inject.Inject;
 import java.util.Objects;
 
 public class Communicator
@@ -15,6 +16,7 @@ public class Communicator
     private final Config config;
     private final HorseEditor horseEditor;
 
+    @Inject
     public Communicator(Config config, HorseEditor horseEditor)
     {
         this.config = config;

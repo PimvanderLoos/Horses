@@ -1,7 +1,6 @@
 package nl.pim16aap2.horses;
 
 import nl.pim16aap2.horses.commands.CommandListener;
-import nl.pim16aap2.horses.listeners.HorseListener;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabCompleter;
@@ -19,38 +18,34 @@ public class Horses extends JavaPlugin
     public static final Set<EntityType> MONITORED_TYPES =
         EnumSet.of(EntityType.HORSE, EntityType.MULE, EntityType.DONKEY);
 
-    private final HorseListener horseListener;
-    private final Config config;
-    private final HorseEditor horseEditor;
-    private final Communicator communicator;
-    private @Nullable CommandListener commandListener;
+    private final HorsesComponent horsesComponent;
 
     public Horses()
     {
-        config = new Config(this);
-        horseEditor = new HorseEditor(this, config);
-        communicator = new Communicator(config, horseEditor);
-        horseListener = new HorseListener(this, config, horseEditor);
+        this.horsesComponent = DaggerHorsesComponent.builder().setPlugin(this).build();
     }
 
     @Override
     public void onEnable()
     {
-        config.reloadConfig();
-        Bukkit.getPluginManager().registerEvents(horseListener, this);
-
-        if (commandListener == null)
-            initCommandListener();
+        horsesComponent.getConfig().reloadConfig();
+        Bukkit.getPluginManager().registerEvents(horsesComponent.getHorseListener(), this);
+        initCommandListener();
     }
 
-    public Communicator getCommunicator()
+    @Override
+    public void onDisable()
     {
-        return communicator;
+        HandlerList.unregisterAll(horsesComponent.getHorseListener());
+    }
+
+    public HorsesComponent getHorsesComponent()
+    {
+        return horsesComponent;
     }
 
     private void initCommandListener()
     {
-        commandListener = new CommandListener(this);
         initCommand("ReloadHorses");
         initCommand("EditHorse", new CommandListener.EditHorseTabComplete(this));
     }
@@ -68,24 +63,8 @@ public class Horses extends JavaPlugin
             getLogger().severe("Failed to register command: '" + name + "'");
             return;
         }
-        command.setExecutor(commandListener);
+        command.setExecutor(horsesComponent.getCommandListener());
         if (tabCompleter != null)
             command.setTabCompleter(tabCompleter);
-    }
-
-    @Override
-    public void onDisable()
-    {
-        HandlerList.unregisterAll(horseListener);
-    }
-
-    public Config getHorsesConfig()
-    {
-        return config;
-    }
-
-    public HorseEditor getHorseEditor()
-    {
-        return horseEditor;
     }
 }
