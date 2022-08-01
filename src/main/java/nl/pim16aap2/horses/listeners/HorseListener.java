@@ -1,6 +1,7 @@
 package nl.pim16aap2.horses.listeners;
 
 
+import nl.pim16aap2.horses.Communicator;
 import nl.pim16aap2.horses.Config;
 import nl.pim16aap2.horses.HorseEditor;
 import nl.pim16aap2.horses.Horses;
@@ -19,17 +20,20 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.spigotmc.event.entity.EntityDismountEvent;
 
+import javax.inject.Inject;
+
 public class HorseListener implements Listener
 {
-    private final Horses plugin;
     private final Config config;
     private final HorseEditor horseEditor;
+    private final Communicator communicator;
 
-    public HorseListener(Horses plugin, Config config, HorseEditor horseEditor)
+    @Inject
+    public HorseListener(Config config, HorseEditor horseEditor, Communicator communicator)
     {
-        this.plugin = plugin;
         this.config = config;
         this.horseEditor = horseEditor;
+        this.communicator = communicator;
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -69,7 +73,7 @@ public class HorseListener implements Listener
         if (holding.getType() != config.getInfoMaterial())
             return false;
 
-        plugin.getCommunicator().printInfo(player, horse);
+        communicator.printInfo(player, horse);
         return true;
     }
 

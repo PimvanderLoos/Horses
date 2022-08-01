@@ -20,6 +20,11 @@
     </module>
 
     <module name="TreeWalker">
+        <module name="SuppressionXpathFilter">
+            <property name="file" value="rules/checkstyle-suppressions.xml"/>
+            <property name="optional" value="false"/>
+        </module>
+
         <module name="SuppressionCommentFilter"/>
 
         <module name="SingleSpaceSeparator"/>

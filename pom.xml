@@ -17,6 +17,7 @@
         <dependency.version.annotations>23.0.0</dependency.version.annotations>
         <dependency.version.errorprone>2.14.0</dependency.version.errorprone>
         <dependency.version.nullaway>0.9.8</dependency.version.nullaway>
+        <dependency.version.dagger>2.42</dependency.version.dagger>
         <dependency.version.checker-framework>3.22.2</dependency.version.checker-framework>
         <dependency.version.checkstyle>10.3.1</dependency.version.checkstyle>
         <dependency.version.maven-checkstyle>3.1.2</dependency.version.maven-checkstyle>
@@ -25,6 +26,7 @@
         <dependency.version.junit>5.8.2</dependency.version.junit>
         <dependency.version.surefire>3.0.0-M7</dependency.version.surefire>
         <dependency.version.maven-compiler>3.10.1</dependency.version.maven-compiler>
+        <dependency.version.maven-shade>3.3.0</dependency.version.maven-shade>
     </properties>
 
     <repositories>
@@ -96,6 +98,20 @@
             <version>${dependency.version.checkstyle}</version>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>com.google.dagger</groupId>
+            <artifactId>dagger</artifactId>
+            <version>${dependency.version.dagger}</version>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.google.dagger</groupId>
+            <artifactId>dagger-compiler</artifactId>
+            <version>${dependency.version.dagger}</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -116,6 +132,32 @@
                     <trimStackTrace>false</trimStackTrace>
                     <useFile>false</useFile>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>${dependency.version.maven-shade}</version>
+                <configuration>
+                    <relocations>
+                        <relocation>
+                            <pattern>javax.inject</pattern>
+                            <shadedPattern>nl.pim16aap2.bigdoors.lib.javax.inject</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>dagger</pattern>
+                            <shadedPattern>nl.pim16aap2.bigdoors.lib.dagger</shadedPattern>
+                        </relocation>
+                    </relocations>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
             <plugin>
@@ -151,6 +193,11 @@
                             <groupId>com.uber.nullaway</groupId>
                             <artifactId>nullaway</artifactId>
                             <version>${dependency.version.nullaway}</version>
+                        </path>
+                        <path>
+                            <groupId>com.google.dagger</groupId>
+                            <artifactId>dagger-compiler</artifactId>
+                            <version>${dependency.version.dagger}</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
@@ -192,6 +239,11 @@
                     <showPmdLog>true</showPmdLog>
                     <detail>true</detail>
                     <printFailingErrors>true</printFailingErrors>
+                    <excludes>
+                        <!-- Exclude files created by Dagger -->
+                        <exclude>**\/Dagger*.java</exclude>
+                        <exclude>**\/*_Factory.java</exclude>
+                    </excludes>
                 </configuration>
                 <executions>
                     <execution>

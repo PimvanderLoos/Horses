@@ -84,7 +84,8 @@ enum ModifiableAttribute
             @Override
             public List<String> getSuggestions(Horses plugin)
             {
-                return plugin.getHorsesConfig().getGaits().gaitsAsList().stream().map(Object::toString).toList();
+                return plugin.getHorsesComponent().getConfig()
+                             .getGaits().gaitsAsList().stream().map(Object::toString).toList();
             }
         },
     SPEED("speed", true)

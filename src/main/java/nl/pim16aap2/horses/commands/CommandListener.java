@@ -1,5 +1,7 @@
 package nl.pim16aap2.horses.commands;
 
+import nl.pim16aap2.horses.Config;
+import nl.pim16aap2.horses.HorseEditor;
 import nl.pim16aap2.horses.Horses;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -10,6 +12,7 @@ import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -19,10 +22,15 @@ import java.util.stream.Stream;
 public class CommandListener implements CommandExecutor
 {
     private final Horses horses;
+    private final Config config;
+    private final HorseEditor horseEditor;
 
-    public CommandListener(Horses horses)
+    @Inject
+    public CommandListener(Horses horses, Config config, HorseEditor horseEditor)
     {
         this.horses = horses;
+        this.config = config;
+        this.horseEditor = horseEditor;
     }
 
     @Override
@@ -30,7 +38,7 @@ public class CommandListener implements CommandExecutor
     {
         if (command.getName().equalsIgnoreCase("ReloadHorses"))
         {
-            horses.getHorsesConfig().reloadConfig();
+            config.reloadConfig();
             final String color = sender instanceof Player ? ChatColor.GREEN.toString() : "";
             sender.sendMessage(color + "Plugin has been reloaded!");
             return true;
@@ -78,7 +86,7 @@ public class CommandListener implements CommandExecutor
                 return true;
             }
 
-            if (!attribute.apply(horses, horses.getHorseEditor(), leadHorses, value))
+            if (!attribute.apply(horses, horseEditor, leadHorses, value))
                 player.sendMessage(ChatColor.RED + attribute.getErrorString(value));
             else
                 player.sendMessage(ChatColor.GREEN + "Attribute '" +
