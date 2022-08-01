@@ -1,7 +1,6 @@
 package nl.pim16aap2.horses.horsetracker;
 
 import nl.pim16aap2.horses.HorseEditor;
-import nl.pim16aap2.horses.Util;
 import nl.pim16aap2.horses.staminabar.IStaminaNotifier;
 import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.Player;
@@ -15,13 +14,16 @@ final class TrackedHorse
     private final HorseEditor horseEditor;
     private final AbstractHorse horse;
     private final int maxEnergy;
+
     private @Nullable IStaminaNotifier notifier;
+    private @Nullable TrackingExhaustionParticles trackingExhaustionParticles;
+
     private final int drainStep;
     private final int recoveryStep;
     private int energy;
-    private boolean exhausted;
+    private volatile boolean exhausted;
 
-    public TrackedHorse(
+    TrackedHorse(
         HorseEditor horseEditor, AbstractHorse horse, @Nullable IStaminaNotifier staminaNotifier, int drainTime,
         int recoveryTime)
     {
@@ -34,6 +36,16 @@ final class TrackedHorse
         this.maxEnergy = drainStep * recoveryStep;
 
         this.energy = maxEnergy;
+    }
+
+    TrackedHorse(TrackedHorse other, int drainTime, int recoveryTime)
+    {
+        this(other.horseEditor, other.horse, other.getStaminaNotifier(), drainTime, recoveryTime);
+
+        trackingExhaustionParticles = other.trackingExhaustionParticles;
+        exhausted = other.exhausted;
+
+        setEnergyPercentage(other.getEnergyPercentage());
     }
 
     public float getEnergyPercentage()
@@ -114,26 +126,28 @@ final class TrackedHorse
     private void onExhaustionChange(boolean newValue)
     {
         if (newValue)
-            Util.spawnSmoke(horse);
+            startParticles();
+        else
+            stopParticles();
     }
 
-    /**
-     * Creates a new tracked horse that has its energy drain time and recovery time remapped to new values.
-     * <p>
-     * All other parameters such as the underlying horse or the current energy percentage are copied over.
-     *
-     * @param energyDrainTime
-     *     The new amount of time it takes for the horse's energy to go from 100% to 0% measured in seconds.
-     * @param energyRecoveryTime
-     *     The new amount of time it takes for the horse's energy to go from 0% to 100% measured in seconds.
-     * @return The new tracked horse, with its drain and recovery times remapped to new values.
-     */
-    public TrackedHorse remap(int energyDrainTime, int energyRecoveryTime)
+    private void startParticles()
     {
-        final TrackedHorse ret =
-            new TrackedHorse(horseEditor, horse, notifier, energyDrainTime, energyRecoveryTime);
-        ret.setEnergyPercentage(getEnergyPercentage());
-        return ret;
+        if (trackingExhaustionParticles == null)
+            trackingExhaustionParticles = new TrackingExhaustionParticles(this);
+        else
+            trackingExhaustionParticles.restart(this);
+    }
+
+    private void stopParticles()
+    {
+        if (trackingExhaustionParticles != null)
+            trackingExhaustionParticles.cancel();
+    }
+
+    public AbstractHorse getTrackedEntity()
+    {
+        return horse;
     }
 
     @Override

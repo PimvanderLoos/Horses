@@ -121,7 +121,7 @@ public class HorseTracker
     {
         trackedHorses = trackedHorses.entrySet().stream().collect(Collectors.toMap(
             Map.Entry::getKey,
-            entry -> entry.getValue().remap(config.getEnergyDrainTime(), config.getEnergyRecoveryTime())));
+            entry -> new TrackedHorse(entry.getValue(), config.getEnergyDrainTime(), config.getEnergyRecoveryTime())));
     }
 
     private void findHorsesWithRiders()
