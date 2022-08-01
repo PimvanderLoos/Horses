@@ -1,6 +1,7 @@
 package nl.pim16aap2.horses;
 
 import nl.pim16aap2.horses.commands.CommandListener;
+import nl.pim16aap2.horses.util.Localizer;
 import nl.pim16aap2.horses.util.IReloadable;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
@@ -27,6 +28,7 @@ public class Horses extends JavaPlugin
     public Horses()
     {
         this.horsesComponent = DaggerHorsesComponent.builder().setPlugin(this).build();
+        saveResource(Localizer.BASE_NAME + ".properties", false);
     }
 
     @Override
