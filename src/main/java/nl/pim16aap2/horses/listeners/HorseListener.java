@@ -83,9 +83,9 @@ public class HorseListener implements Listener
         if (!(vehicle instanceof AbstractHorse horse))
             return;
 
-        if (event.getAction() == Action.LEFT_CLICK_AIR)
+        if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)
             horseEditor.increaseGait(event.getPlayer(), horse);
-        else if (event.getAction() == Action.RIGHT_CLICK_AIR)
+        else if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)
             horseEditor.decreaseGait(event.getPlayer(), horse);
     }
 
