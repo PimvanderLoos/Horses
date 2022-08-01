@@ -6,11 +6,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+@Singleton
 public class Config
 {
     private static final String DEFAULT_GAITS = "0,25,35,50,75,100";

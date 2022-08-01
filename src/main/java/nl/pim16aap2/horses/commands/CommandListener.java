@@ -13,12 +13,14 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Stream;
 
+@Singleton
 public class CommandListener implements CommandExecutor
 {
     private final Horses horses;

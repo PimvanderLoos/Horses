@@ -21,7 +21,9 @@ import org.jetbrains.annotations.Nullable;
 import org.spigotmc.event.entity.EntityDismountEvent;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
+@Singleton
 public class HorseListener implements Listener
 {
     private final Config config;
