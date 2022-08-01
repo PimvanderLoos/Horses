@@ -11,19 +11,18 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.Locale;
 import java.util.Objects;
 
 @Singleton
 public class Communicator
 {
-    private final Config config;
     private final HorseEditor horseEditor;
     private final Localizer localizer;
 
     @Inject
-    public Communicator(Config config, HorseEditor horseEditor, Localizer localizer)
+    public Communicator(HorseEditor horseEditor, Localizer localizer)
     {
-        this.config = config;
         this.horseEditor = horseEditor;
         this.localizer = localizer;
     }
@@ -43,7 +42,8 @@ public class Communicator
         final String msg = ChatColor.DARK_GRAY + ">>>>>>--------------------------<<<<<<<\n"
             + addInfo(localizer.get("horse.attribute.name"),
                       Objects.requireNonNullElse(horse.getCustomName(), horse.getType().getName()))
-            + addInfo(localizer.get("horse.attribute.gender"), config.getGenderName(horseEditor.getGender(horse)))
+            + addInfo(localizer.get("horse.attribute.gender"),
+                      localizer.get("horse.gender." + horseEditor.getGender(horse).name().toLowerCase(Locale.ROOT)))
             + addInfo(localizer.get("horse.attribute.gait"), horseEditor.getGait(horse))
             + addInfo(localizer.get("horse.attribute.speed"),
                       String.format("%.2f", horseEditor.getBaseSpeed(horse) * 43.17f))
