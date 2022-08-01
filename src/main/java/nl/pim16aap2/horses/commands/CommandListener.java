@@ -1,6 +1,5 @@
 package nl.pim16aap2.horses.commands;
 
-import nl.pim16aap2.horses.Config;
 import nl.pim16aap2.horses.HorseEditor;
 import nl.pim16aap2.horses.Horses;
 import org.bukkit.ChatColor;
@@ -24,14 +23,12 @@ import java.util.stream.Stream;
 public class CommandListener implements CommandExecutor
 {
     private final Horses horses;
-    private final Config config;
     private final HorseEditor horseEditor;
 
     @Inject
-    public CommandListener(Horses horses, Config config, HorseEditor horseEditor)
+    public CommandListener(Horses horses, HorseEditor horseEditor)
     {
         this.horses = horses;
-        this.config = config;
         this.horseEditor = horseEditor;
     }
 
@@ -40,7 +37,7 @@ public class CommandListener implements CommandExecutor
     {
         if (command.getName().equalsIgnoreCase("ReloadHorses"))
         {
-            config.reloadConfig();
+            horses.reload();
             final String color = sender instanceof Player ? ChatColor.GREEN.toString() : "";
             sender.sendMessage(color + "Plugin has been reloaded!");
             return true;

@@ -1,5 +1,7 @@
 package nl.pim16aap2.horses;
 
+import nl.pim16aap2.horses.util.IReloadable;
+import nl.pim16aap2.horses.util.Util;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -13,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Singleton
-public class Config
+public class Config implements IReloadable
 {
     private static final String DEFAULT_GAITS = "0,25,35,50,75,100";
 
@@ -29,19 +31,21 @@ public class Config
     private final Path path;
 
     @Inject
-    public Config(JavaPlugin javaPlugin)
+    public Config(Horses horses)
     {
-        this.javaPlugin = javaPlugin;
+        this.javaPlugin = horses;
         gaits = parseGaits(DEFAULT_GAITS);
-        this.path = javaPlugin.getDataFolder().toPath().resolve("config.yml");
+        this.path = horses.getDataFolder().toPath().resolve("config.yml");
 
         final HorseGender[] genders = HorseGender.values();
         genderNames = new String[genders.length];
         for (int idx = 0; idx < genders.length; ++idx)
             genderNames[idx] = Util.capitalizeFirstLetter(genders[idx].name());
+        horses.registerReloadable(this);
     }
 
-    public void reloadConfig()
+    @Override
+    public void reload()
     {
         javaPlugin.getLogger().info("(Re)Loading config!");
         ensureFileExists();

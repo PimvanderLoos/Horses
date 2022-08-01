@@ -1,4 +1,4 @@
-package nl.pim16aap2.horses;
+package nl.pim16aap2.horses.util;
 
 import java.util.Locale;
 
