@@ -1,5 +1,6 @@
 package nl.pim16aap2.horses.staminabar;
 
+import nl.pim16aap2.horses.util.Localizer;
 import org.bukkit.Bukkit;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
@@ -10,9 +11,10 @@ public class StaminaBar implements IStaminaNotifier
 {
     private final BossBar bossBar;
 
-    StaminaBar(Player player, double percentage, boolean exhausted)
+    StaminaBar(Localizer localizer, Player player, double percentage, boolean exhausted)
     {
-        this.bossBar = Bukkit.createBossBar("Stamina", BarColor.GREEN, BarStyle.SOLID);
+        this.bossBar =
+            Bukkit.createBossBar(localizer.get("notification.hud.stamina.title"), BarColor.GREEN, BarStyle.SOLID);
         setStamina(percentage, exhausted);
         this.bossBar.addPlayer(player);
     }

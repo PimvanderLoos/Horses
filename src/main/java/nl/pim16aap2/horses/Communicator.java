@@ -51,7 +51,9 @@ public class Communicator implements IStaminaNotifier
             + addInfo(localizer.get("horse.attribute.jump"),
                       String.format(Locale.ROOT, "%.2f", horse.getJumpStrength()))
             + addInfo(localizer.get("horse.attribute.health"), String.format(Locale.ROOT, "%.0f", horse.getHealth()))
-            + addInfo("Exhausted", Boolean.toString(horseEditor.isExhausted(horse)))
+            + addInfo(localizer.get("horse.attribute.exhausted"),
+                      localizer.get(horseEditor.isExhausted(horse) ? "horse.attribute.exhausted.true" :
+                                    "horse.attribute.exhausted.false"))
             + addInfo(localizer.get("horse.attribute.owner"), getOwnerName(horse))
             + ChatColor.DARK_GRAY + ">>>>>>--------------------------<<<<<<<\n";
 
@@ -74,6 +76,7 @@ public class Communicator implements IStaminaNotifier
     {
         player.spigot().sendMessage(
             ChatMessageType.CHAT,
-            new TextComponent(ChatColor.GREEN + String.format("ENERGY: %3.2f%%", (100 * percentage))));
+            new TextComponent(ChatColor.GREEN + localizer.get("notification.hud.stamina.message",
+                                                              String.format(" %3.2f%%", (100 * percentage)))));
     }
 }

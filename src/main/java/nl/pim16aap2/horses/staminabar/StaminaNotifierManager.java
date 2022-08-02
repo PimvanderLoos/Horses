@@ -1,5 +1,6 @@
 package nl.pim16aap2.horses.staminabar;
 
+import nl.pim16aap2.horses.util.Localizer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
@@ -10,10 +11,12 @@ import java.util.Map;
 public class StaminaNotifierManager
 {
     private final Map<Player, IStaminaNotifier> notifierMap = new HashMap<>();
+    private final Localizer localizer;
 
     @Inject
-    public StaminaNotifierManager()
+    public StaminaNotifierManager(Localizer localizer)
     {
+        this.localizer = localizer;
     }
 
     public @Nullable IStaminaNotifier getNewNotifier(Player player, double staminaPercentage, boolean exhausted)
@@ -22,7 +25,7 @@ public class StaminaNotifierManager
         if (!player.hasPermission("horses.user.staminabar"))
             return null;
 
-        final IStaminaNotifier notifier = new StaminaBar(player, staminaPercentage, exhausted);
+        final IStaminaNotifier notifier = new StaminaBar(localizer, player, staminaPercentage, exhausted);
         final @Nullable IStaminaNotifier oldNotifier = notifierMap.put(player, notifier);
         if (oldNotifier != null)
             oldNotifier.kill();
