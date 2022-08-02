@@ -38,7 +38,7 @@ public class HorseListener implements Listener
 
     @Inject
     public HorseListener(
-        Horses plugin, Config config, HorseEditor horseEditor, Communicator communicator, HorseTracker horseTracker,
+        Config config, HorseEditor horseEditor, Communicator communicator, HorseTracker horseTracker,
         StaminaNotifierManager staminaNotifierManager)
     {
         this.config = config;

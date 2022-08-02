@@ -5,9 +5,11 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.HashMap;
 import java.util.Map;
 
+@Singleton
 public class StaminaNotifierManager
 {
     private final Map<Player, IStaminaNotifier> notifierMap = new HashMap<>();
