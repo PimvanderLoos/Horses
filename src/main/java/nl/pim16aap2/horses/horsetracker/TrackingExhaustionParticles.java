@@ -9,8 +9,6 @@ import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 class TrackingExhaustionParticles
 {
     private final Config config;
@@ -42,11 +40,8 @@ class TrackingExhaustionParticles
 
     private static final class ParticlesRunnable implements Runnable
     {
-        private static final int UPDATE_FREQUENCY = 2;
-
         private final Config config;
         private final Entity trackedEntity;
-        private final AtomicInteger tickCount = new AtomicInteger(0);
         private final World world;
 
         public ParticlesRunnable(Config config, Entity trackedEntity)
@@ -59,9 +54,6 @@ class TrackingExhaustionParticles
         @Override
         public void run()
         {
-            if (tickCount.incrementAndGet() % UPDATE_FREQUENCY != 0)
-                return;
-
             final Location loc = trackedEntity.getLocation().add(0D, 1.3D, 0D);
             // Spawn the particles slightly offset in front of the horse.
             loc.add(loc.getDirection().normalize().multiply(0.85));
