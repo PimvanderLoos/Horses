@@ -39,4 +39,17 @@ disableMountedSpeedPotionBuff: false
 
 # Whether to use the alternative baby growth method. With the alternative method, baby horses do not grow over time.
 # Instead, they will need to be fed by their owner to grow bigger.
+# Whether to use the alternative baby growth method. With the alternative method, baby horses/mules/donkeys
+# do not grow over time. Instead, they will need to be fed by their owner to grow bigger.
 alternativeBabyGrowth: true
+
+# The items that can be fed to baby horses/mules/donkeys that use the alternative growth method.
+# The format is <Material>:<GrowthPercentage>.
+# So "WHEAT:2.5" means that one weed will progress the baby's growth by 2.5 percentage points.
+babyFoodGrowthItems:
+  - SUGAR:1.5
+  - WHEAT:2
+  - APPLE:3
+  - GOLDEN_CARROT:4
+  - GOLDEN_APPLE:10
+
