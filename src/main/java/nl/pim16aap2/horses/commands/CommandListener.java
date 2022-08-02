@@ -137,6 +137,7 @@ public class CommandListener implements CommandExecutor
 
         @Inject EditHorseTabComplete(Horses plugin, AttributeMapper attributeMapper)
         {
+            plugin.registerReloadable(this);
             this.plugin = plugin;
             this.attributeMapper = attributeMapper;
             reload();

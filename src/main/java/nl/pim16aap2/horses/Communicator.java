@@ -47,8 +47,9 @@ public class Communicator
             + addInfo(localizer.get("horse.attribute.gait"), horseEditor.getGait(horse))
             + addInfo(localizer.get("horse.attribute.speed"),
                       String.format("%.2f", horseEditor.getBaseSpeed(horse) * 43.17f))
-            + addInfo(localizer.get("horse.attribute.jump"), String.format("%.2f", horse.getJumpStrength()))
-            + addInfo(localizer.get("horse.attribute.health"), String.format("%.0f", horse.getHealth()))
+            + addInfo(localizer.get("horse.attribute.jump"),
+                      String.format(Locale.ROOT, "%.2f", horse.getJumpStrength()))
+            + addInfo(localizer.get("horse.attribute.health"), String.format(Locale.ROOT, "%.0f", horse.getHealth()))
             + addInfo(localizer.get("horse.attribute.owner"), getOwnerName(horse))
             + ChatColor.DARK_GRAY + ">>>>>>--------------------------<<<<<<<\n";
 

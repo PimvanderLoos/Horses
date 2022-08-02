@@ -8,7 +8,6 @@ import org.jetbrains.annotations.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -19,7 +18,7 @@ class AttributeMapper implements IReloadable
 {
     private final Localizer localizer;
 
-    private Map<String, ModifiableAttribute> attributeMap = Collections.emptyMap();
+    private final Map<String, ModifiableAttribute> attributeMap = new HashMap<>();
 
     @Inject AttributeMapper(Horses plugin, Localizer localizer)
     {
@@ -31,16 +30,16 @@ class AttributeMapper implements IReloadable
     @Override
     public void reload()
     {
-        attributeMap = new HashMap<>();
+        attributeMap.clear();
         for (final ModifiableAttribute attribute : ModifiableAttribute.values())
-            attributeMap.put(getLocalizedName(attribute).replaceAll(" ", "_"), attribute);
+            attributeMap.put(getLocalizedName(attribute).replaceAll(" ", "_").toLowerCase(Locale.ROOT), attribute);
     }
 
     public @Nullable ModifiableAttribute getAttribute(@Nullable String input)
     {
         if (input == null)
             return null;
-        return attributeMap.get(input);
+        return attributeMap.get(input.toLowerCase(Locale.ROOT));
     }
 
     public String getLocalizedName(ModifiableAttribute attribute)
