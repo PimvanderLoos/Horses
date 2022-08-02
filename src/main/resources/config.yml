@@ -29,3 +29,7 @@ energyDrainTime: 5
 # The amount of time (in seconds) it takes for a horse to recover once it is exhausted.
 # This has no effect when exhaustionPenalty is set to <0.
 energyRecoveryTime: 8
+
+# The number of normal and big smoke particles to repeatedly spawn while a horse is exhausted.
+exhaustionSmokeParticles: 8
+exhaustionBigSmokeParticles: 2

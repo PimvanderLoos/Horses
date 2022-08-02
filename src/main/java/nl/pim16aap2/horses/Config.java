@@ -29,6 +29,9 @@ public class Config implements IReloadable
     private int energyDrainTime = 5;
     private int energyRecoveryTime = 7;
 
+    private int exhaustionSmokeParticles = 8;
+    private int exhaustionBigSmokeParticles = 2;
+
     private final Path path;
 
     @Inject
@@ -61,6 +64,9 @@ public class Config implements IReloadable
         this.exhaustionPenalty = parseInt(config, "exhaustionPenalty", 25);
         this.energyDrainTime = parseInt(config, "energyDrainTime", 5);
         this.energyRecoveryTime = parseInt(config, "energyRecoveryTime", 7);
+
+        this.exhaustionSmokeParticles = parseInt(config, "exhaustionSmokeParticles", 8);
+        this.exhaustionBigSmokeParticles = parseInt(config, "exhaustionBigSmokeParticles", 2);
     }
 
     private int parseInt(FileConfiguration configuration, String optionName, int fallback)
@@ -163,5 +169,15 @@ public class Config implements IReloadable
     public int getEnergyRecoveryTime()
     {
         return energyRecoveryTime;
+    }
+
+    public int getExhaustionSmokeParticles()
+    {
+        return exhaustionSmokeParticles;
+    }
+
+    public int getExhaustionBigSmokeParticles()
+    {
+        return exhaustionBigSmokeParticles;
     }
 }

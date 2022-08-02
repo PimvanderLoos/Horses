@@ -1,5 +1,6 @@
 package nl.pim16aap2.horses.horsetracker;
 
+import nl.pim16aap2.horses.Config;
 import nl.pim16aap2.horses.HorseEditor;
 import nl.pim16aap2.horses.staminabar.IStaminaNotifier;
 import org.bukkit.entity.AbstractHorse;
@@ -11,36 +12,37 @@ import java.util.Objects;
 
 final class TrackedHorse
 {
+    private final Config config;
     private final HorseEditor horseEditor;
     private final AbstractHorse horse;
     private final int maxEnergy;
+    private final int drainStep;
+    private final int recoveryStep;
 
     private @Nullable IStaminaNotifier notifier;
     private @Nullable TrackingExhaustionParticles trackingExhaustionParticles;
 
-    private final int drainStep;
-    private final int recoveryStep;
     private int energy;
     private volatile boolean exhausted;
 
     TrackedHorse(
-        HorseEditor horseEditor, AbstractHorse horse, @Nullable IStaminaNotifier staminaNotifier, int drainTime,
-        int recoveryTime)
+        HorseEditor horseEditor, AbstractHorse horse, @Nullable IStaminaNotifier staminaNotifier, Config config)
     {
+        this.config = config;
         this.horseEditor = horseEditor;
         this.horse = horse;
         this.notifier = staminaNotifier;
 
-        this.drainStep = 20 * recoveryTime;
-        this.recoveryStep = 20 * drainTime;
+        this.drainStep = 20 * config.getEnergyRecoveryTime();
+        this.recoveryStep = 20 * config.getEnergyDrainTime();
         this.maxEnergy = drainStep * recoveryStep;
 
         this.energy = maxEnergy;
     }
 
-    TrackedHorse(TrackedHorse other, int drainTime, int recoveryTime)
+    TrackedHorse(TrackedHorse other, Config config)
     {
-        this(other.horseEditor, other.horse, other.getStaminaNotifier(), drainTime, recoveryTime);
+        this(other.horseEditor, other.horse, other.getStaminaNotifier(), config);
 
         trackingExhaustionParticles = other.trackingExhaustionParticles;
         exhausted = other.exhausted;
@@ -134,7 +136,7 @@ final class TrackedHorse
     private void startParticles()
     {
         if (trackingExhaustionParticles == null)
-            trackingExhaustionParticles = new TrackingExhaustionParticles(this);
+            trackingExhaustionParticles = new TrackingExhaustionParticles(this, config);
         else
             trackingExhaustionParticles.restart(this);
     }

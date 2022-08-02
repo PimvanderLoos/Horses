@@ -50,8 +50,7 @@ public class HorseTracker
             if (trackedHorse == null)
             {
                 final @Nullable IStaminaNotifier notifier = staminaNotifierManager.getNewNotifier(rider, 1D, false);
-                return new TrackedHorse(
-                    horseEditor, horse, notifier, config.getEnergyDrainTime(), config.getEnergyRecoveryTime());
+                return new TrackedHorse(horseEditor, horse, notifier, config);
             }
             else
             {
@@ -122,7 +121,7 @@ public class HorseTracker
     {
         trackedHorses = trackedHorses.entrySet().stream().collect(Collectors.toMap(
             Map.Entry::getKey,
-            entry -> new TrackedHorse(entry.getValue(), config.getEnergyDrainTime(), config.getEnergyRecoveryTime())));
+            entry -> new TrackedHorse(entry.getValue(), config)));
     }
 
     private void findHorsesWithRiders()
