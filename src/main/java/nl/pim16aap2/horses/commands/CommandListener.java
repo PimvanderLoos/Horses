@@ -2,6 +2,8 @@ package nl.pim16aap2.horses.commands;
 
 import nl.pim16aap2.horses.HorseEditor;
 import nl.pim16aap2.horses.Horses;
+import nl.pim16aap2.horses.util.IReloadable;
+import nl.pim16aap2.horses.util.Localizer;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -17,19 +19,22 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Stream;
 
 @Singleton
 public class CommandListener implements CommandExecutor
 {
     private final Horses horses;
     private final HorseEditor horseEditor;
+    private final Localizer localizer;
+    private final AttributeMapper attributeMapper;
 
     @Inject
-    public CommandListener(Horses horses, HorseEditor horseEditor)
+    public CommandListener(Horses horses, HorseEditor horseEditor, Localizer localizer, AttributeMapper attributeMapper)
     {
         this.horses = horses;
         this.horseEditor = horseEditor;
+        this.localizer = localizer;
+        this.attributeMapper = attributeMapper;
     }
 
     @Override
@@ -39,7 +44,7 @@ public class CommandListener implements CommandExecutor
         {
             horses.reload();
             final String color = sender instanceof Player ? ChatColor.GREEN.toString() : "";
-            sender.sendMessage(color + "Plugin has been reloaded!");
+            sender.sendMessage(color + localizer.get("commands.success.plugin_reloaded"));
             return true;
         }
 
@@ -56,10 +61,10 @@ public class CommandListener implements CommandExecutor
                 return false;
 
             final @Nullable String value = args.length < 2 ? null : args[1];
-            final @Nullable ModifiableAttribute attribute = ModifiableAttribute.getAttribute(args[0]);
+            final @Nullable ModifiableAttribute attribute = attributeMapper.getAttribute(args[0]);
             if (attribute == null)
             {
-                player.sendMessage(ChatColor.RED + "Could not find attribute " + args[0]);
+                player.sendMessage(ChatColor.RED + localizer.get("commands.error.attribute_not_found"), args[0]);
                 return false;
             }
 
@@ -68,29 +73,32 @@ public class CommandListener implements CommandExecutor
             {
                 horses.getLogger()
                       .info("Player '" + player.getName() + "' does not have permission node '" + permission + "'!");
-                player.sendMessage(ChatColor.RED + "You do not have permission to execute this command!");
+                player.sendMessage(ChatColor.RED + localizer.get("commands.error.no_permission"));
                 return true;
             }
 
             if (attribute.isParameterRequired() && value == null)
             {
-                player.sendMessage(ChatColor.RED + "Required command value not provided!");
+                player.sendMessage(ChatColor.RED + localizer.get("commands.error.missing_required_value"));
                 return false;
             }
 
             final List<AbstractHorse> leadHorses = getHorsesLeadBy(player);
             if (leadHorses.isEmpty())
             {
-                player.sendMessage(ChatColor.RED + "You are not currently leading any horses!");
+                player.sendMessage(ChatColor.RED + localizer.get("commands.error.no_horses_targeted"));
                 return true;
             }
 
             if (!attribute.apply(horses, horseEditor, leadHorses, value))
-                player.sendMessage(ChatColor.RED + attribute.getErrorString(value));
+                player.sendMessage(ChatColor.RED + attribute.getErrorString(horses, value));
             else
-                player.sendMessage(ChatColor.GREEN + "Attribute '" +
-                                       ChatColor.GOLD + attribute.getName() +
-                                       ChatColor.GREEN + "' has been updated!");
+            {
+                final String attributeName =
+                    ChatColor.GOLD + attributeMapper.getLocalizedName(attribute) + ChatColor.GREEN;
+                player.sendMessage(
+                    ChatColor.GREEN + localizer.get("commands.success.attribute_updated", attributeName));
+            }
             return true;
         }
         return false;
@@ -120,15 +128,19 @@ public class CommandListener implements CommandExecutor
         return ret;
     }
 
-    public static final class EditHorseTabComplete implements TabCompleter
+    @Singleton
+    public static final class EditHorseTabComplete implements TabCompleter, IReloadable
     {
         private final Horses plugin;
-        private final List<String> attributeNames;
+        private final AttributeMapper attributeMapper;
+        private List<String> attributeNames = Collections.emptyList();
 
-        public EditHorseTabComplete(Horses plugin)
+        @Inject EditHorseTabComplete(Horses plugin, AttributeMapper attributeMapper)
         {
+            plugin.registerReloadable(this);
             this.plugin = plugin;
-            attributeNames = Stream.of(ModifiableAttribute.values()).map(ModifiableAttribute::getName).toList();
+            this.attributeMapper = attributeMapper;
+            reload();
         }
 
         @Override
@@ -145,12 +157,18 @@ public class CommandListener implements CommandExecutor
                 return stream.toList();
             }
 
-            final @Nullable ModifiableAttribute attribute = ModifiableAttribute.getAttribute(args[0]);
+            final @Nullable ModifiableAttribute attribute = attributeMapper.getAttribute(args[0]);
             final List<String> ret = attribute == null ? Collections.emptyList() : attribute.getSuggestions(plugin);
 
             if (args.length == 2)
                 return ret.stream().filter(name -> name.startsWith(args[1].toLowerCase(Locale.ROOT))).toList();
             return ret;
+        }
+
+        @Override
+        public void reload()
+        {
+            this.attributeNames = attributeMapper.getNames();
         }
     }
 }

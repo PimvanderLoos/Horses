@@ -1,7 +1,7 @@
 package nl.pim16aap2.horses;
 
-import nl.pim16aap2.horses.commands.CommandListener;
 import nl.pim16aap2.horses.util.IReloadable;
+import nl.pim16aap2.horses.util.Localizer;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabCompleter;
@@ -27,6 +27,7 @@ public class Horses extends JavaPlugin
     public Horses()
     {
         this.horsesComponent = DaggerHorsesComponent.builder().setPlugin(this).build();
+        saveResource(Localizer.BASE_NAME + ".properties", false);
     }
 
     @Override
@@ -51,7 +52,7 @@ public class Horses extends JavaPlugin
     private void initCommandListener()
     {
         initCommand("ReloadHorses");
-        initCommand("EditHorse", new CommandListener.EditHorseTabComplete(this));
+        initCommand("EditHorse", getHorsesComponent().getEditHorseTabCompleter());
     }
 
     private void initCommand(@SuppressWarnings("SameParameterValue") String name)

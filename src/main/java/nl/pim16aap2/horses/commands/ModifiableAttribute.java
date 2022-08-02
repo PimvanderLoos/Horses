@@ -12,10 +12,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -179,9 +177,10 @@ enum ModifiableAttribute
             }
 
             @Override
-            public String getErrorString(@Nullable String input)
+            public String getErrorString(Horses plugin, @Nullable String input)
             {
-                return "Could not find player '" + input + "'! Are they online? Or try their UUID!";
+                return plugin.getHorsesComponent().getLocalizer()
+                             .get("commands.error.player_not_found", input == null ? "NULL" : input);
             }
         },
     STYLE("style", true)
@@ -215,9 +214,10 @@ enum ModifiableAttribute
             }
 
             @Override
-            public String getErrorString(@Nullable String input)
+            public String getErrorString(Horses plugin, @Nullable String input)
             {
-                return "Could not find style '" + input + "'!";
+                return plugin.getHorsesComponent().getLocalizer()
+                             .get("commands.error.style_not_found", input == null ? "NULL" : input);
             }
         },
     COLOR("color", true)
@@ -251,22 +251,13 @@ enum ModifiableAttribute
             }
 
             @Override
-            public String getErrorString(@Nullable String input)
+            public String getErrorString(Horses plugin, @Nullable String input)
             {
-                return "Could not find color '" + input + "'!";
+                return plugin.getHorsesComponent().getLocalizer()
+                             .get("commands.error.color_not_found", input == null ? "NULL" : input);
             }
         },
     ;
-
-    private static final Map<String, ModifiableAttribute> NAME_MAPPER;
-
-    static
-    {
-        final ModifiableAttribute[] values = values();
-        NAME_MAPPER = new HashMap<>(values.length);
-        for (final ModifiableAttribute attribute : values())
-            NAME_MAPPER.put(attribute.name.toLowerCase(Locale.ROOT), attribute);
-    }
 
     private final String name;
     private final boolean parameterRequired;
@@ -275,11 +266,6 @@ enum ModifiableAttribute
     {
         this.name = name;
         this.parameterRequired = parameterRequired;
-    }
-
-    public static @Nullable ModifiableAttribute getAttribute(String input)
-    {
-        return NAME_MAPPER.get(input.toLowerCase(Locale.ROOT));
     }
 
     public String getName()
@@ -295,9 +281,10 @@ enum ModifiableAttribute
     public abstract boolean apply(
         Horses plugin, HorseEditor horseEditor, List<AbstractHorse> horses, @Nullable String input);
 
-    public String getErrorString(@Nullable String input)
+    public String getErrorString(Horses plugin, @Nullable String input)
     {
-        return "Failed to parse input '" + input + "'";
+        return plugin.getHorsesComponent().getLocalizer()
+                     .get("commands.error.invalid_attribute_value", input == null ? "NULL" : input);
     }
 
     public List<String> getSuggestions(Horses plugin)

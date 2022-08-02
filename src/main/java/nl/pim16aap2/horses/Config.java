@@ -1,7 +1,6 @@
 package nl.pim16aap2.horses;
 
 import nl.pim16aap2.horses.util.IReloadable;
-import nl.pim16aap2.horses.util.Util;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -26,7 +25,6 @@ public class Config implements IReloadable
     private Gaits gaits;
     private int defaultGait = 100;
     private int resetGait = -1;
-    private String[] genderNames;
 
     private final Path path;
 
@@ -36,11 +34,6 @@ public class Config implements IReloadable
         this.javaPlugin = horses;
         gaits = parseGaits(DEFAULT_GAITS);
         this.path = horses.getDataFolder().toPath().resolve("config.yml");
-
-        final HorseGender[] genders = HorseGender.values();
-        genderNames = new String[genders.length];
-        for (int idx = 0; idx < genders.length; ++idx)
-            genderNames[idx] = Util.capitalizeFirstLetter(genders[idx].name());
         horses.registerReloadable(this);
     }
 
@@ -61,20 +54,6 @@ public class Config implements IReloadable
         this.gaits = parseGaits(config.getString("gaits", DEFAULT_GAITS));
         this.defaultGait = parseInt(config, "defaultGait", 100);
         this.resetGait = parseInt(config, "resetGait", 100);
-
-        this.genderNames = readGenderNames(config);
-    }
-
-    private static String[] readGenderNames(FileConfiguration config)
-    {
-        final HorseGender[] genders = HorseGender.values();
-        final String[] names = new String[genders.length];
-        for (int idx = 0; idx < genders.length; ++idx)
-        {
-            final String baseName = Util.capitalizeFirstLetter(genders[idx].name());
-            names[idx] = config.getString("name" + baseName, baseName);
-        }
-        return names;
     }
 
     private int parseInt(FileConfiguration configuration, String optionName, int fallback)
@@ -162,10 +141,5 @@ public class Config implements IReloadable
     public int getResetGait()
     {
         return resetGait;
-    }
-
-    public String getGenderName(HorseGender gender)
-    {
-        return genderNames[gender.ordinal()];
     }
 }
