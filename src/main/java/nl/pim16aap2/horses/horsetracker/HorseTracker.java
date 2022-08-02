@@ -56,8 +56,9 @@ public class HorseTracker
             {
                 final @Nullable IStaminaNotifier notifier = staminaNotifierManager.getNewNotifier(
                     rider, trackedHorse.getEnergyPercentage(), trackedHorse.isExhausted());
-                trackedHorse.setStaminaNotifier(notifier);
-                return trackedHorse;
+                final TrackedHorse result = new TrackedHorse(horseEditor, horse, notifier, config);
+                result.setEnergyPercentage(trackedHorse.getEnergyPercentage());
+                return result;
             }
         });
     }

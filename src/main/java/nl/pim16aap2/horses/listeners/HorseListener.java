@@ -12,6 +12,7 @@ import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityBreedEvent;
@@ -147,15 +148,17 @@ public class HorseListener implements Listener
         staminaNotifierManager.removeNotifier(event.getPlayer());
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onMount(EntityMountEvent event)
     {
         if (config.getExhaustionPenalty() <= 0)
             return;
+
         if (!Horses.MONITORED_TYPES.contains(event.getMount().getType()) ||
             !(event.getMount() instanceof AbstractHorse horse) ||
             !(event.getEntity() instanceof Player player))
             return;
+
         horseTracker.trackHorse(player, horse);
     }
 }

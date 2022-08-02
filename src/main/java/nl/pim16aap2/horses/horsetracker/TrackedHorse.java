@@ -18,11 +18,11 @@ final class TrackedHorse
     private final int maxEnergy;
     private final int drainStep;
     private final int recoveryStep;
+    private final @Nullable IStaminaNotifier notifier;
 
-    private @Nullable IStaminaNotifier notifier;
     private @Nullable TrackingExhaustionParticles trackingExhaustionParticles;
-
     private int energy;
+
     private volatile boolean exhausted;
 
     TrackedHorse(
@@ -95,11 +95,6 @@ final class TrackedHorse
     public @Nullable IStaminaNotifier getStaminaNotifier()
     {
         return notifier;
-    }
-
-    public void setStaminaNotifier(@Nullable IStaminaNotifier staminaNotifier)
-    {
-        this.notifier = staminaNotifier;
     }
 
     public void setExhausted(boolean exhausted)
