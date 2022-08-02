@@ -5,6 +5,7 @@ import dagger.Component;
 import nl.pim16aap2.horses.commands.CommandListener;
 import nl.pim16aap2.horses.horsetracker.HorseTracker;
 import nl.pim16aap2.horses.listeners.HorseListener;
+import nl.pim16aap2.horses.staminabar.StaminaNotifierManager;
 import nl.pim16aap2.horses.util.Localizer;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -43,4 +44,6 @@ public interface HorsesComponent
     Localizer getLocalizer();
 
     CommandListener.EditHorseTabComplete getEditHorseTabCompleter();
+
+    StaminaNotifierManager getStaminaNotifierManager();
 }
