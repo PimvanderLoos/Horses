@@ -97,7 +97,7 @@ public class CommandListener implements CommandExecutor
                 final String attributeName =
                     ChatColor.GOLD + attributeMapper.getLocalizedName(attribute) + ChatColor.GREEN;
                 player.sendMessage(
-                    ChatColor.GREEN + localizer.get("commands.success.attribute_updated"), attributeName);
+                    ChatColor.GREEN + localizer.get("commands.success.attribute_updated", attributeName));
             }
             return true;
         }
