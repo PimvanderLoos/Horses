@@ -5,6 +5,7 @@ import nl.pim16aap2.horses.Communicator;
 import nl.pim16aap2.horses.Config;
 import nl.pim16aap2.horses.HorseEditor;
 import nl.pim16aap2.horses.Horses;
+import nl.pim16aap2.horses.baby.BabyHandler;
 import nl.pim16aap2.horses.horsetracker.HorseTracker;
 import nl.pim16aap2.horses.staminabar.StaminaNotifierManager;
 import org.bukkit.Material;
@@ -35,17 +36,19 @@ class HorseListener implements Listener
     private final HorseEditor horseEditor;
     private final HorseTracker horseTracker;
     private final StaminaNotifierManager staminaNotifierManager;
+    private final BabyHandler babyHandler;
     private final Communicator communicator;
 
     @Inject HorseListener(
         Config config, HorseEditor horseEditor, Communicator communicator, HorseTracker horseTracker,
-        StaminaNotifierManager staminaNotifierManager)
+        StaminaNotifierManager staminaNotifierManager, BabyHandler babyHandler)
     {
         this.config = config;
         this.horseEditor = horseEditor;
         this.communicator = communicator;
         this.horseTracker = horseTracker;
         this.staminaNotifierManager = staminaNotifierManager;
+        this.babyHandler = babyHandler;
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -113,10 +116,7 @@ class HorseListener implements Listener
             !(event.getMother() instanceof AbstractHorse horseB) ||
             !(event.getEntity() instanceof AbstractHorse child))
             return;
-        final boolean canBreed = horseEditor.canBreed(horseA, horseB);
-        event.setCancelled(!canBreed);
-        if (canBreed)
-            horseEditor.ensureHorseManaged(child);
+        event.setCancelled(!babyHandler.newBaby(horseA, horseB, child));
     }
 
     @EventHandler(ignoreCancelled = true)

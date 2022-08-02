@@ -31,6 +31,7 @@ public class Config implements IReloadable
     private int exhaustionSmokeParticles = 4;
     private int exhaustionBigSmokeParticles = 1;
     private boolean disableMountedSpeedPotionBuff = false;
+    private boolean alternativeBabyGrowth = true;
 
     private final Path path;
 
@@ -64,6 +65,8 @@ public class Config implements IReloadable
         this.exhaustionPenalty = parseInt(config, "exhaustionPenalty", 25);
         this.energyDrainTime = parseInt(config, "energyDrainTime", 5);
         this.energyRecoveryTime = parseInt(config, "energyRecoveryTime", 7);
+
+        this.alternativeBabyGrowth = config.getBoolean("alternativeBabyGrowth", true);
 
         this.exhaustionSmokeParticles = parseInt(config, "exhaustionSmokeParticles", 4);
         this.exhaustionBigSmokeParticles = parseInt(config, "exhaustionBigSmokeParticles", 1);
@@ -186,5 +189,10 @@ public class Config implements IReloadable
     public boolean disableMountedSpeedPotionBuff()
     {
         return disableMountedSpeedPotionBuff;
+    }
+
+    public boolean alternativeAgeMethod()
+    {
+        return alternativeBabyGrowth;
     }
 }

@@ -36,3 +36,7 @@ exhaustionBigSmokeParticles: 2
 
 # Disables the speed buff gained from potions while mounted.
 disableMountedSpeedPotionBuff: false
+
+# Whether to use the alternative baby growth method. With the alternative method, baby horses do not grow over time.
+# Instead, they will need to be fed by their owner to grow bigger.
+alternativeBabyGrowth: true
