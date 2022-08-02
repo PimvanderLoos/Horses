@@ -14,12 +14,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 class TrackingExhaustionParticles
 {
     private final Config config;
+
     private BukkitTask task;
 
     TrackingExhaustionParticles(TrackedHorse trackedHorse, Config config)
     {
-        task = newTask(trackedHorse);
         this.config = config;
+        task = newTask(trackedHorse);
     }
 
     void cancel()
