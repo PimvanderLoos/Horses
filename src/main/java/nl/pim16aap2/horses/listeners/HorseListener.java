@@ -19,6 +19,8 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityBreedEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntitySpawnEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
@@ -108,15 +110,44 @@ class HorseListener implements Listener
             horseEditor.decreaseGait(event.getPlayer(), horse);
     }
 
+    @EventHandler
+    public void onSpawn(EntitySpawnEvent event)
+    {
+        if (!Horses.MONITORED_TYPES.contains(event.getEntity().getType()) ||
+            !(event.getEntity() instanceof AbstractHorse horse) ||
+            horse.isAdult())
+            return;
+        babyHandler.newBaby(horse, null, null);
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onFeed(PlayerInteractEntityEvent event)
+    {
+        if (!Horses.MONITORED_TYPES.contains(event.getRightClicked().getType()) ||
+            !(event.getRightClicked() instanceof AbstractHorse horse))
+            return;
+
+        final ItemStack item = event.getPlayer().getInventory().getItem(event.getHand());
+        if (item.getType() == Material.AIR || item.getType() == Material.LEAD)
+            return;
+
+        if (horse.getAgeLock())
+            event.setCancelled(true);
+
+        if (!horse.isAdult())
+            babyHandler.feedBaby(event.getPlayer(), horse, item);
+    }
+
     @EventHandler(ignoreCancelled = true)
     public void onBreed(EntityBreedEvent event)
     {
         if (!Horses.MONITORED_TYPES.contains(event.getMother().getType()) ||
+            !Horses.MONITORED_TYPES.contains(event.getFather().getType()) ||
             !(event.getFather() instanceof AbstractHorse horseA) ||
             !(event.getMother() instanceof AbstractHorse horseB) ||
             !(event.getEntity() instanceof AbstractHorse child))
             return;
-        event.setCancelled(!babyHandler.newBaby(horseA, horseB, child));
+        event.setCancelled(!babyHandler.newBaby(child, horseA, horseB));
     }
 
     @EventHandler(ignoreCancelled = true)

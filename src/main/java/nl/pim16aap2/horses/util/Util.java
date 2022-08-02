@@ -34,4 +34,40 @@ public final class Util
             return horse;
         return null;
     }
+
+    /**
+     * Checks if a player has access to a horse.
+     * <p>
+     * A player is considered to have access to a horse if
+     * <p>
+     * 1) The player is an OP.
+     * <p>
+     * 2) The horse has no owner.
+     * <p>
+     * 3) The player is the owner of the horse.
+     * <p>
+     * 4) The provided permission node is not null and the player has that permission node.
+     *
+     * @param player
+     *     The player to check.
+     * @param horse
+     *     The target horse.
+     * @param permission
+     *     The permission node required if the player is not an owner of the horse. May be null.
+     * @return True if the player has access to the target horse.
+     */
+    public static boolean checkPlayerAccess(Player player, AbstractHorse horse, @Nullable String permission)
+    {
+        if (player.isOp())
+            return true;
+        if (horse.getOwner() == null || player.equals(horse.getOwner()))
+            return true;
+        return permission != null && player.hasPermission(permission);
+    }
+
+    public static String formatBabyGrowthPercentage(AbstractHorse horse)
+    {
+        final float percentage = Math.min(100, Math.max(0, (24_000 + horse.getAge()) / 240F));
+        return String.format(Locale.ROOT, "%2.2f%%", percentage);
+    }
 }

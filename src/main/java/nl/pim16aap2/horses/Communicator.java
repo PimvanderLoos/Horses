@@ -4,6 +4,7 @@ import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import nl.pim16aap2.horses.staminabar.IStaminaNotifier;
 import nl.pim16aap2.horses.util.Localizer;
+import nl.pim16aap2.horses.util.Util;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.AnimalTamer;
@@ -40,7 +41,7 @@ public class Communicator implements IStaminaNotifier
         horseEditor.ensureHorseManaged(horse);
 
         //noinspection deprecation
-        final String msg = ChatColor.DARK_GRAY + ">>>>>>--------------------------<<<<<<<\n"
+        String msg = ChatColor.DARK_GRAY + ">>>>>>--------------------------<<<<<<<\n"
             + addInfo(localizer.get("horse.attribute.name"),
                       Objects.requireNonNullElse(horse.getCustomName(), horse.getType().getName()))
             + addInfo(localizer.get("horse.attribute.gender"),
@@ -54,8 +55,12 @@ public class Communicator implements IStaminaNotifier
             + addInfo(localizer.get("horse.attribute.exhausted"),
                       localizer.get(horseEditor.isExhausted(horse) ? "horse.attribute.exhausted.true" :
                                     "horse.attribute.exhausted.false"))
-            + addInfo(localizer.get("horse.attribute.owner"), getOwnerName(horse))
-            + ChatColor.DARK_GRAY + ">>>>>>--------------------------<<<<<<<\n";
+            + addInfo(localizer.get("horse.attribute.owner"), getOwnerName(horse));
+
+        if (!horse.isAdult())
+            msg += addInfo(localizer.get("horse.attribute.grow_progress"), Util.formatBabyGrowthPercentage(horse));
+
+        msg += ChatColor.DARK_GRAY + ">>>>>>--------------------------<<<<<<<\n";
 
         player.sendMessage(msg);
     }
