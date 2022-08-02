@@ -4,6 +4,7 @@ import nl.pim16aap2.horses.Horses;
 import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -13,6 +14,7 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+@Singleton
 public class Localizer implements IReloadable
 {
     public static final String BASE_NAME = "horses_messages";

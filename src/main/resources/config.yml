@@ -18,3 +18,18 @@ resetGait: -1
 nameMale: Stallion
 nameFemale: Mare
 nameGelding: Gelding
+
+# The speed penalty (percentage) to give when a horse is exhausted. Use a value of 0 to disable this feature.
+exhaustionPenalty: 35
+
+# The amount of time (in seconds) a horse can run at >= 100% speed before getting exhausted.
+# This has no effect when exhaustionPenalty is set to <0.
+energyDrainTime: 5
+
+# The amount of time (in seconds) it takes for a horse to recover once it is exhausted.
+# This has no effect when exhaustionPenalty is set to <0.
+energyRecoveryTime: 8
+
+# The number of normal and big smoke particles to repeatedly spawn while a horse is exhausted.
+exhaustionSmokeParticles: 8
+exhaustionBigSmokeParticles: 2

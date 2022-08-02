@@ -2,6 +2,7 @@ package nl.pim16aap2.horses;
 
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
+import nl.pim16aap2.horses.staminabar.IStaminaNotifier;
 import nl.pim16aap2.horses.util.Localizer;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.AbstractHorse;
@@ -15,7 +16,7 @@ import java.util.Locale;
 import java.util.Objects;
 
 @Singleton
-public class Communicator
+public class Communicator implements IStaminaNotifier
 {
     private final HorseEditor horseEditor;
     private final Localizer localizer;
@@ -50,6 +51,9 @@ public class Communicator
             + addInfo(localizer.get("horse.attribute.jump"),
                       String.format(Locale.ROOT, "%.2f", horse.getJumpStrength()))
             + addInfo(localizer.get("horse.attribute.health"), String.format(Locale.ROOT, "%.0f", horse.getHealth()))
+            + addInfo(localizer.get("horse.attribute.exhausted"),
+                      localizer.get(horseEditor.isExhausted(horse) ? "horse.attribute.exhausted.true" :
+                                    "horse.attribute.exhausted.false"))
             + addInfo(localizer.get("horse.attribute.owner"), getOwnerName(horse))
             + ChatColor.DARK_GRAY + ">>>>>>--------------------------<<<<<<<\n";
 
@@ -65,5 +69,14 @@ public class Communicator
     private String addInfo(String name, Object value)
     {
         return ChatColor.GOLD + name + ": " + ChatColor.GRAY + value + "\n";
+    }
+
+    @Override
+    public void notifyStaminaChange(Player player, double percentage, boolean exhausted)
+    {
+        player.spigot().sendMessage(
+            ChatMessageType.CHAT,
+            new TextComponent(ChatColor.GREEN + localizer.get("notification.hud.stamina.message",
+                                                              String.format(" %3.2f%%", (100 * percentage)))));
     }
 }
