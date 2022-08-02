@@ -38,4 +38,6 @@ public interface HorsesComponent
     HorseEditor getHorseEditor();
 
     Localizer getLocalizer();
+
+    CommandListener.EditHorseTabComplete getEditHorseTabCompleter();
 }

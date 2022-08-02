@@ -12,10 +12,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -261,16 +259,6 @@ enum ModifiableAttribute
         },
     ;
 
-    private static final Map<String, ModifiableAttribute> NAME_MAPPER;
-
-    static
-    {
-        final ModifiableAttribute[] values = values();
-        NAME_MAPPER = new HashMap<>(values.length);
-        for (final ModifiableAttribute attribute : values())
-            NAME_MAPPER.put(attribute.name.toLowerCase(Locale.ROOT), attribute);
-    }
-
     private final String name;
     private final boolean parameterRequired;
 
@@ -278,11 +266,6 @@ enum ModifiableAttribute
     {
         this.name = name;
         this.parameterRequired = parameterRequired;
-    }
-
-    public static @Nullable ModifiableAttribute getAttribute(String input)
-    {
-        return NAME_MAPPER.get(input.toLowerCase(Locale.ROOT));
     }
 
     public String getName()
