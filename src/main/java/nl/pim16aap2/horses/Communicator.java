@@ -31,7 +31,7 @@ public class Communicator
     {
         player.spigot().sendMessage(
             ChatMessageType.ACTION_BAR,
-            new TextComponent(ChatColor.RED + localizer.get("information.speed", newSpeed)));
+            new TextComponent(ChatColor.RED + localizer.get("notification.hud.speed", newSpeed)));
     }
 
     public void printInfo(Player player, AbstractHorse horse)

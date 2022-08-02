@@ -300,7 +300,8 @@ enum ModifiableAttribute
 
     public String getErrorString(Horses plugin, @Nullable String input)
     {
-        return "Failed to parse input '" + input + "'";
+        return plugin.getHorsesComponent().getLocalizer()
+                     .get("commands.error.invalid_attribute_value", input == null ? "NULL" : input);
     }
 
     public List<String> getSuggestions(Horses plugin)
