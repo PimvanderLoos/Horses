@@ -131,9 +131,8 @@ public class CommandListener implements CommandExecutor
         }
 
         final @Nullable Entity entity = Bukkit.getEntity(uuid);
-        if (entity == null ||
-            !Horses.MONITORED_TYPES.contains(entity.getType()) ||
-            !(entity instanceof AbstractHorse horse))
+        if (!(entity instanceof AbstractHorse horse) ||
+            !Horses.MONITORED_TYPES.contains(horse.getType()))
         {
             sender.sendMessage(localizer.get("commands.error.no_horses_found", uuid.toString()));
             return;

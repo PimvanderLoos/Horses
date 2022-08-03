@@ -79,8 +79,8 @@ public class Communicator implements IStaminaNotifier
 
 
         final Parents parents = horseEditor.getParents(horse);
-        appendParentInfo(builder, "horse.parents.father", parents.father());
-        appendParentInfo(builder, "horse.parents.mother", parents.mother());
+        appendParentInfo(builder, "horse.attribute.father", parents.father());
+        appendParentInfo(builder, "horse.attribute.mother", parents.mother());
 
         builder.color(ChatColor.DARK_GRAY).append(">>>>>>--------------------------<<<<<<<\n");
         commandSender.spigot().sendMessage(builder.create());

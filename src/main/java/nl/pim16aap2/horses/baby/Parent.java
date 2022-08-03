@@ -6,16 +6,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-public final class Parent
+public record Parent(UUID uuid, String name)
 {
-    private final UUID uuid;
-    private final String name;
-
-    public Parent(UUID uuid, String name)
-    {
-        this.uuid = uuid;
-        this.name = name;
-    }
+    private static final UUID EMPTY_UUID = new UUID(0L, 0L);
 
     public Parent(AbstractHorse horse)
     {
@@ -24,7 +17,7 @@ public final class Parent
 
     @Nullable AbstractHorse getEntity()
     {
-        return Bukkit.getEntity(uuid) instanceof AbstractHorse horse ? horse : null;
+        return (!uuid.equals(EMPTY_UUID)) && Bukkit.getEntity(uuid) instanceof AbstractHorse horse ? horse : null;
     }
 
     /**
@@ -43,15 +36,5 @@ public final class Parent
     {
         final @Nullable AbstractHorse horse = getEntity();
         return horse != null && horse.isValid();
-    }
-
-    public UUID uuid()
-    {
-        return uuid;
-    }
-
-    public String name()
-    {
-        return name;
     }
 }

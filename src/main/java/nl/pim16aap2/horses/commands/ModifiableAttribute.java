@@ -257,6 +257,36 @@ enum ModifiableAttribute
                              .get("commands.error.color_not_found", input == null ? "NULL" : input);
             }
         },
+    FATHER("father", false)
+        {
+            @Override
+            public boolean apply(
+                Horses plugin, HorseEditor horseEditor, List<AbstractHorse> horses, @Nullable String input)
+            {
+                if (input != null)
+                {
+                    for (final var horse : horses)
+                        horseEditor.setFather(horse, input);
+                    return true;
+                }
+                return false;
+            }
+        },
+    MOTHER("mother", false)
+        {
+            @Override
+            public boolean apply(
+                Horses plugin, HorseEditor horseEditor, List<AbstractHorse> horses, @Nullable String input)
+            {
+                if (input != null)
+                {
+                    for (final var horse : horses)
+                        horseEditor.setMother(horse, input);
+                    return true;
+                }
+                return false;
+            }
+        },
     ;
 
     private final String name;

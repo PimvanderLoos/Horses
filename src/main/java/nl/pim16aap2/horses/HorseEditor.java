@@ -1,5 +1,6 @@
 package nl.pim16aap2.horses;
 
+import nl.pim16aap2.horses.baby.Parent;
 import nl.pim16aap2.horses.baby.ParentFactory;
 import nl.pim16aap2.horses.baby.Parents;
 import nl.pim16aap2.horses.baby.ParentsTagType;
@@ -20,10 +21,12 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 import java.util.Random;
+import java.util.UUID;
 
 @Singleton
 public final class HorseEditor
 {
+    private static final UUID EMPTY_UUID = new UUID(0L, 0L);
     private static final HorseGender[] GENDERS = HorseGender.values();
 
     private final Random random = new Random();
@@ -205,6 +208,26 @@ public final class HorseEditor
         return baseSpeed;
     }
 
+    public void setFather(AbstractHorse child, String name)
+    {
+        setParents(child, getParents(child).withFather(new Parent(EMPTY_UUID, name)));
+    }
+
+    public void setMother(AbstractHorse child, String name)
+    {
+        setParents(child, getParents(child).withMother(new Parent(EMPTY_UUID, name)));
+    }
+
+    public void setFather(AbstractHorse child, AbstractHorse father)
+    {
+        setParents(child, getParents(child).withFather(new Parent(father)));
+    }
+
+    public void setMother(AbstractHorse child, AbstractHorse mother)
+    {
+        setParents(child, getParents(child).withMother(new Parent(mother)));
+    }
+
     public Parents getParents(AbstractHorse horse)
     {
         ensureHorseManaged(horse);
@@ -229,8 +252,11 @@ public final class HorseEditor
             father = horseB;
             mother = horseA;
         }
+        setParents(child, parentFactory.of(father, mother));
+    }
 
-        final Parents parents = parentFactory.of(father, mother);
+    public void setParents(AbstractHorse child, Parents parents)
+    {
         final PersistentDataContainer container = child.getPersistentDataContainer();
         container.set(keyParents, parentsTagType, parents);
     }
