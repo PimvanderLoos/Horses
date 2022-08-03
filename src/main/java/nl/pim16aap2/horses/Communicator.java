@@ -2,6 +2,7 @@ package nl.pim16aap2.horses;
 
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
+import nl.pim16aap2.horses.baby.Parents;
 import nl.pim16aap2.horses.staminabar.IStaminaNotifier;
 import nl.pim16aap2.horses.util.Localizer;
 import nl.pim16aap2.horses.util.Util;
@@ -59,6 +60,12 @@ public class Communicator implements IStaminaNotifier
 
         if (!horse.isAdult())
             msg += addInfo(localizer.get("horse.attribute.grow_progress"), Util.formatBabyGrowthPercentage(horse));
+
+        final Parents parents = horseEditor.getParents(horse);
+        if (parents.father() != null)
+            msg += addInfo(localizer.get("horse.attribute.father"), (parents.father().toString()));
+        if (parents.mother() != null)
+            msg += addInfo(localizer.get("horse.attribute.father"), (parents.mother().toString()));
 
         msg += ChatColor.DARK_GRAY + ">>>>>>--------------------------<<<<<<<\n";
 

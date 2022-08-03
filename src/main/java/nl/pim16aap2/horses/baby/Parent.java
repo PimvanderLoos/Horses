@@ -19,4 +19,12 @@ public record Parent(UUID uuid, String name)
         final @Nullable Entity entity = Bukkit.getEntity(uuid);
         return entity instanceof AbstractHorse horse ? horse : null;
     }
+
+    public String getUpToDateName()
+    {
+        final @Nullable AbstractHorse entity = getEntity();
+        if (entity == null)
+            return name;
+        return entity.getName();
+    }
 }

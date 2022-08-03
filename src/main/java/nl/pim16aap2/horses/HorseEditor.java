@@ -2,6 +2,7 @@ package nl.pim16aap2.horses;
 
 import nl.pim16aap2.horses.baby.ParentFactory;
 import nl.pim16aap2.horses.baby.Parents;
+import nl.pim16aap2.horses.baby.ParentsTagType;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
@@ -35,6 +36,7 @@ public final class HorseEditor
     private final NamespacedKey keyParents;
     private final Provider<Communicator> communicatorProvider;
     private final ParentFactory parentFactory;
+    private final ParentsTagType parentsTagType;
 
     private @Nullable Team team;
 
@@ -52,6 +54,7 @@ public final class HorseEditor
         keyParents = new NamespacedKey(plugin, "parents");
         this.communicatorProvider = communicatorProvider;
         this.parentFactory = parentFactory;
+        this.parentsTagType = parentFactory.tagType();
     }
 
     public void increaseGait(Player player, AbstractHorse horse)
@@ -202,6 +205,36 @@ public final class HorseEditor
         return baseSpeed;
     }
 
+    public Parents getParents(AbstractHorse horse)
+    {
+        ensureHorseManaged(horse);
+
+        final @Nullable Parents parents = horse.getPersistentDataContainer().get(keyParents, parentsTagType);
+        if (parents == null)
+            return new Parents(null, null);
+        return parents;
+    }
+
+    public void setParents(AbstractHorse child, AbstractHorse horseA, AbstractHorse horseB)
+    {
+        final AbstractHorse father;
+        final AbstractHorse mother;
+        if (getGender(horseA) == HorseGender.MALE)
+        {
+            father = horseA;
+            mother = horseB;
+        }
+        else
+        {
+            father = horseB;
+            mother = horseA;
+        }
+
+        final Parents parents = parentFactory.of(father, mother);
+        final PersistentDataContainer container = child.getPersistentDataContainer();
+        container.set(keyParents, parentsTagType, parents);
+    }
+
     private void assignToTeam(AbstractHorse horse)
     {
         final @Nullable Team team = getTeam();
@@ -251,25 +284,5 @@ public final class HorseEditor
             team = scoreboard.registerNewTeam("horses_noNameTag");
         team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
         return team;
-    }
-
-    public void setParents(AbstractHorse child, AbstractHorse horseA, AbstractHorse horseB)
-    {
-        final AbstractHorse father;
-        final AbstractHorse mother;
-        if (getGender(horseA) == HorseGender.MALE)
-        {
-            father = horseA;
-            mother = horseB;
-        }
-        else
-        {
-            father = horseB;
-            mother = horseA;
-        }
-
-        final Parents parents = parentFactory.of(father, mother);
-        final PersistentDataContainer container = child.getPersistentDataContainer();
-        container.set(keyParents, parentFactory.tagType(), parents);
     }
 }
