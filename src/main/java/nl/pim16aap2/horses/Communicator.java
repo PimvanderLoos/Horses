@@ -48,7 +48,7 @@ public class Communicator implements IStaminaNotifier
         horseEditor.ensureHorseManaged(horse);
 
         final ComponentBuilder builder = new ComponentBuilder()
-            .color(ChatColor.DARK_GRAY).append(">>>>>>--------------------------<<<<<<<\n");
+            .color(ChatColor.DARK_GRAY).append(">>>>>>--------------------------<<<<<<<").append("\n");
 
         //noinspection deprecation
         appendInfo(builder, localizer.get("horse.attribute.name"),
@@ -82,7 +82,7 @@ public class Communicator implements IStaminaNotifier
         appendParentInfo(builder, "horse.attribute.father", parents.father());
         appendParentInfo(builder, "horse.attribute.mother", parents.mother());
 
-        builder.color(ChatColor.DARK_GRAY).append(">>>>>>--------------------------<<<<<<<\n");
+        builder.color(ChatColor.DARK_GRAY).append(">>>>>>--------------------------<<<<<<<");
         commandSender.spigot().sendMessage(builder.create());
     }
 
