@@ -326,6 +326,30 @@ enum ModifiableAttribute
                 return true;
             }
         },
+    UNSET_FATHER("remove_father", false)
+        {
+            @Override
+            public boolean apply(
+                Horses plugin, HorseEditor horseEditor, CommandSender commandSender, List<AbstractHorse> horses,
+                @Nullable String input)
+            {
+                for (final var horse : horses)
+                    horseEditor.unsetFather(horse);
+                return true;
+            }
+        },
+    UNSET_MOTHER("remove_mother", false)
+        {
+            @Override
+            public boolean apply(
+                Horses plugin, HorseEditor horseEditor, CommandSender commandSender, List<AbstractHorse> horses,
+                @Nullable String input)
+            {
+                for (final var horse : horses)
+                    horseEditor.unsetMother(horse);
+                return true;
+            }
+        },
     ;
 
     private final String name;

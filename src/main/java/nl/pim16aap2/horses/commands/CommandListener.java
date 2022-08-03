@@ -81,7 +81,7 @@ public class CommandListener implements CommandExecutor
             final @Nullable ModifiableAttribute attribute = attributeMapper.getAttribute(args[0]);
             if (attribute == null)
             {
-                player.sendMessage(ChatColor.RED + localizer.get("commands.error.attribute_not_found"), args[0]);
+                player.sendMessage(ChatColor.RED + localizer.get("commands.error.attribute_not_found", args[0]));
                 return false;
             }
 

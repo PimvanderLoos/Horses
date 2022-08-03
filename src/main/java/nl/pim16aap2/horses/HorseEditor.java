@@ -228,6 +228,16 @@ public final class HorseEditor
         setParents(child, getParents(child).withMother(new Parent(mother)));
     }
 
+    public void unsetFather(AbstractHorse child)
+    {
+        setParents(child, getParents(child).withFather(null));
+    }
+
+    public void unsetMother(AbstractHorse child)
+    {
+        setParents(child, getParents(child).withMother(null));
+    }
+
     public Parents getParents(AbstractHorse horse)
     {
         ensureHorseManaged(horse);
