@@ -117,10 +117,13 @@ class HorseListener implements Listener
     public void onSpawn(EntitySpawnEvent event)
     {
         if (!Horses.MONITORED_TYPES.contains(event.getEntity().getType()) ||
-            !(event.getEntity() instanceof AbstractHorse horse) ||
-            horse.isAdult())
+            !(event.getEntity() instanceof AbstractHorse horse))
             return;
-        babyHandler.newBaby(horse, null, null);
+
+        if (horse.isAdult())
+            horseEditor.ensureHorseManaged(horse);
+        else
+            babyHandler.newBaby(horse, null, null);
     }
 
     @EventHandler(ignoreCancelled = true)
