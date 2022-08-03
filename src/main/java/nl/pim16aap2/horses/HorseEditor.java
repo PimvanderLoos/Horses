@@ -166,7 +166,7 @@ public final class HorseEditor
 
     private HorseGender assignGender(AbstractHorse horse)
     {
-        final HorseGender gender = GENDERS[random.nextInt(GENDERS.length)];
+        final HorseGender gender = GENDERS[random.nextInt(2)];
         setGender(horse, gender);
         return gender;
     }
