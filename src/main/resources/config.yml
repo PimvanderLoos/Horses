@@ -1,6 +1,9 @@
 # The material used to obtain information from a horse.
 infoMaterial: FEATHER
 
+# The material that is (temporarily) given to a player to select another horse.
+selectorMaterial: FEATHER
+
 # The material used to change the speed while riding a horse.
 whipMaterial: BLAZE_ROD
 

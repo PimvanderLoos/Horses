@@ -24,6 +24,7 @@ public class Config implements IReloadable
     private final JavaPlugin javaPlugin;
 
     private Material infoMaterial = Material.FEATHER;
+    private Material selectorMaterial = Material.FEATHER;
     private Material whipMaterial = Material.BLAZE_ROD;
     private Gaits gaits;
     private int defaultGait = 100;
@@ -60,6 +61,7 @@ public class Config implements IReloadable
     private void readValues(FileConfiguration config)
     {
         this.infoMaterial = readMaterial(config, "infoMaterial", Material.FEATHER);
+        this.selectorMaterial = readMaterial(config, "selectorMaterial", Material.FEATHER);
         this.whipMaterial = readMaterial(config, "whipMaterial", Material.BLAZE_ROD);
 
         this.gaits = parseGaits(config.getString("gaits", DEFAULT_GAITS));
@@ -184,6 +186,11 @@ public class Config implements IReloadable
     public Material getInfoMaterial()
     {
         return infoMaterial;
+    }
+
+    public Material getSelectorMaterial()
+    {
+        return selectorMaterial;
     }
 
     public Material getWhipMaterial()

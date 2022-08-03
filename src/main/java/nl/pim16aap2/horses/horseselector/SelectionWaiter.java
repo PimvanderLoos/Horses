@@ -1,5 +1,7 @@
 package nl.pim16aap2.horses.horseselector;
 
+import nl.pim16aap2.horses.util.Localizer;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.Player;
 
@@ -12,13 +14,15 @@ final class SelectionWaiter
     private final BiConsumer<Player, AbstractHorse> method;
     private final AtomicBoolean completed = new AtomicBoolean(false);
 
-    public SelectionWaiter(Player player, BiConsumer<Player, AbstractHorse> method)
+    public SelectionWaiter(Localizer localizer, Player player, BiConsumer<Player, AbstractHorse> method)
     {
         this.player = player;
         this.method = method;
+
+        player.sendMessage(ChatColor.GREEN + localizer.get("selector.process_started"));
     }
 
-    public void provideInput(AbstractHorse horse)
+    public void processInput(AbstractHorse horse)
     {
         if (!completed.compareAndSet(false, true))
             return;
