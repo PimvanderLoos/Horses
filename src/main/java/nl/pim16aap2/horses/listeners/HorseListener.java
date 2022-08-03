@@ -87,7 +87,7 @@ class HorseListener implements Listener
             return false;
 
         final ItemStack holding = player.getInventory().getItemInMainHand();
-        if (holding.getType() != config.getInfoMaterial())
+        if (holding.getType() != config.getInfoMaterial() && holding.getEnchantments().size() == 0)
             return false;
 
         communicator.printInfo(player, horse);

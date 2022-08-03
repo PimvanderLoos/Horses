@@ -32,6 +32,7 @@ public class Horses extends JavaPlugin
 
     public static Horses instance()
     {
+        //noinspection ConstantConditions
         return Objects.requireNonNull(instance);
     }
 
