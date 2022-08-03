@@ -37,7 +37,7 @@ public class SelectorToolUtil
 
     public boolean isSelectorTool(@Nullable ItemStack itemStack)
     {
-        if (itemStack == null)
+        if (itemStack == null || itemStack.getType() != config.getSelectorMaterial())
             return false;
         final @Nullable ItemMeta meta = itemStack.getItemMeta();
         if (meta == null)

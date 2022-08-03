@@ -34,6 +34,7 @@ public class Config implements IReloadable
     private int energyRecoveryTime = 7;
     private int exhaustionSmokeParticles = 4;
     private int exhaustionBigSmokeParticles = 1;
+    private int selectorTimeOut = 60;
     private boolean disableMountedSpeedPotionBuff = false;
     private boolean alternativeBabyGrowth = true;
     private Map<Material, Float> babyFoodMap = Collections.emptyMap();
@@ -71,6 +72,8 @@ public class Config implements IReloadable
         this.exhaustionPenalty = parseInt(config, "exhaustionPenalty", 25);
         this.energyDrainTime = parseInt(config, "energyDrainTime", 5);
         this.energyRecoveryTime = parseInt(config, "energyRecoveryTime", 7);
+
+        this.selectorTimeOut = parseInt(config, "selectorTimeOut", 60);
 
         this.exhaustionSmokeParticles = parseInt(config, "exhaustionSmokeParticles", 4);
         this.exhaustionBigSmokeParticles = parseInt(config, "exhaustionBigSmokeParticles", 1);
@@ -226,6 +229,11 @@ public class Config implements IReloadable
     public int getEnergyRecoveryTime()
     {
         return energyRecoveryTime;
+    }
+
+    public int getSelectorTimeOut()
+    {
+        return selectorTimeOut;
     }
 
     public int getExhaustionSmokeParticles()

@@ -49,6 +49,7 @@ public class Horses extends JavaPlugin
     {
         horsesComponent.getListenerManager().onDisable();
         horsesComponent.getStaminaNotifierManager().removeAll();
+        horsesComponent.getHorseSelectorManager().reload();
     }
 
     public HorsesComponent getHorsesComponent()

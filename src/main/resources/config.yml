@@ -17,10 +17,8 @@ defaultGait: 100
 # Use -1 to not reset the gait and remember the last-used gait instead.
 resetGait: -1
 
-# The names of the genders
-nameMale: Stallion
-nameFemale: Mare
-nameGelding: Gelding
+# The amount of time (in seconds) you get to select a horse before the process times out.
+selectorTimeOut: 60
 
 # The speed penalty (percentage) to give when a horse is exhausted. Use a value of 0 to disable this feature.
 exhaustionPenalty: 35

@@ -107,7 +107,7 @@ public class CommandListener implements CommandExecutor
                 return true;
             }
 
-            if (!attribute.apply(horses, horseEditor, leadHorses, value))
+            if (!attribute.apply(horses, horseEditor, sender, leadHorses, value))
                 player.sendMessage(ChatColor.RED + attribute.getErrorString(horses, value));
             else
             {
