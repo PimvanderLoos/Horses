@@ -57,6 +57,9 @@ public class BabyHandler
 
         horseEditor.ensureHorseManaged(child);
 
+        if (horseA != null && horseB != null)
+            horseEditor.setParents(child, horseA, horseB);
+
         if (config.alternativeAgeMethod())
             child.setAgeLock(true);
 
