@@ -11,3 +11,7 @@ commands:
     description: Edits an attribute of a horse.
     permission: horses.admin.edit
     usage: /EditHorse <Attribute> [Value]
+  gethorseinfo:
+    description: Gets the information of a horse.
+    permission: horses.user.getinfo
+    usage: /gethorseinfo <horse UUID>

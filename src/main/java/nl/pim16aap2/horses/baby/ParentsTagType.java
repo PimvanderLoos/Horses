@@ -1,22 +1,20 @@
 package nl.pim16aap2.horses.baby;
 
+import nl.pim16aap2.horses.util.Util;
 import org.bukkit.NamespacedKey;
 import org.bukkit.persistence.PersistentDataAdapterContext;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
 public class ParentsTagType implements PersistentDataType<PersistentDataContainer, Parents>
 {
-    private final JavaPlugin javaPlugin;
     private final ParentKeys keys;
 
-    ParentsTagType(JavaPlugin javaPlugin, ParentKeys keys)
+    ParentsTagType(ParentKeys keys)
     {
-        this.javaPlugin = javaPlugin;
         this.keys = keys;
     }
 
@@ -59,23 +57,10 @@ public class ParentsTagType implements PersistentDataType<PersistentDataContaine
 
     private @Nullable Parent getParent(PersistentDataContainer container, NamespacedKey uuidKey, NamespacedKey nameKey)
     {
-        final @Nullable UUID uuid = parseUUID(container.get(uuidKey, PersistentDataType.STRING));
+        final @Nullable UUID uuid = Util.parseUUID(container.get(uuidKey, PersistentDataType.STRING));
         final @Nullable String name = container.get(nameKey, PersistentDataType.STRING);
         return uuid != null && name != null ? new Parent(uuid, name) : null;
     }
 
-    private @Nullable UUID parseUUID(@Nullable String input)
-    {
-        if (input == null)
-            return null;
-        try
-        {
-            return UUID.fromString(input);
-        }
-        catch (IllegalArgumentException e)
-        {
-            javaPlugin.getLogger().severe("Failed to parse UUID from input: '" + input + "'!");
-            return null;
-        }
-    }
+
 }

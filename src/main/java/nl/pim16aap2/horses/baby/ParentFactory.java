@@ -12,12 +12,10 @@ import javax.inject.Singleton;
 @Singleton
 public final class ParentFactory
 {
-    private final JavaPlugin javaPlugin;
     private final ParentKeys parentKeys;
 
     @Inject ParentFactory(JavaPlugin javaPlugin)
     {
-        this.javaPlugin = javaPlugin;
         parentKeys = new ParentKeys(
             new NamespacedKey(javaPlugin, "fatherUUID"), new NamespacedKey(javaPlugin, "motherUUID"),
             new NamespacedKey(javaPlugin, "fatherName"), new NamespacedKey(javaPlugin, "motherName"));
@@ -31,6 +29,6 @@ public final class ParentFactory
 
     public ParentsTagType tagType()
     {
-        return new ParentsTagType(javaPlugin, parentKeys);
+        return new ParentsTagType(parentKeys);
     }
 }

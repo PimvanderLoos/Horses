@@ -79,7 +79,7 @@ public class ListenerManager implements IReloadable
 
     private void initCommandListener()
     {
-        initCommands("ReloadHorses");
+        initCommands("ReloadHorses", "GetHorseInfo");
         initCommand("EditHorse", tabCompleter);
     }
 
