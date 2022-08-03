@@ -3,6 +3,7 @@ package nl.pim16aap2.horses.horseselector;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -14,7 +15,7 @@ public class SelectorToolUtil
     {
     }
 
-    public boolean isSelectorTool(ItemStack itemStack)
+    public boolean isSelectorTool(@Nullable ItemStack itemStack)
     {
         return false;
     }
