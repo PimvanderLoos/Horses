@@ -5,6 +5,7 @@ import nl.pim16aap2.horses.Communicator;
 import nl.pim16aap2.horses.Config;
 import nl.pim16aap2.horses.HorseEditor;
 import nl.pim16aap2.horses.Horses;
+import nl.pim16aap2.horses.baby.BabyHandler;
 import nl.pim16aap2.horses.horsetracker.HorseTracker;
 import nl.pim16aap2.horses.staminabar.StaminaNotifierManager;
 import org.bukkit.Material;
@@ -18,6 +19,8 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityBreedEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntitySpawnEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
@@ -35,17 +38,19 @@ class HorseListener implements Listener
     private final HorseEditor horseEditor;
     private final HorseTracker horseTracker;
     private final StaminaNotifierManager staminaNotifierManager;
+    private final BabyHandler babyHandler;
     private final Communicator communicator;
 
     @Inject HorseListener(
         Config config, HorseEditor horseEditor, Communicator communicator, HorseTracker horseTracker,
-        StaminaNotifierManager staminaNotifierManager)
+        StaminaNotifierManager staminaNotifierManager, BabyHandler babyHandler)
     {
         this.config = config;
         this.horseEditor = horseEditor;
         this.communicator = communicator;
         this.horseTracker = horseTracker;
         this.staminaNotifierManager = staminaNotifierManager;
+        this.babyHandler = babyHandler;
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -105,18 +110,41 @@ class HorseListener implements Listener
             horseEditor.decreaseGait(event.getPlayer(), horse);
     }
 
+    @EventHandler
+    public void onSpawn(EntitySpawnEvent event)
+    {
+        if (!Horses.MONITORED_TYPES.contains(event.getEntity().getType()) ||
+            !(event.getEntity() instanceof AbstractHorse horse) ||
+            horse.isAdult())
+            return;
+        babyHandler.newBaby(horse, null, null);
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onFeed(PlayerInteractEntityEvent event)
+    {
+        if (!Horses.MONITORED_TYPES.contains(event.getRightClicked().getType()) ||
+            !(event.getRightClicked() instanceof AbstractHorse horse))
+            return;
+
+        final ItemStack item = event.getPlayer().getInventory().getItem(event.getHand());
+        if (!babyHandler.hijackInteraction(horse, item.getType()))
+            return;
+
+        event.setCancelled(true);
+        babyHandler.feedBaby(event.getPlayer(), horse, item);
+    }
+
     @EventHandler(ignoreCancelled = true)
     public void onBreed(EntityBreedEvent event)
     {
         if (!Horses.MONITORED_TYPES.contains(event.getMother().getType()) ||
+            !Horses.MONITORED_TYPES.contains(event.getFather().getType()) ||
             !(event.getFather() instanceof AbstractHorse horseA) ||
             !(event.getMother() instanceof AbstractHorse horseB) ||
             !(event.getEntity() instanceof AbstractHorse child))
             return;
-        final boolean canBreed = horseEditor.canBreed(horseA, horseB);
-        event.setCancelled(!canBreed);
-        if (canBreed)
-            horseEditor.ensureHorseManaged(child);
+        event.setCancelled(!babyHandler.newBaby(child, horseA, horseB));
     }
 
     @EventHandler(ignoreCancelled = true)

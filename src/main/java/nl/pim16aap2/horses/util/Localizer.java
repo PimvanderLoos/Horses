@@ -12,6 +12,7 @@ import java.net.URLClassLoader;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 @Singleton
@@ -69,10 +70,15 @@ public class Localizer implements IReloadable
         {
             return ResourceBundle.getBundle(BASE_NAME, Locale.getDefault(), classLoader).getString(key);
         }
-        catch (Exception e)
+        catch (MissingResourceException e)
         {
             plugin.getLogger().severe("Failed to find translation for key: '" + key + "'");
+            return "Localization error! Please contact a server administrator!";
+        }
+        catch (Exception e)
+        {
             e.printStackTrace();
+            plugin.getLogger().severe("Failed to find translation for key: '" + key + "'");
             return "Localization error! Please contact a server administrator!";
         }
     }

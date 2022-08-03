@@ -11,7 +11,10 @@ import javax.inject.Singleton;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Singleton
 public class Config implements IReloadable
@@ -31,6 +34,8 @@ public class Config implements IReloadable
     private int exhaustionSmokeParticles = 4;
     private int exhaustionBigSmokeParticles = 1;
     private boolean disableMountedSpeedPotionBuff = false;
+    private boolean alternativeBabyGrowth = true;
+    private Map<Material, Float> babyFoodMap = Collections.emptyMap();
 
     private final Path path;
 
@@ -69,6 +74,9 @@ public class Config implements IReloadable
         this.exhaustionBigSmokeParticles = parseInt(config, "exhaustionBigSmokeParticles", 1);
 
         this.disableMountedSpeedPotionBuff = config.getBoolean("disableMountedSpeedPotionBuff", false);
+
+        this.alternativeBabyGrowth = config.getBoolean("alternativeBabyGrowth", true);
+        this.babyFoodMap = parseBabyFoodMap(config);
     }
 
     private int parseInt(FileConfiguration configuration, String optionName, int fallback)
@@ -124,6 +132,46 @@ public class Config implements IReloadable
 
         javaPlugin.getLogger().info("Selected material '" + parsed.name() + "' for option: '" + optionName + "'");
         return parsed;
+    }
+
+    private Map<Material, Float> parseBabyFoodMap(FileConfiguration config)
+    {
+        final Map<Material, Float> ret = new HashMap<>();
+        final List<String> values = config.getStringList("babyFoodGrowthItems");
+
+        for (final String line : values)
+        {
+            final String[] parts = line.split(":", 2);
+            if (parts.length != 2)
+            {
+                javaPlugin.getLogger().severe("Invalid baby food configuration option '" + line + "'!");
+                continue;
+            }
+
+            final @Nullable Material mat = Material.getMaterial(parts[0]);
+            if (mat == null)
+            {
+                javaPlugin.getLogger().severe("Invalid material name '" + parts[0] + "'!");
+                continue;
+            }
+
+            float percentage;
+            try
+            {
+                percentage = Float.parseFloat(parts[1]);
+            }
+            catch (NumberFormatException e)
+            {
+                percentage = -1;
+            }
+            if (percentage < 0)
+            {
+                javaPlugin.getLogger().severe("Invalid amount: '" + parts[1] + "'!");
+                continue;
+            }
+            ret.put(mat, percentage);
+        }
+        return Collections.unmodifiableMap(ret);
     }
 
     private void ensureFileExists()
@@ -186,5 +234,15 @@ public class Config implements IReloadable
     public boolean disableMountedSpeedPotionBuff()
     {
         return disableMountedSpeedPotionBuff;
+    }
+
+    public boolean alternativeAgeMethod()
+    {
+        return alternativeBabyGrowth;
+    }
+
+    public Map<Material, Float> getBabyFoodMap()
+    {
+        return babyFoodMap;
     }
 }
