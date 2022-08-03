@@ -20,7 +20,7 @@ import java.util.Set;
 @Singleton
 public class BabyHandler
 {
-    private static final Set<Material> DEFAULT_FEED_MATERIALS =
+    public static final Set<Material> DEFAULT_FEED_MATERIALS =
         Set.of(Material.GOLDEN_APPLE, Material.ENCHANTED_GOLDEN_APPLE, Material.GOLDEN_CARROT,
                Material.SUGAR, Material.WHEAT, Material.APPLE);
 
@@ -61,6 +61,22 @@ public class BabyHandler
             child.setAgeLock(true);
 
         return true;
+    }
+
+    /**
+     * Checks if this plugin should hijack interactions of items on a horse.
+     *
+     * @param horse
+     *     The target horse.
+     * @param material
+     *     The material being used on the horse.
+     * @return True if this plugin should hijack the interaction.
+     */
+    public boolean hijackInteraction(AbstractHorse horse, Material material)
+    {
+        if (horse.isAdult() || !horse.getAgeLock())
+            return false;
+        return DEFAULT_FEED_MATERIALS.contains(material) || config.getBabyFoodMap().containsKey(material);
     }
 
     public void feedBaby(Player player, AbstractHorse horse, ItemStack item)

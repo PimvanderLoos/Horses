@@ -128,14 +128,11 @@ class HorseListener implements Listener
             return;
 
         final ItemStack item = event.getPlayer().getInventory().getItem(event.getHand());
-        if (item.getType() == Material.AIR || item.getType() == Material.LEAD)
+        if (!babyHandler.hijackInteraction(horse, item.getType()))
             return;
 
-        if (horse.getAgeLock())
-            event.setCancelled(true);
-
-        if (!horse.isAdult())
-            babyHandler.feedBaby(event.getPlayer(), horse, item);
+        event.setCancelled(true);
+        babyHandler.feedBaby(event.getPlayer(), horse, item);
     }
 
     @EventHandler(ignoreCancelled = true)
