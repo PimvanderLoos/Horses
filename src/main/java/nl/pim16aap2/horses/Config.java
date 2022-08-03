@@ -28,9 +28,9 @@ public class Config implements IReloadable
     private int exhaustionPenalty = 35;
     private int energyDrainTime = 5;
     private int energyRecoveryTime = 7;
-
     private int exhaustionSmokeParticles = 4;
     private int exhaustionBigSmokeParticles = 1;
+    private boolean disableMountedSpeedPotionBuff = false;
 
     private final Path path;
 
@@ -67,6 +67,8 @@ public class Config implements IReloadable
 
         this.exhaustionSmokeParticles = parseInt(config, "exhaustionSmokeParticles", 4);
         this.exhaustionBigSmokeParticles = parseInt(config, "exhaustionBigSmokeParticles", 1);
+
+        this.disableMountedSpeedPotionBuff = config.getBoolean("disableMountedSpeedPotionBuff", false);
     }
 
     private int parseInt(FileConfiguration configuration, String optionName, int fallback)
@@ -179,5 +181,10 @@ public class Config implements IReloadable
     public int getExhaustionBigSmokeParticles()
     {
         return exhaustionBigSmokeParticles;
+    }
+
+    public boolean disableMountedSpeedPotionBuff()
+    {
+        return disableMountedSpeedPotionBuff;
     }
 }

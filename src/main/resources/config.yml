@@ -33,3 +33,6 @@ energyRecoveryTime: 8
 # The number of normal and big smoke particles to repeatedly spawn while a horse is exhausted.
 exhaustionSmokeParticles: 8
 exhaustionBigSmokeParticles: 2
+
+# Disables the speed buff gained from potions while mounted.
+disableMountedSpeedPotionBuff: false

@@ -4,6 +4,7 @@ import nl.pim16aap2.horses.HorseEditor;
 import nl.pim16aap2.horses.Horses;
 import nl.pim16aap2.horses.util.IReloadable;
 import nl.pim16aap2.horses.util.Localizer;
+import nl.pim16aap2.horses.util.Util;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -118,12 +119,11 @@ public class CommandListener implements CommandExecutor
                         .filter(horse -> player.equals(horse.getLeashHolder()))
                         .toList();
 
-        if (player.getVehicle() != null &&
-            Horses.MONITORED_TYPES.contains(player.getVehicle().getType()) &&
-            player.getVehicle() instanceof AbstractHorse horse)
+        final @Nullable AbstractHorse riddenHorse = Util.getHorseRiddenByPlayer(player);
+        if (riddenHorse != null)
         {
             ret = new ArrayList<>(ret);
-            ret.add(horse);
+            ret.add(riddenHorse);
         }
         return ret;
     }

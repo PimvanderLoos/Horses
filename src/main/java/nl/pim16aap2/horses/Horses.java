@@ -43,7 +43,11 @@ public class Horses extends JavaPlugin
     public void onEnable()
     {
         horsesComponent.getConfig().reload();
+
         Bukkit.getPluginManager().registerEvents(horsesComponent.getHorseListener(), this);
+        if (horsesComponent.getConfig().disableMountedSpeedPotionBuff())
+            Bukkit.getPluginManager().registerEvents(horsesComponent.getPotionListener(), this);
+
         initCommandListener();
 
         horsesComponent.getHorseTracker().onEnable();
@@ -53,6 +57,7 @@ public class Horses extends JavaPlugin
     public void onDisable()
     {
         HandlerList.unregisterAll(horsesComponent.getHorseListener());
+        HandlerList.unregisterAll(horsesComponent.getPotionListener());
         horsesComponent.getStaminaNotifierManager().removeAll();
     }
 
