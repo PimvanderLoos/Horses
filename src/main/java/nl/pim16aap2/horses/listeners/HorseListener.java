@@ -29,7 +29,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public class HorseListener implements Listener
+class HorseListener implements Listener
 {
     private final Config config;
     private final HorseEditor horseEditor;
@@ -37,8 +37,7 @@ public class HorseListener implements Listener
     private final StaminaNotifierManager staminaNotifierManager;
     private final Communicator communicator;
 
-    @Inject
-    public HorseListener(
+    @Inject HorseListener(
         Config config, HorseEditor horseEditor, Communicator communicator, HorseTracker horseTracker,
         StaminaNotifierManager staminaNotifierManager)
     {

@@ -2,11 +2,7 @@ package nl.pim16aap2.horses;
 
 import nl.pim16aap2.horses.util.IReloadable;
 import nl.pim16aap2.horses.util.Localizer;
-import org.bukkit.Bukkit;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.EntityType;
-import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,51 +39,20 @@ public class Horses extends JavaPlugin
     public void onEnable()
     {
         horsesComponent.getConfig().reload();
-
-        Bukkit.getPluginManager().registerEvents(horsesComponent.getHorseListener(), this);
-        if (horsesComponent.getConfig().disableMountedSpeedPotionBuff())
-            Bukkit.getPluginManager().registerEvents(horsesComponent.getPotionListener(), this);
-
-        initCommandListener();
-
+        horsesComponent.getListenerManager().onEnable();
         horsesComponent.getHorseTracker().onEnable();
     }
 
     @Override
     public void onDisable()
     {
-        HandlerList.unregisterAll(horsesComponent.getHorseListener());
-        HandlerList.unregisterAll(horsesComponent.getPotionListener());
+        horsesComponent.getListenerManager().onDisable();
         horsesComponent.getStaminaNotifierManager().removeAll();
     }
 
     public HorsesComponent getHorsesComponent()
     {
         return horsesComponent;
-    }
-
-    private void initCommandListener()
-    {
-        initCommand("ReloadHorses");
-        initCommand("EditHorse", getHorsesComponent().getEditHorseTabCompleter());
-    }
-
-    private void initCommand(@SuppressWarnings("SameParameterValue") String name)
-    {
-        initCommand(name, null);
-    }
-
-    private void initCommand(String name, @Nullable TabCompleter tabCompleter)
-    {
-        final @Nullable PluginCommand command = getCommand(name);
-        if (command == null)
-        {
-            getLogger().severe("Failed to register command: '" + name + "'");
-            return;
-        }
-        command.setExecutor(horsesComponent.getCommandListener());
-        if (tabCompleter != null)
-            command.setTabCompleter(tabCompleter);
     }
 
     public void registerReloadable(IReloadable reloadable)

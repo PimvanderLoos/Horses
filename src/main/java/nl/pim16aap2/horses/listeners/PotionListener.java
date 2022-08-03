@@ -15,7 +15,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public class PotionListener implements Listener
+class PotionListener implements Listener
 {
     @Inject PotionListener()
     {
