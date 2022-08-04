@@ -4,11 +4,16 @@ package nl.pim16aap2.horses.listeners;
 import nl.pim16aap2.horses.Communicator;
 import nl.pim16aap2.horses.Config;
 import nl.pim16aap2.horses.HorseEditor;
+import nl.pim16aap2.horses.HorseGender;
 import nl.pim16aap2.horses.Horses;
 import nl.pim16aap2.horses.baby.BabyHandler;
 import nl.pim16aap2.horses.horseselector.SelectorToolUtil;
 import nl.pim16aap2.horses.horsetracker.HorseTracker;
 import nl.pim16aap2.horses.staminabar.StaminaNotifierManager;
+import nl.pim16aap2.horses.util.Localizer;
+import nl.pim16aap2.horses.util.Permission;
+import nl.pim16aap2.horses.util.Util;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.Entity;
@@ -41,11 +46,13 @@ class HorseListener implements Listener
     private final StaminaNotifierManager staminaNotifierManager;
     private final BabyHandler babyHandler;
     private final SelectorToolUtil selectorToolUtil;
+    private final Localizer localizer;
     private final Communicator communicator;
 
     @Inject HorseListener(
         Config config, HorseEditor horseEditor, Communicator communicator, HorseTracker horseTracker,
-        StaminaNotifierManager staminaNotifierManager, BabyHandler babyHandler, SelectorToolUtil selectorToolUtil)
+        StaminaNotifierManager staminaNotifierManager, BabyHandler babyHandler, SelectorToolUtil selectorToolUtil,
+        Localizer localizer)
     {
         this.config = config;
         this.horseEditor = horseEditor;
@@ -54,6 +61,7 @@ class HorseListener implements Listener
         this.staminaNotifierManager = staminaNotifierManager;
         this.babyHandler = babyHandler;
         this.selectorToolUtil = selectorToolUtil;
+        this.localizer = localizer;
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -61,6 +69,38 @@ class HorseListener implements Listener
     {
         if (event.getDamager() instanceof Player player && processInfoClick(player, event.getEntity()))
             event.setCancelled(true);
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    public void onShearClick(EntityDamageByEntityEvent event)
+    {
+        if (!(event.getDamager() instanceof Player player) ||
+            !(event.getEntity() instanceof AbstractHorse horse) ||
+            !(Horses.MONITORED_TYPES.contains(horse.getType())))
+            return;
+
+        if (player.getInventory().getItemInMainHand().getType() != Material.SHEARS)
+            return;
+
+        event.setCancelled(true);
+        if (horseEditor.getGender(horse) != HorseGender.MALE)
+            return;
+
+        if (!Permission.USER_MAKE_GELDING.isSetFor(player))
+        {
+            player.sendMessage(ChatColor.RED + localizer.get("notification.error.no_permission_for_gelding"));
+            return;
+        }
+
+        if (!Util.checkPlayerAccess(player, horse, Permission.ADMIN_MAKE_GELDING))
+        {
+            player.sendMessage(ChatColor.RED + localizer.get("notification.error.generic_no_access"));
+            return;
+        }
+
+        event.setCancelled(false);
+        event.setDamage(0);
+        horseEditor.setGender(horse, HorseGender.GELDING);
     }
 
     @EventHandler
