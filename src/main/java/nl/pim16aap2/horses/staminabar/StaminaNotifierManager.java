@@ -24,7 +24,7 @@ public class StaminaNotifierManager
 
     public @Nullable IStaminaNotifier getNewNotifier(Player player, double staminaPercentage, boolean exhausted)
     {
-        if (!Permission.USER_STAMINA_BAR.isSetFor(player))
+        if (!Permission.USER_SEE_STAMINA_BAR.isSetFor(player))
             return null;
 
         final IStaminaNotifier notifier = new StaminaBar(localizer, player, staminaPercentage, exhausted);
