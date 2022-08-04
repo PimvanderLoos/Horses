@@ -13,5 +13,5 @@ commands:
     usage: /EditHorse <Attribute> [Value]
   gethorseinfo:
     description: Gets the information of a horse.
-    permission: horses.user.getinfo
+    permission: horses.user.see_info_menu
     usage: /gethorseinfo <horse UUID>

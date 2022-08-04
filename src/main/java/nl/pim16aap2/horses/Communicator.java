@@ -11,6 +11,7 @@ import nl.pim16aap2.horses.baby.Parent;
 import nl.pim16aap2.horses.baby.Parents;
 import nl.pim16aap2.horses.staminabar.IStaminaNotifier;
 import nl.pim16aap2.horses.util.Localizer;
+import nl.pim16aap2.horses.util.Permission;
 import nl.pim16aap2.horses.util.Util;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.AbstractHorse;
@@ -45,6 +46,19 @@ public class Communicator implements IStaminaNotifier
 
     public void printInfo(CommandSender commandSender, AbstractHorse horse)
     {
+        if (!Permission.USER_SEE_INFO_MENU.isSetFor(commandSender))
+        {
+            commandSender.sendMessage(ChatColor.RED + localizer.get("commands.error.no_permission"));
+            return;
+        }
+
+        if (commandSender instanceof Player player &&
+            !Util.checkPlayerAccess(player, horse, Permission.ADMIN_SEE_INFO_MENU))
+        {
+            player.sendMessage(ChatColor.RED + localizer.get("notification.error.generic_no_access"));
+            return;
+        }
+
         horseEditor.ensureHorseManaged(horse);
 
         final ComponentBuilder builder = new ComponentBuilder()
