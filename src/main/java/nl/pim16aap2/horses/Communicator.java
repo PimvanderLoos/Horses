@@ -82,7 +82,8 @@ public class Communicator implements IStaminaNotifier
         appendParentInfo(builder, "horse.attribute.father", parents.father());
         appendParentInfo(builder, "horse.attribute.mother", parents.mother());
 
-        builder.color(ChatColor.DARK_GRAY).append(">>>>>>--------------------------<<<<<<<");
+        // Remove last newline.
+        builder.removeComponent(builder.getCursor());
         commandSender.spigot().sendMessage(builder.create());
     }
 
