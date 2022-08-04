@@ -97,6 +97,17 @@ public final class HorseEditor
         updateEffectiveSpeed(horse, gait, isExhausted(horse));
     }
 
+    public double getEffectiveSpeed(AbstractHorse horse)
+    {
+        final @Nullable AttributeInstance attribute = horse.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED);
+        if (attribute == null)
+        {
+            plugin.getLogger().severe("Failed to get movement speed for horse!");
+            return 0;
+        }
+        return attribute.getBaseValue();
+    }
+
     private void updateEffectiveSpeed(AbstractHorse horse, int gait, boolean isExhausted)
     {
         final double baseSpeed = getBaseSpeed(horse);
@@ -153,8 +164,20 @@ public final class HorseEditor
      */
     public void setBaseSpeed(AbstractHorse horse, double speed)
     {
-        final double baseSpeed = speed / 43.17f;
-        horse.getPersistentDataContainer().set(keyBaseSpeed, PersistentDataType.DOUBLE, baseSpeed);
+        setRawBaseSpeed(horse, speed / 43.17D);
+    }
+
+    /**
+     * Sets the raw base speed of a horse.
+     *
+     * @param horse
+     *     The horse whose base speed to change.
+     * @param speed
+     *     The new, raw, speed value. In whatever unit used by Minecraft.
+     */
+    public void setRawBaseSpeed(AbstractHorse horse, double speed)
+    {
+        horse.getPersistentDataContainer().set(keyBaseSpeed, PersistentDataType.DOUBLE, speed);
         updateEffectiveSpeed(horse, getGait(horse), isExhausted(horse));
     }
 
