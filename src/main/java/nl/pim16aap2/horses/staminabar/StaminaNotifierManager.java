@@ -1,6 +1,7 @@
 package nl.pim16aap2.horses.staminabar;
 
 import nl.pim16aap2.horses.util.Localizer;
+import nl.pim16aap2.horses.util.Permission;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,8 +24,7 @@ public class StaminaNotifierManager
 
     public @Nullable IStaminaNotifier getNewNotifier(Player player, double staminaPercentage, boolean exhausted)
     {
-        //noinspection SpellCheckingInspection
-        if (!player.hasPermission("horses.user.staminabar"))
+        if (!Permission.USER_STAMINA_BAR.isSetFor(player))
             return null;
 
         final IStaminaNotifier notifier = new StaminaBar(localizer, player, staminaPercentage, exhausted);

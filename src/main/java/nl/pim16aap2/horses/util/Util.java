@@ -57,13 +57,13 @@ public final class Util
      *     The permission node required if the player is not an owner of the horse. May be null.
      * @return True if the player has access to the target horse.
      */
-    public static boolean checkPlayerAccess(Player player, AbstractHorse horse, @Nullable String permission)
+    public static boolean checkPlayerAccess(Player player, AbstractHorse horse, @Nullable Permission permission)
     {
         if (player.isOp())
             return true;
         if (horse.getOwner() == null || player.equals(horse.getOwner()))
             return true;
-        return permission != null && player.hasPermission(permission);
+        return permission != null && permission.isSetFor(player);
     }
 
     public static String formatBabyGrowthPercentage(AbstractHorse horse)

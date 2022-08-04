@@ -3,6 +3,7 @@ package nl.pim16aap2.horses.baby;
 import nl.pim16aap2.horses.Config;
 import nl.pim16aap2.horses.HorseEditor;
 import nl.pim16aap2.horses.util.Localizer;
+import nl.pim16aap2.horses.util.Permission;
 import nl.pim16aap2.horses.util.Util;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -123,7 +124,7 @@ public class BabyHandler
         if (percentage == null)
             return;
 
-        if (!Util.checkPlayerAccess(player, horse, "horses.admin.feed_baby"))
+        if (!Util.checkPlayerAccess(player, horse, Permission.ADMIN_FEED_BABY))
         {
             player.sendMessage(ChatColor.RED + localizer.get("notification.error.not_allowed_to_feed_baby"));
             return;
