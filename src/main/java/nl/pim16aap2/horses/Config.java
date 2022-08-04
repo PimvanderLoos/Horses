@@ -24,6 +24,7 @@ public class Config implements IReloadable
     private final JavaPlugin javaPlugin;
 
     private Material infoMaterial = Material.FEATHER;
+    private Material selectorMaterial = Material.FEATHER;
     private Material whipMaterial = Material.BLAZE_ROD;
     private Gaits gaits;
     private int defaultGait = 100;
@@ -33,6 +34,7 @@ public class Config implements IReloadable
     private int energyRecoveryTime = 7;
     private int exhaustionSmokeParticles = 4;
     private int exhaustionBigSmokeParticles = 1;
+    private int selectorTimeOut = 60;
     private boolean disableMountedSpeedPotionBuff = false;
     private boolean alternativeBabyGrowth = true;
     private Map<Material, Float> babyFoodMap = Collections.emptyMap();
@@ -60,6 +62,7 @@ public class Config implements IReloadable
     private void readValues(FileConfiguration config)
     {
         this.infoMaterial = readMaterial(config, "infoMaterial", Material.FEATHER);
+        this.selectorMaterial = readMaterial(config, "selectorMaterial", Material.FEATHER);
         this.whipMaterial = readMaterial(config, "whipMaterial", Material.BLAZE_ROD);
 
         this.gaits = parseGaits(config.getString("gaits", DEFAULT_GAITS));
@@ -69,6 +72,8 @@ public class Config implements IReloadable
         this.exhaustionPenalty = parseInt(config, "exhaustionPenalty", 25);
         this.energyDrainTime = parseInt(config, "energyDrainTime", 5);
         this.energyRecoveryTime = parseInt(config, "energyRecoveryTime", 7);
+
+        this.selectorTimeOut = parseInt(config, "selectorTimeOut", 60);
 
         this.exhaustionSmokeParticles = parseInt(config, "exhaustionSmokeParticles", 4);
         this.exhaustionBigSmokeParticles = parseInt(config, "exhaustionBigSmokeParticles", 1);
@@ -186,6 +191,11 @@ public class Config implements IReloadable
         return infoMaterial;
     }
 
+    public Material getSelectorMaterial()
+    {
+        return selectorMaterial;
+    }
+
     public Material getWhipMaterial()
     {
         return whipMaterial;
@@ -219,6 +229,11 @@ public class Config implements IReloadable
     public int getEnergyRecoveryTime()
     {
         return energyRecoveryTime;
+    }
+
+    public int getSelectorTimeOut()
+    {
+        return selectorTimeOut;
     }
 
     public int getExhaustionSmokeParticles()

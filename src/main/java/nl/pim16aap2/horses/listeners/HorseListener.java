@@ -6,6 +6,7 @@ import nl.pim16aap2.horses.Config;
 import nl.pim16aap2.horses.HorseEditor;
 import nl.pim16aap2.horses.Horses;
 import nl.pim16aap2.horses.baby.BabyHandler;
+import nl.pim16aap2.horses.horseselector.SelectorToolUtil;
 import nl.pim16aap2.horses.horsetracker.HorseTracker;
 import nl.pim16aap2.horses.staminabar.StaminaNotifierManager;
 import org.bukkit.Material;
@@ -39,11 +40,12 @@ class HorseListener implements Listener
     private final HorseTracker horseTracker;
     private final StaminaNotifierManager staminaNotifierManager;
     private final BabyHandler babyHandler;
+    private final SelectorToolUtil selectorToolUtil;
     private final Communicator communicator;
 
     @Inject HorseListener(
         Config config, HorseEditor horseEditor, Communicator communicator, HorseTracker horseTracker,
-        StaminaNotifierManager staminaNotifierManager, BabyHandler babyHandler)
+        StaminaNotifierManager staminaNotifierManager, BabyHandler babyHandler, SelectorToolUtil selectorToolUtil)
     {
         this.config = config;
         this.horseEditor = horseEditor;
@@ -51,6 +53,7 @@ class HorseListener implements Listener
         this.horseTracker = horseTracker;
         this.staminaNotifierManager = staminaNotifierManager;
         this.babyHandler = babyHandler;
+        this.selectorToolUtil = selectorToolUtil;
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -87,7 +90,7 @@ class HorseListener implements Listener
             return false;
 
         final ItemStack holding = player.getInventory().getItemInMainHand();
-        if (holding.getType() != config.getInfoMaterial())
+        if (holding.getType() != config.getInfoMaterial() || selectorToolUtil.isSelectorTool(holding))
             return false;
 
         communicator.printInfo(player, horse);
@@ -114,10 +117,13 @@ class HorseListener implements Listener
     public void onSpawn(EntitySpawnEvent event)
     {
         if (!Horses.MONITORED_TYPES.contains(event.getEntity().getType()) ||
-            !(event.getEntity() instanceof AbstractHorse horse) ||
-            horse.isAdult())
+            !(event.getEntity() instanceof AbstractHorse horse))
             return;
-        babyHandler.newBaby(horse, null, null);
+
+        if (horse.isAdult())
+            horseEditor.ensureHorseManaged(horse);
+        else
+            babyHandler.newBaby(horse, null, null);
     }
 
     @EventHandler(ignoreCancelled = true)

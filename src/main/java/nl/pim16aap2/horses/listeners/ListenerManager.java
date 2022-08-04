@@ -17,6 +17,7 @@ import javax.inject.Singleton;
 @Singleton
 public class ListenerManager implements IReloadable
 {
+    private final SelectorToolListener selectorToolListener;
     private final CommandListener commandListener;
     private final CommandListener.EditHorseTabComplete tabCompleter;
     private final Horses plugin;
@@ -26,6 +27,7 @@ public class ListenerManager implements IReloadable
 
     @Inject ListenerManager
         (
+            SelectorToolListener selectorToolListener,
             CommandListener commandListener,
             CommandListener.EditHorseTabComplete tabCompleter,
             HorseListener horseListener,
@@ -34,6 +36,7 @@ public class ListenerManager implements IReloadable
             Horses plugin
         )
     {
+        this.selectorToolListener = selectorToolListener;
         this.commandListener = commandListener;
         this.tabCompleter = tabCompleter;
         this.horseListener = horseListener;
@@ -46,7 +49,7 @@ public class ListenerManager implements IReloadable
 
     public void onEnable()
     {
-        registerAll(horseListener);
+        registerAll(horseListener, selectorToolListener);
         if (config.disableMountedSpeedPotionBuff())
             Bukkit.getPluginManager().registerEvents(potionListener, plugin);
 
@@ -55,7 +58,7 @@ public class ListenerManager implements IReloadable
 
     public void onDisable()
     {
-        unregisterAll(horseListener, potionListener);
+        unregisterAll(horseListener, potionListener, selectorToolListener);
     }
 
     private void registerAll(Listener... listeners)
@@ -79,7 +82,7 @@ public class ListenerManager implements IReloadable
 
     private void initCommandListener()
     {
-        initCommands("ReloadHorses");
+        initCommands("ReloadHorses", "GetHorseInfo");
         initCommand("EditHorse", tabCompleter);
     }
 

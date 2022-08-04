@@ -32,6 +32,7 @@ public class Horses extends JavaPlugin
 
     public static Horses instance()
     {
+        //noinspection ConstantConditions
         return Objects.requireNonNull(instance);
     }
 
@@ -48,6 +49,7 @@ public class Horses extends JavaPlugin
     {
         horsesComponent.getListenerManager().onDisable();
         horsesComponent.getStaminaNotifierManager().removeAll();
+        horsesComponent.getHorseSelectorManager().reload();
     }
 
     public HorsesComponent getHorsesComponent()

@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Locale;
+import java.util.UUID;
 
 public final class Util
 {
@@ -69,5 +70,20 @@ public final class Util
     {
         final float percentage = Math.min(100, Math.max(0, (24_000 + horse.getAge()) / 240F));
         return String.format(Locale.ROOT, "%2.2f%%", percentage);
+    }
+
+    public static @Nullable UUID parseUUID(@Nullable String input)
+    {
+        if (input == null)
+            return null;
+        try
+        {
+            return UUID.fromString(input);
+        }
+        catch (IllegalArgumentException e)
+        {
+            Horses.instance().getLogger().severe("Failed to parse UUID from input: '" + input + "'!");
+            return null;
+        }
     }
 }

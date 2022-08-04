@@ -1,5 +1,9 @@
 package nl.pim16aap2.horses;
 
+import nl.pim16aap2.horses.baby.Parent;
+import nl.pim16aap2.horses.baby.ParentFactory;
+import nl.pim16aap2.horses.baby.Parents;
+import nl.pim16aap2.horses.baby.ParentsTagType;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
@@ -17,10 +21,12 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 import java.util.Random;
+import java.util.UUID;
 
 @Singleton
 public final class HorseEditor
 {
+    private static final UUID EMPTY_UUID = new UUID(0L, 0L);
     private static final HorseGender[] GENDERS = HorseGender.values();
 
     private final Random random = new Random();
@@ -30,12 +36,16 @@ public final class HorseEditor
     private final NamespacedKey keyGait;
     private final NamespacedKey keyBaseSpeed;
     private final NamespacedKey keyExhausted;
+    private final NamespacedKey keyParents;
     private final Provider<Communicator> communicatorProvider;
+    private final ParentFactory parentFactory;
+    private final ParentsTagType parentsTagType;
 
     private @Nullable Team team;
 
     @Inject
-    public HorseEditor(Horses plugin, Config config, Provider<Communicator> communicatorProvider)
+    public HorseEditor(
+        Horses plugin, Config config, Provider<Communicator> communicatorProvider, ParentFactory parentFactory)
     {
         this.config = config;
         this.plugin = plugin;
@@ -44,7 +54,10 @@ public final class HorseEditor
         keyGait = new NamespacedKey(plugin, "gait");
         keyBaseSpeed = new NamespacedKey(plugin, "baseSpeed");
         keyExhausted = new NamespacedKey(plugin, "exhausted");
+        keyParents = new NamespacedKey(plugin, "parents");
         this.communicatorProvider = communicatorProvider;
+        this.parentFactory = parentFactory;
+        this.parentsTagType = parentFactory.tagType();
     }
 
     public void increaseGait(Player player, AbstractHorse horse)
@@ -82,6 +95,17 @@ public final class HorseEditor
         final PersistentDataContainer container = horse.getPersistentDataContainer();
         container.set(keyGait, PersistentDataType.INTEGER, gait);
         updateEffectiveSpeed(horse, gait, isExhausted(horse));
+    }
+
+    public double getEffectiveSpeed(AbstractHorse horse)
+    {
+        final @Nullable AttributeInstance attribute = horse.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED);
+        if (attribute == null)
+        {
+            plugin.getLogger().severe("Failed to get movement speed for horse!");
+            return 0;
+        }
+        return attribute.getBaseValue();
     }
 
     private void updateEffectiveSpeed(AbstractHorse horse, int gait, boolean isExhausted)
@@ -140,8 +164,20 @@ public final class HorseEditor
      */
     public void setBaseSpeed(AbstractHorse horse, double speed)
     {
-        final double baseSpeed = speed / 43.17f;
-        horse.getPersistentDataContainer().set(keyBaseSpeed, PersistentDataType.DOUBLE, baseSpeed);
+        setRawBaseSpeed(horse, speed / 43.17D);
+    }
+
+    /**
+     * Sets the raw base speed of a horse.
+     *
+     * @param horse
+     *     The horse whose base speed to change.
+     * @param speed
+     *     The new, raw, speed value. In whatever unit used by Minecraft.
+     */
+    public void setRawBaseSpeed(AbstractHorse horse, double speed)
+    {
+        horse.getPersistentDataContainer().set(keyBaseSpeed, PersistentDataType.DOUBLE, speed);
         updateEffectiveSpeed(horse, getGait(horse), isExhausted(horse));
     }
 
@@ -193,6 +229,69 @@ public final class HorseEditor
         final double baseSpeed = movementSpeedAttr == null ? 0.225d : movementSpeedAttr.getBaseValue();
         horse.getPersistentDataContainer().set(keyBaseSpeed, PersistentDataType.DOUBLE, baseSpeed);
         return baseSpeed;
+    }
+
+    public void setFather(AbstractHorse child, String name)
+    {
+        setParents(child, getParents(child).withFather(new Parent(EMPTY_UUID, name)));
+    }
+
+    public void setMother(AbstractHorse child, String name)
+    {
+        setParents(child, getParents(child).withMother(new Parent(EMPTY_UUID, name)));
+    }
+
+    public void setFather(AbstractHorse child, AbstractHorse father)
+    {
+        setParents(child, getParents(child).withFather(new Parent(father)));
+    }
+
+    public void setMother(AbstractHorse child, AbstractHorse mother)
+    {
+        setParents(child, getParents(child).withMother(new Parent(mother)));
+    }
+
+    public void unsetFather(AbstractHorse child)
+    {
+        setParents(child, getParents(child).withFather(null));
+    }
+
+    public void unsetMother(AbstractHorse child)
+    {
+        setParents(child, getParents(child).withMother(null));
+    }
+
+    public Parents getParents(AbstractHorse horse)
+    {
+        ensureHorseManaged(horse);
+
+        final @Nullable Parents parents = horse.getPersistentDataContainer().get(keyParents, parentsTagType);
+        if (parents == null)
+            return new Parents(null, null);
+        return parents;
+    }
+
+    public void setParents(AbstractHorse child, AbstractHorse horseA, AbstractHorse horseB)
+    {
+        final AbstractHorse father;
+        final AbstractHorse mother;
+        if (getGender(horseA) == HorseGender.MALE)
+        {
+            father = horseA;
+            mother = horseB;
+        }
+        else
+        {
+            father = horseB;
+            mother = horseA;
+        }
+        setParents(child, parentFactory.of(father, mother));
+    }
+
+    public void setParents(AbstractHorse child, Parents parents)
+    {
+        final PersistentDataContainer container = child.getPersistentDataContainer();
+        container.set(keyParents, parentsTagType, parents);
     }
 
     private void assignToTeam(AbstractHorse horse)

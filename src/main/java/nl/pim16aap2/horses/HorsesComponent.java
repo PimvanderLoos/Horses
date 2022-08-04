@@ -2,6 +2,7 @@ package nl.pim16aap2.horses;
 
 import dagger.BindsInstance;
 import dagger.Component;
+import nl.pim16aap2.horses.horseselector.HorseSelectorManager;
 import nl.pim16aap2.horses.horsetracker.HorseTracker;
 import nl.pim16aap2.horses.listeners.ListenerManager;
 import nl.pim16aap2.horses.staminabar.StaminaNotifierManager;
@@ -33,4 +34,6 @@ public interface HorsesComponent
     StaminaNotifierManager getStaminaNotifierManager();
 
     ListenerManager getListenerManager();
+
+    HorseSelectorManager getHorseSelectorManager();
 }

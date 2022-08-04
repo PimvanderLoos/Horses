@@ -57,10 +57,45 @@ public class BabyHandler
 
         horseEditor.ensureHorseManaged(child);
 
+        if (horseA != null && horseB != null)
+        {
+            horseEditor.setParents(child, horseA, horseB);
+            setCorrectBaseSpeed(child, horseA, horseB);
+        }
+
         if (config.alternativeAgeMethod())
             child.setAgeLock(true);
 
         return true;
+    }
+
+    /**
+     * Ensures the speed value of the baby is correct given the two parents.
+     * <p>
+     * The gait affects the speed value of the horses, so the speed inherited by the baby is affected by the gaits of
+     * the parents, which makes no sense.
+     * <p>
+     * As such, this method will recalculate the speed of the child to ensure it is based on the parents' base speed.
+     *
+     * @param child
+     *     The child whose speed to change.
+     * @param horseA
+     *     The first parent.
+     * @param horseB
+     *     The second parent.
+     */
+    private void setCorrectBaseSpeed(AbstractHorse child, AbstractHorse horseA, AbstractHorse horseB)
+    {
+        final double speedA = horseEditor.getEffectiveSpeed(horseA);
+        final double speedB = horseEditor.getEffectiveSpeed(horseB);
+        final double oldSpeed = horseEditor.getBaseSpeed(child);
+        final double bonus = oldSpeed * 3 - speedA - speedB;
+
+        final double baseSpeedA = horseEditor.getBaseSpeed(horseA);
+        final double baseSpeedB = horseEditor.getBaseSpeed(horseB);
+        final double newSpeed = (bonus + baseSpeedA + baseSpeedB) / 3;
+
+        horseEditor.setRawBaseSpeed(child, newSpeed);
     }
 
     /**

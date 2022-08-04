@@ -5,6 +5,7 @@ import nl.pim16aap2.horses.HorseGender;
 import nl.pim16aap2.horses.Horses;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.Horse;
 import org.bukkit.entity.Player;
@@ -24,7 +25,8 @@ enum ModifiableAttribute
         {
             @Override
             public boolean apply(
-                Horses plugin, HorseEditor horseEditor, List<AbstractHorse> horses, @Nullable String input)
+                Horses plugin, HorseEditor horseEditor, CommandSender commandSender, List<AbstractHorse> horses,
+                @Nullable String input)
             {
                 for (final AbstractHorse horse : horses)
                     horseEditor.setName(horse, input);
@@ -38,7 +40,8 @@ enum ModifiableAttribute
 
             @Override
             public boolean apply(
-                Horses plugin, HorseEditor horseEditor, List<AbstractHorse> horses, @Nullable String input)
+                Horses plugin, HorseEditor horseEditor, CommandSender commandSender, List<AbstractHorse> horses,
+                @Nullable String input)
             {
                 try
                 {
@@ -64,7 +67,8 @@ enum ModifiableAttribute
         {
             @Override
             public boolean apply(
-                Horses plugin, HorseEditor horseEditor, List<AbstractHorse> horses, @Nullable String input)
+                Horses plugin, HorseEditor horseEditor, CommandSender commandSender, List<AbstractHorse> horses,
+                @Nullable String input)
             {
                 try
                 {
@@ -90,7 +94,8 @@ enum ModifiableAttribute
         {
             @Override
             public boolean apply(
-                Horses plugin, HorseEditor horseEditor, List<AbstractHorse> horses, @Nullable String input)
+                Horses plugin, HorseEditor horseEditor, CommandSender commandSender, List<AbstractHorse> horses,
+                @Nullable String input)
             {
                 try
                 {
@@ -109,7 +114,8 @@ enum ModifiableAttribute
         {
             @Override
             public boolean apply(
-                Horses plugin, HorseEditor horseEditor, List<AbstractHorse> horses, @Nullable String input)
+                Horses plugin, HorseEditor horseEditor, CommandSender commandSender, List<AbstractHorse> horses,
+                @Nullable String input)
             {
                 try
                 {
@@ -128,7 +134,8 @@ enum ModifiableAttribute
         {
             @Override
             public boolean apply(
-                Horses plugin, HorseEditor horseEditor, List<AbstractHorse> horses, @Nullable String input)
+                Horses plugin, HorseEditor horseEditor, CommandSender commandSender, List<AbstractHorse> horses,
+                @Nullable String input)
             {
                 try
                 {
@@ -162,7 +169,8 @@ enum ModifiableAttribute
 
             @Override
             public boolean apply(
-                Horses plugin, HorseEditor horseEditor, List<AbstractHorse> horses, @Nullable String input)
+                Horses plugin, HorseEditor horseEditor, CommandSender commandSender, List<AbstractHorse> horses,
+                @Nullable String input)
             {
                 final @Nullable OfflinePlayer player = input == null ? null : parsePlayer(input);
                 for (final AbstractHorse horse : horses)
@@ -190,7 +198,8 @@ enum ModifiableAttribute
 
             @Override
             public boolean apply(
-                Horses plugin, HorseEditor horseEditor, List<AbstractHorse> horses, @Nullable String input)
+                Horses plugin, HorseEditor horseEditor, CommandSender commandSender, List<AbstractHorse> horses,
+                @Nullable String input)
             {
                 try
                 {
@@ -227,7 +236,8 @@ enum ModifiableAttribute
 
             @Override
             public boolean apply(
-                Horses plugin, HorseEditor horseEditor, List<AbstractHorse> horses, @Nullable String input)
+                Horses plugin, HorseEditor horseEditor, CommandSender commandSender, List<AbstractHorse> horses,
+                @Nullable String input)
             {
                 try
                 {
@@ -257,6 +267,89 @@ enum ModifiableAttribute
                              .get("commands.error.color_not_found", input == null ? "NULL" : input);
             }
         },
+    FATHER("father", false)
+        {
+            @Override
+            public boolean apply(
+                Horses plugin, HorseEditor horseEditor, CommandSender commandSender, List<AbstractHorse> horses,
+                @Nullable String input)
+            {
+                if (input != null)
+                {
+                    for (final var horse : horses)
+                        horseEditor.setFather(horse, input);
+                    return true;
+                }
+
+                if (!(commandSender instanceof Player player))
+                {
+                    plugin.getLogger().severe("Only players can use the selection process!");
+                    return true;
+                }
+
+                plugin.getHorsesComponent().getHorseSelectorManager().newWaiter(
+                    player, selected ->
+                    {
+                        for (final var horse : horses)
+                            horseEditor.setFather(horse, selected);
+                    });
+
+                return true;
+            }
+        },
+    MOTHER("mother", false)
+        {
+            @Override
+            public boolean apply(
+                Horses plugin, HorseEditor horseEditor, CommandSender commandSender, List<AbstractHorse> horses,
+                @Nullable String input)
+            {
+                if (input != null)
+                {
+                    for (final var horse : horses)
+                        horseEditor.setMother(horse, input);
+                    return true;
+                }
+
+                if (!(commandSender instanceof Player player))
+                {
+                    plugin.getLogger().severe("Only players can use the selection process!");
+                    return true;
+                }
+
+                plugin.getHorsesComponent().getHorseSelectorManager().newWaiter(
+                    player, selected ->
+                    {
+                        for (final var horse : horses)
+                            horseEditor.setMother(horse, selected);
+                    });
+                return true;
+            }
+        },
+    UNSET_FATHER("remove_father", false)
+        {
+            @Override
+            public boolean apply(
+                Horses plugin, HorseEditor horseEditor, CommandSender commandSender, List<AbstractHorse> horses,
+                @Nullable String input)
+            {
+                for (final var horse : horses)
+                    horseEditor.unsetFather(horse);
+                return true;
+            }
+        },
+    UNSET_MOTHER("remove_mother", false)
+        {
+            @Override
+            public boolean apply(
+                Horses plugin, HorseEditor horseEditor, CommandSender commandSender, List<AbstractHorse> horses,
+                @Nullable String input)
+            {
+                for (final var horse : horses)
+                    horseEditor.unsetMother(horse);
+                return true;
+            }
+        },
     ;
 
     private final String name;
@@ -279,7 +372,8 @@ enum ModifiableAttribute
     }
 
     public abstract boolean apply(
-        Horses plugin, HorseEditor horseEditor, List<AbstractHorse> horses, @Nullable String input);
+        Horses plugin, HorseEditor horseEditor, CommandSender commandSender, List<AbstractHorse> horses,
+        @Nullable String input);
 
     public String getErrorString(Horses plugin, @Nullable String input)
     {

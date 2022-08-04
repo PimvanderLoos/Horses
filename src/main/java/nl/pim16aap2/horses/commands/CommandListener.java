@@ -1,16 +1,19 @@
 package nl.pim16aap2.horses.commands;
 
+import nl.pim16aap2.horses.Communicator;
 import nl.pim16aap2.horses.HorseEditor;
 import nl.pim16aap2.horses.Horses;
 import nl.pim16aap2.horses.util.IReloadable;
 import nl.pim16aap2.horses.util.Localizer;
 import nl.pim16aap2.horses.util.Util;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.AbstractHorse;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 @Singleton
 public class CommandListener implements CommandExecutor
@@ -28,14 +32,18 @@ public class CommandListener implements CommandExecutor
     private final HorseEditor horseEditor;
     private final Localizer localizer;
     private final AttributeMapper attributeMapper;
+    private final Communicator communicator;
 
     @Inject
-    public CommandListener(Horses horses, HorseEditor horseEditor, Localizer localizer, AttributeMapper attributeMapper)
+    public CommandListener(
+        Horses horses, HorseEditor horseEditor, Localizer localizer, AttributeMapper attributeMapper,
+        Communicator communicator)
     {
         this.horses = horses;
         this.horseEditor = horseEditor;
         this.localizer = localizer;
         this.attributeMapper = attributeMapper;
+        this.communicator = communicator;
     }
 
     @Override
@@ -46,6 +54,14 @@ public class CommandListener implements CommandExecutor
             horses.reload();
             final String color = sender instanceof Player ? ChatColor.GREEN.toString() : "";
             sender.sendMessage(color + localizer.get("commands.success.plugin_reloaded"));
+            return true;
+        }
+
+        if (command.getName().equalsIgnoreCase("GetHorseInfo"))
+        {
+            if (args.length != 1)
+                return false;
+            handleGetHorseInfo(sender, args[0]);
             return true;
         }
 
@@ -65,7 +81,7 @@ public class CommandListener implements CommandExecutor
             final @Nullable ModifiableAttribute attribute = attributeMapper.getAttribute(args[0]);
             if (attribute == null)
             {
-                player.sendMessage(ChatColor.RED + localizer.get("commands.error.attribute_not_found"), args[0]);
+                player.sendMessage(ChatColor.RED + localizer.get("commands.error.attribute_not_found", args[0]));
                 return false;
             }
 
@@ -91,7 +107,7 @@ public class CommandListener implements CommandExecutor
                 return true;
             }
 
-            if (!attribute.apply(horses, horseEditor, leadHorses, value))
+            if (!attribute.apply(horses, horseEditor, sender, leadHorses, value))
                 player.sendMessage(ChatColor.RED + attribute.getErrorString(horses, value));
             else
             {
@@ -103,6 +119,26 @@ public class CommandListener implements CommandExecutor
             return true;
         }
         return false;
+    }
+
+    private void handleGetHorseInfo(CommandSender sender, String input)
+    {
+        final @Nullable UUID uuid = Util.parseUUID(input);
+        if (uuid == null)
+        {
+            sender.sendMessage(localizer.get("commands.error.invalid_attribute_value", input));
+            return;
+        }
+
+        final @Nullable Entity entity = Bukkit.getEntity(uuid);
+        if (!(entity instanceof AbstractHorse horse) ||
+            !Horses.MONITORED_TYPES.contains(horse.getType()))
+        {
+            sender.sendMessage(localizer.get("commands.error.no_horses_found", uuid.toString()));
+            return;
+        }
+
+        communicator.printInfo(sender, horse);
     }
 
     static String getAttributePermission(String attributeName)
