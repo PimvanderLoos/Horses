@@ -66,7 +66,7 @@ public class Communicator implements IStaminaNotifier
                    String.format(Locale.ROOT, "%.2f", horse.getJumpStrength()));
 
         appendInfo(builder, localizer.get("horse.attribute.health"),
-                   String.format(Locale.ROOT, "%.0f", horse.getHealth()));
+                   String.format(Locale.ROOT, "%d", (int) Math.floor(horse.getHealth() / 2.0F)));
 
         appendInfo(builder, localizer.get("horse.attribute.exhausted"),
                    localizer.get(horseEditor.isExhausted(horse) ? "horse.attribute.exhausted.true" :
