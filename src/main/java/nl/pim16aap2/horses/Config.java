@@ -38,6 +38,7 @@ public class Config implements IReloadable
     private boolean disableMountedSpeedPotionBuff = false;
     private boolean alternativeBabyGrowth = true;
     private boolean teleportHorses = true;
+    private boolean restrictLeads = true;
     private Map<Material, Float> babyFoodMap = Collections.emptyMap();
 
     private final Path path;
@@ -82,6 +83,8 @@ public class Config implements IReloadable
         this.disableMountedSpeedPotionBuff = config.getBoolean("disableMountedSpeedPotionBuff", false);
 
         this.teleportHorses = config.getBoolean("teleportHorses", true);
+
+        this.restrictLeads = config.getBoolean("restrictLeads", true);
 
         this.alternativeBabyGrowth = config.getBoolean("alternativeBabyGrowth", true);
         this.babyFoodMap = parseBabyFoodMap(config);
@@ -267,5 +270,10 @@ public class Config implements IReloadable
     public boolean teleportHorses()
     {
         return teleportHorses;
+    }
+
+    public boolean restrictLeads()
+    {
+        return restrictLeads;
     }
 }
