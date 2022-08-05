@@ -31,8 +31,8 @@ final class SelectionWaiter
     {
         if (!completed.compareAndSet(false, true))
             return;
-        selectorToolUtil.removeSelectorTool(player);
         player.sendMessage(ChatColor.GREEN + localizer.get("selector.process.completed"));
+        selectorToolUtil.removeSelectorTool(player);
         method.accept(horse);
     }
 

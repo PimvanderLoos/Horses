@@ -3,7 +3,9 @@ package nl.pim16aap2.horses.commands;
 import nl.pim16aap2.horses.HorseEditor;
 import nl.pim16aap2.horses.HorseGender;
 import nl.pim16aap2.horses.Horses;
+import nl.pim16aap2.horses.util.Localizer;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.AbstractHorse;
@@ -290,10 +292,17 @@ enum ModifiableAttribute
                 plugin.getHorsesComponent().getHorseSelectorManager().newWaiter(
                     player, selected ->
                     {
+                        final Localizer localizer = plugin.getHorsesComponent().getLocalizer();
+                        final HorseGender gender = horseEditor.getGender(selected);
+                        if (gender != HorseGender.MALE && gender != HorseGender.GELDING)
+                        {
+                            player.sendMessage(ChatColor.RED + localizer.get("notification.error.expected_father"));
+                            return;
+                        }
+
                         for (final var horse : horses)
                             horseEditor.setFather(horse, selected);
-                        CommandListener.sendSuccessMessage(
-                            attributeMapper, plugin.getHorsesComponent().getLocalizer(), player, this);
+                        CommandListener.sendSuccessMessage(attributeMapper, localizer, player, this);
                     });
                 return ExecutionResult.DELAYED;
             }
@@ -321,10 +330,16 @@ enum ModifiableAttribute
                 plugin.getHorsesComponent().getHorseSelectorManager().newWaiter(
                     player, selected ->
                     {
+                        final Localizer localizer = plugin.getHorsesComponent().getLocalizer();
+                        if (horseEditor.getGender(selected) != HorseGender.FEMALE)
+                        {
+                            player.sendMessage(ChatColor.RED + localizer.get("notification.error.expected_mother"));
+                            return;
+                        }
+
                         for (final var horse : horses)
                             horseEditor.setMother(horse, selected);
-                        CommandListener.sendSuccessMessage(
-                            attributeMapper, plugin.getHorsesComponent().getLocalizer(), player, this);
+                        CommandListener.sendSuccessMessage(attributeMapper, localizer, player, this);
                     });
                 return ExecutionResult.DELAYED;
             }
