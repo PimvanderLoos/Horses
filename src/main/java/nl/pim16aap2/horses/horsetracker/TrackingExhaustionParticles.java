@@ -2,11 +2,11 @@ package nl.pim16aap2.horses.horsetracker;
 
 import nl.pim16aap2.horses.Config;
 import nl.pim16aap2.horses.Horses;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 class TrackingExhaustionParticles
@@ -34,11 +34,11 @@ class TrackingExhaustionParticles
 
     private BukkitTask newTask(TrackedHorse trackedHorse)
     {
-        final Runnable runnable = new ParticlesRunnable(config, trackedHorse.getTrackedEntity());
-        return Bukkit.getScheduler().runTaskTimerAsynchronously(Horses.instance(), runnable, 0L, 1L);
+        final BukkitRunnable runnable = new ParticlesRunnable(config, trackedHorse.getTrackedEntity());
+        return runnable.runTaskTimerAsynchronously(Horses.instance(), 0L, 1L);
     }
 
-    private static final class ParticlesRunnable implements Runnable
+    private static final class ParticlesRunnable extends BukkitRunnable
     {
         private final Config config;
         private final Entity trackedEntity;
@@ -52,8 +52,18 @@ class TrackingExhaustionParticles
         }
 
         @Override
+        public synchronized void cancel()
+            throws IllegalStateException
+        {
+            super.cancel();
+        }
+
+        @Override
         public void run()
         {
+            if (!trackedEntity.isValid())
+                cancel();
+
             final Location loc = trackedEntity.getLocation().add(0D, 1.3D, 0D);
             // Spawn the particles slightly offset in front of the horse.
             loc.add(loc.getDirection().normalize().multiply(0.85));

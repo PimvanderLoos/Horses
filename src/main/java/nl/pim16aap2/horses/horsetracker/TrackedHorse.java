@@ -47,6 +47,7 @@ final class TrackedHorse
         trackingExhaustionParticles = other.trackingExhaustionParticles;
         exhausted = other.exhausted;
 
+        stopParticles();
         setEnergyPercentage(other.getEnergyPercentage());
     }
 
