@@ -19,7 +19,6 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -100,7 +99,7 @@ public class CommandListener implements CommandExecutor
                 return false;
             }
 
-            final List<AbstractHorse> leadHorses = getHorsesLeadBy(player);
+            final List<AbstractHorse> leadHorses = Util.getLeadAndRiddenHorses(player);
             if (leadHorses.isEmpty())
             {
                 player.sendMessage(ChatColor.RED + localizer.get("commands.error.no_horses_targeted"));
@@ -144,24 +143,6 @@ public class CommandListener implements CommandExecutor
     static String getAttributePermission(String attributeName)
     {
         return "horses.editattribute." + attributeName;
-    }
-
-    private List<AbstractHorse> getHorsesLeadBy(Player player)
-    {
-        var ret = player.getNearbyEntities(10, 10, 10).stream()
-                        .filter(entity -> Horses.MONITORED_TYPES.contains(entity.getType()))
-                        .map(AbstractHorse.class::cast)
-                        .filter(AbstractHorse::isLeashed)
-                        .filter(horse -> player.equals(horse.getLeashHolder()))
-                        .toList();
-
-        final @Nullable AbstractHorse riddenHorse = Util.getHorseRiddenByPlayer(player);
-        if (riddenHorse != null)
-        {
-            ret = new ArrayList<>(ret);
-            ret.add(riddenHorse);
-        }
-        return ret;
     }
 
     @Singleton

@@ -5,6 +5,8 @@ import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -85,5 +87,28 @@ public final class Util
             Horses.instance().getLogger().severe("Failed to parse UUID from input: '" + input + "'!");
             return null;
         }
+    }
+
+    public static List<AbstractHorse> getLeadAndRiddenHorses(Player player)
+    {
+        return getLeadAndRiddenHorses(player, 10);
+    }
+
+    public static List<AbstractHorse> getLeadAndRiddenHorses(Player player, int range)
+    {
+        var ret = player.getNearbyEntities(range, range, range).stream()
+                        .filter(entity -> Horses.MONITORED_TYPES.contains(entity.getType()))
+                        .map(AbstractHorse.class::cast)
+                        .filter(AbstractHorse::isLeashed)
+                        .filter(horse -> player.equals(horse.getLeashHolder()))
+                        .toList();
+
+        final @Nullable AbstractHorse riddenHorse = Util.getHorseRiddenByPlayer(player);
+        if (riddenHorse != null)
+        {
+            ret = new ArrayList<>(ret);
+            ret.add(riddenHorse);
+        }
+        return ret;
     }
 }
