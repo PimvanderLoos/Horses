@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
+import static nl.pim16aap2.horses.commands.ModifiableAttribute.ExecutionResult;
+
 @Singleton
 public class CommandListener implements CommandExecutor
 {
@@ -106,15 +108,12 @@ public class CommandListener implements CommandExecutor
                 return true;
             }
 
-            if (!attribute.apply(horses, horseEditor, sender, leadHorses, value))
+            final ExecutionResult result =
+                attribute.apply(horses, horseEditor, sender, leadHorses, value, attributeMapper);
+            if (result == ExecutionResult.SUCCESS)
+                sendSuccessMessage(attributeMapper, localizer, player, attribute);
+            else if (result == ExecutionResult.ERROR)
                 player.sendMessage(ChatColor.RED + attribute.getErrorString(horses, value));
-            else
-            {
-                final String attributeName =
-                    ChatColor.GOLD + attributeMapper.getLocalizedName(attribute) + ChatColor.GREEN;
-                player.sendMessage(
-                    ChatColor.GREEN + localizer.get("commands.success.attribute_updated", attributeName));
-            }
             return true;
         }
         return false;
@@ -143,6 +142,15 @@ public class CommandListener implements CommandExecutor
     static String getAttributePermission(String attributeName)
     {
         return "horses.editattribute." + attributeName;
+    }
+
+    public static void sendSuccessMessage(
+        AttributeMapper attributeMapper, Localizer localizer, Player player, ModifiableAttribute attribute)
+    {
+        final String attributeName =
+            ChatColor.GOLD + attributeMapper.getLocalizedName(attribute) + ChatColor.GREEN;
+        player.sendMessage(
+            ChatColor.GREEN + localizer.get("commands.success.attribute_updated", attributeName));
     }
 
     @Singleton

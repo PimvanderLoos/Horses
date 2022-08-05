@@ -24,13 +24,13 @@ enum ModifiableAttribute
     NAME("name", false)
         {
             @Override
-            public boolean apply(
+            public ExecutionResult apply(
                 Horses plugin, HorseEditor horseEditor, CommandSender commandSender, List<AbstractHorse> horses,
-                @Nullable String input)
+                @Nullable String input, AttributeMapper attributeMapper)
             {
                 for (final AbstractHorse horse : horses)
                     horseEditor.setName(horse, input);
-                return true;
+                return ExecutionResult.SUCCESS;
             }
         },
     GENDER("gender", true)
@@ -39,9 +39,9 @@ enum ModifiableAttribute
                 Stream.of(HorseGender.values()).map(gender -> gender.name().toLowerCase(Locale.ROOT)).toList();
 
             @Override
-            public boolean apply(
+            public ExecutionResult apply(
                 Horses plugin, HorseEditor horseEditor, CommandSender commandSender, List<AbstractHorse> horses,
-                @Nullable String input)
+                @Nullable String input, AttributeMapper attributeMapper)
             {
                 try
                 {
@@ -49,11 +49,11 @@ enum ModifiableAttribute
                         Objects.requireNonNull(input).toUpperCase(Locale.ROOT));
                     for (final AbstractHorse horse : horses)
                         horseEditor.setGender(horse, gender);
-                    return true;
+                    return ExecutionResult.SUCCESS;
                 }
                 catch (IllegalArgumentException exception)
                 {
-                    return false;
+                    return ExecutionResult.ERROR;
                 }
             }
 
@@ -66,20 +66,20 @@ enum ModifiableAttribute
     GAIT("gait", true)
         {
             @Override
-            public boolean apply(
+            public ExecutionResult apply(
                 Horses plugin, HorseEditor horseEditor, CommandSender commandSender, List<AbstractHorse> horses,
-                @Nullable String input)
+                @Nullable String input, AttributeMapper attributeMapper)
             {
                 try
                 {
                     final int gait = Integer.parseInt(Objects.requireNonNull(input));
                     for (final AbstractHorse horse : horses)
                         horseEditor.setGait(horse, gait);
-                    return true;
+                    return ExecutionResult.SUCCESS;
                 }
                 catch (NumberFormatException exception)
                 {
-                    return false;
+                    return ExecutionResult.ERROR;
                 }
             }
 
@@ -93,49 +93,49 @@ enum ModifiableAttribute
     SPEED("speed", true)
         {
             @Override
-            public boolean apply(
+            public ExecutionResult apply(
                 Horses plugin, HorseEditor horseEditor, CommandSender commandSender, List<AbstractHorse> horses,
-                @Nullable String input)
+                @Nullable String input, AttributeMapper attributeMapper)
             {
                 try
                 {
                     final double speed = Double.parseDouble(Objects.requireNonNull(input));
                     for (final AbstractHorse horse : horses)
                         horseEditor.setBaseSpeed(horse, speed);
-                    return true;
+                    return ExecutionResult.SUCCESS;
                 }
                 catch (NumberFormatException exception)
                 {
-                    return false;
+                    return ExecutionResult.ERROR;
                 }
             }
         },
     JUMP("jump", true)
         {
             @Override
-            public boolean apply(
+            public ExecutionResult apply(
                 Horses plugin, HorseEditor horseEditor, CommandSender commandSender, List<AbstractHorse> horses,
-                @Nullable String input)
+                @Nullable String input, AttributeMapper attributeMapper)
             {
                 try
                 {
                     final double jumpStrength = Double.parseDouble(Objects.requireNonNull(input));
                     for (final AbstractHorse horse : horses)
                         horse.setJumpStrength(jumpStrength);
-                    return true;
+                    return ExecutionResult.SUCCESS;
                 }
                 catch (NumberFormatException exception)
                 {
-                    return false;
+                    return ExecutionResult.ERROR;
                 }
             }
         },
     HEALTH("health", true)
         {
             @Override
-            public boolean apply(
+            public ExecutionResult apply(
                 Horses plugin, HorseEditor horseEditor, CommandSender commandSender, List<AbstractHorse> horses,
-                @Nullable String input)
+                @Nullable String input, AttributeMapper attributeMapper)
             {
                 try
                 {
@@ -145,11 +145,11 @@ enum ModifiableAttribute
                         horseEditor.setMaxHealth(horse, health);
                         horse.setHealth(health);
                     }
-                    return true;
+                    return ExecutionResult.SUCCESS;
                 }
                 catch (NumberFormatException exception)
                 {
-                    return false;
+                    return ExecutionResult.ERROR;
                 }
             }
         },
@@ -168,14 +168,14 @@ enum ModifiableAttribute
             }
 
             @Override
-            public boolean apply(
+            public ExecutionResult apply(
                 Horses plugin, HorseEditor horseEditor, CommandSender commandSender, List<AbstractHorse> horses,
-                @Nullable String input)
+                @Nullable String input, AttributeMapper attributeMapper)
             {
                 final @Nullable OfflinePlayer player = input == null ? null : parsePlayer(input);
                 for (final AbstractHorse horse : horses)
                     horse.setOwner(player);
-                return true;
+                return ExecutionResult.SUCCESS;
             }
 
             @Override
@@ -197,9 +197,9 @@ enum ModifiableAttribute
                 Arrays.stream(Horse.Style.values()).map(style -> style.name().toLowerCase(Locale.ROOT)).toList();
 
             @Override
-            public boolean apply(
+            public ExecutionResult apply(
                 Horses plugin, HorseEditor horseEditor, CommandSender commandSender, List<AbstractHorse> horses,
-                @Nullable String input)
+                @Nullable String input, AttributeMapper attributeMapper)
             {
                 try
                 {
@@ -208,11 +208,11 @@ enum ModifiableAttribute
                     for (final AbstractHorse abstractHorse : horses)
                         if (abstractHorse instanceof Horse horse)
                             horse.setStyle(style);
-                    return true;
+                    return ExecutionResult.SUCCESS;
                 }
                 catch (IllegalArgumentException exception)
                 {
-                    return false;
+                    return ExecutionResult.ERROR;
                 }
             }
 
@@ -235,9 +235,9 @@ enum ModifiableAttribute
                 Arrays.stream(Horse.Color.values()).map(color -> color.name().toLowerCase(Locale.ROOT)).toList();
 
             @Override
-            public boolean apply(
+            public ExecutionResult apply(
                 Horses plugin, HorseEditor horseEditor, CommandSender commandSender, List<AbstractHorse> horses,
-                @Nullable String input)
+                @Nullable String input, AttributeMapper attributeMapper)
             {
                 try
                 {
@@ -246,11 +246,11 @@ enum ModifiableAttribute
                     for (final AbstractHorse abstractHorse : horses)
                         if (abstractHorse instanceof Horse horse)
                             horse.setColor(color);
-                    return true;
+                    return ExecutionResult.SUCCESS;
                 }
                 catch (IllegalArgumentException exception)
                 {
-                    return false;
+                    return ExecutionResult.ERROR;
                 }
             }
 
@@ -270,21 +270,21 @@ enum ModifiableAttribute
     FATHER("father", false)
         {
             @Override
-            public boolean apply(
+            public ExecutionResult apply(
                 Horses plugin, HorseEditor horseEditor, CommandSender commandSender, List<AbstractHorse> horses,
-                @Nullable String input)
+                @Nullable String input, AttributeMapper attributeMapper)
             {
                 if (input != null)
                 {
                     for (final var horse : horses)
                         horseEditor.setFather(horse, input);
-                    return true;
+                    return ExecutionResult.SUCCESS;
                 }
 
                 if (!(commandSender instanceof Player player))
                 {
                     plugin.getLogger().severe("Only players can use the selection process!");
-                    return true;
+                    return ExecutionResult.SUCCESS;
                 }
 
                 plugin.getHorsesComponent().getHorseSelectorManager().newWaiter(
@@ -292,29 +292,30 @@ enum ModifiableAttribute
                     {
                         for (final var horse : horses)
                             horseEditor.setFather(horse, selected);
+                        CommandListener.sendSuccessMessage(
+                            attributeMapper, plugin.getHorsesComponent().getLocalizer(), player, this);
                     });
-
-                return true;
+                return ExecutionResult.DELAYED;
             }
         },
     MOTHER("mother", false)
         {
             @Override
-            public boolean apply(
+            public ExecutionResult apply(
                 Horses plugin, HorseEditor horseEditor, CommandSender commandSender, List<AbstractHorse> horses,
-                @Nullable String input)
+                @Nullable String input, AttributeMapper attributeMapper)
             {
                 if (input != null)
                 {
                     for (final var horse : horses)
                         horseEditor.setMother(horse, input);
-                    return true;
+                    return ExecutionResult.SUCCESS;
                 }
 
                 if (!(commandSender instanceof Player player))
                 {
                     plugin.getLogger().severe("Only players can use the selection process!");
-                    return true;
+                    return ExecutionResult.SUCCESS;
                 }
 
                 plugin.getHorsesComponent().getHorseSelectorManager().newWaiter(
@@ -322,32 +323,34 @@ enum ModifiableAttribute
                     {
                         for (final var horse : horses)
                             horseEditor.setMother(horse, selected);
+                        CommandListener.sendSuccessMessage(
+                            attributeMapper, plugin.getHorsesComponent().getLocalizer(), player, this);
                     });
-                return true;
+                return ExecutionResult.DELAYED;
             }
         },
     UNSET_FATHER("remove_father", false)
         {
             @Override
-            public boolean apply(
+            public ExecutionResult apply(
                 Horses plugin, HorseEditor horseEditor, CommandSender commandSender, List<AbstractHorse> horses,
-                @Nullable String input)
+                @Nullable String input, AttributeMapper attributeMapper)
             {
                 for (final var horse : horses)
                     horseEditor.unsetFather(horse);
-                return true;
+                return ExecutionResult.SUCCESS;
             }
         },
     UNSET_MOTHER("remove_mother", false)
         {
             @Override
-            public boolean apply(
+            public ExecutionResult apply(
                 Horses plugin, HorseEditor horseEditor, CommandSender commandSender, List<AbstractHorse> horses,
-                @Nullable String input)
+                @Nullable String input, AttributeMapper attributeMapper)
             {
                 for (final var horse : horses)
                     horseEditor.unsetMother(horse);
-                return true;
+                return ExecutionResult.SUCCESS;
             }
         },
     ;
@@ -361,28 +364,35 @@ enum ModifiableAttribute
         this.parameterRequired = parameterRequired;
     }
 
-    public String getName()
+    String getName()
     {
         return name;
     }
 
-    public boolean isParameterRequired()
+    boolean isParameterRequired()
     {
         return parameterRequired;
     }
 
-    public abstract boolean apply(
+    abstract ExecutionResult apply(
         Horses plugin, HorseEditor horseEditor, CommandSender commandSender, List<AbstractHorse> horses,
-        @Nullable String input);
+        @Nullable String input, AttributeMapper attributeMapper);
 
-    public String getErrorString(Horses plugin, @Nullable String input)
+    String getErrorString(Horses plugin, @Nullable String input)
     {
         return plugin.getHorsesComponent().getLocalizer()
                      .get("commands.error.invalid_attribute_value", input == null ? "NULL" : input);
     }
 
-    public List<String> getSuggestions(Horses plugin)
+    List<String> getSuggestions(Horses plugin)
     {
         return Collections.emptyList();
+    }
+
+    enum ExecutionResult
+    {
+        SUCCESS,
+        ERROR,
+        DELAYED
     }
 }
