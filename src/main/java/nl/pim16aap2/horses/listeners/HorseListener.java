@@ -224,12 +224,26 @@ class HorseListener implements Listener
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onMount(EntityMountEvent event)
     {
-        if (config.getExhaustionPenalty() <= 0)
-            return;
-
         if (!Horses.MONITORED_TYPES.contains(event.getMount().getType()) ||
             !(event.getMount() instanceof AbstractHorse horse) ||
             !(event.getEntity() instanceof Player player))
+            return;
+
+        if (!Permission.USER_MOUNT.isSetFor(player))
+        {
+            player.sendMessage(ChatColor.RED + localizer.get("notification.error.generic_no_permission"));
+            event.setCancelled(true);
+            return;
+        }
+
+        if (!Util.checkPlayerAccess(player, horse, Permission.ADMIN_MOUNT))
+        {
+            player.sendMessage(ChatColor.RED + localizer.get("notification.error.generic_no_access"));
+            event.setCancelled(true);
+            return;
+        }
+
+        if (config.getExhaustionPenalty() <= 0)
             return;
 
         horseTracker.trackHorse(player, horse);

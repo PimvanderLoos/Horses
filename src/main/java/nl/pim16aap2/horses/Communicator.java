@@ -48,7 +48,7 @@ public class Communicator implements IStaminaNotifier
     {
         if (!Permission.USER_SEE_INFO_MENU.isSetFor(commandSender))
         {
-            commandSender.sendMessage(ChatColor.RED + localizer.get("commands.error.no_permission"));
+            commandSender.sendMessage(ChatColor.RED + localizer.get("notification.error.generic_no_permission"));
             return;
         }
 
