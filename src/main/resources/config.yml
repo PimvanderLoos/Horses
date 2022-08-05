@@ -56,3 +56,5 @@ babyFoodGrowthItems:
   - GOLDEN_APPLE:10
   - ENCHANTED_GOLDEN_APPLE:15
 
+# Determines whether horses are taken with you when teleporting.
+teleportHorses: true

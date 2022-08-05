@@ -17,6 +17,7 @@ import javax.inject.Singleton;
 @Singleton
 public class ListenerManager implements IReloadable
 {
+    private final TeleportListener teleportListener;
     private final SelectorToolListener selectorToolListener;
     private final CommandListener commandListener;
     private final CommandListener.EditHorseTabComplete tabCompleter;
@@ -27,6 +28,7 @@ public class ListenerManager implements IReloadable
 
     @Inject ListenerManager
         (
+            TeleportListener teleportListener,
             SelectorToolListener selectorToolListener,
             CommandListener commandListener,
             CommandListener.EditHorseTabComplete tabCompleter,
@@ -36,6 +38,7 @@ public class ListenerManager implements IReloadable
             Horses plugin
         )
     {
+        this.teleportListener = teleportListener;
         this.selectorToolListener = selectorToolListener;
         this.commandListener = commandListener;
         this.tabCompleter = tabCompleter;
@@ -49,16 +52,24 @@ public class ListenerManager implements IReloadable
 
     public void onEnable()
     {
-        registerAll(horseListener, selectorToolListener);
+        registerAll(
+            horseListener,
+            selectorToolListener);
         if (config.disableMountedSpeedPotionBuff())
             Bukkit.getPluginManager().registerEvents(potionListener, plugin);
+        if (config.teleportHorses())
+            Bukkit.getPluginManager().registerEvents(teleportListener, plugin);
 
         initCommandListener();
     }
 
     public void onDisable()
     {
-        unregisterAll(horseListener, potionListener, selectorToolListener);
+        unregisterAll(
+            horseListener,
+            potionListener,
+            teleportListener,
+            selectorToolListener);
     }
 
     private void registerAll(Listener... listeners)
@@ -82,7 +93,9 @@ public class ListenerManager implements IReloadable
 
     private void initCommandListener()
     {
-        initCommands("ReloadHorses", "GetHorseInfo");
+        initCommands(
+            "ReloadHorses",
+            "GetHorseInfo");
         initCommand("EditHorse", tabCompleter);
     }
 

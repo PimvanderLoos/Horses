@@ -89,6 +89,21 @@ public final class Util
         }
     }
 
+    public static List<AbstractHorse> getLeadHorses(Player player)
+    {
+        return getLeadHorses(player, 10);
+    }
+
+    public static List<AbstractHorse> getLeadHorses(Player player, int range)
+    {
+        return player.getNearbyEntities(range, range, range).stream()
+                     .filter(entity -> Horses.MONITORED_TYPES.contains(entity.getType()))
+                     .map(AbstractHorse.class::cast)
+                     .filter(AbstractHorse::isLeashed)
+                     .filter(horse -> player.equals(horse.getLeashHolder()))
+                     .toList();
+    }
+
     public static List<AbstractHorse> getLeadAndRiddenHorses(Player player)
     {
         return getLeadAndRiddenHorses(player, 10);
@@ -96,13 +111,7 @@ public final class Util
 
     public static List<AbstractHorse> getLeadAndRiddenHorses(Player player, int range)
     {
-        var ret = player.getNearbyEntities(range, range, range).stream()
-                        .filter(entity -> Horses.MONITORED_TYPES.contains(entity.getType()))
-                        .map(AbstractHorse.class::cast)
-                        .filter(AbstractHorse::isLeashed)
-                        .filter(horse -> player.equals(horse.getLeashHolder()))
-                        .toList();
-
+        var ret = getLeadHorses(player, range);
         final @Nullable AbstractHorse riddenHorse = Util.getHorseRiddenByPlayer(player);
         if (riddenHorse != null)
         {
