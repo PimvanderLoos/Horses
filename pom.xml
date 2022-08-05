@@ -142,11 +142,11 @@
                     <relocations>
                         <relocation>
                             <pattern>javax.inject</pattern>
-                            <shadedPattern>nl.pim16aap2.bigdoors.lib.javax.inject</shadedPattern>
+                            <shadedPattern>nl.pim16aap2.horses.lib.javax.inject</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>dagger</pattern>
-                            <shadedPattern>nl.pim16aap2.bigdoors.lib.dagger</shadedPattern>
+                            <shadedPattern>nl.pim16aap2.horses.lib.dagger</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>
