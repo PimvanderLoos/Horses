@@ -16,11 +16,11 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public class LeadListener implements Listener
+public class LeadRestrictionListener implements Listener
 {
     private final Localizer localizer;
 
-    @Inject LeadListener(Localizer localizer)
+    @Inject LeadRestrictionListener(Localizer localizer)
     {
         this.localizer = localizer;
     }

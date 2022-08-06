@@ -17,7 +17,7 @@ import javax.inject.Singleton;
 @Singleton
 public class ListenerManager implements IReloadable
 {
-    private final LeadListener leadListener;
+    private final LeadRestrictionListener leadRestrictionListener;
     private final TeleportListener teleportListener;
     private final SelectorToolListener selectorToolListener;
     private final CommandListener commandListener;
@@ -29,7 +29,7 @@ public class ListenerManager implements IReloadable
 
     @Inject ListenerManager
         (
-            LeadListener leadListener,
+            LeadRestrictionListener leadRestrictionListener,
             TeleportListener teleportListener,
             SelectorToolListener selectorToolListener,
             CommandListener commandListener,
@@ -40,7 +40,7 @@ public class ListenerManager implements IReloadable
             Horses plugin
         )
     {
-        this.leadListener = leadListener;
+        this.leadRestrictionListener = leadRestrictionListener;
         this.teleportListener = teleportListener;
         this.selectorToolListener = selectorToolListener;
         this.commandListener = commandListener;
@@ -63,7 +63,7 @@ public class ListenerManager implements IReloadable
         if (config.teleportHorses())
             Bukkit.getPluginManager().registerEvents(teleportListener, plugin);
         if (config.restrictLeads())
-            Bukkit.getPluginManager().registerEvents(leadListener, plugin);
+            Bukkit.getPluginManager().registerEvents(leadRestrictionListener, plugin);
 
         initCommandListener();
     }
@@ -71,7 +71,7 @@ public class ListenerManager implements IReloadable
     public void onDisable()
     {
         unregisterAll(
-            leadListener,
+            leadRestrictionListener,
             horseListener,
             potionListener,
             teleportListener,
