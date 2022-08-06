@@ -24,8 +24,8 @@ class PotionListener implements Listener
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onMount(EntityMountEvent event)
     {
-        if (!Horses.MONITORED_TYPES.contains(event.getMount().getType()) ||
-            !(event.getMount() instanceof AbstractHorse horse) ||
+        if (!(event.getMount() instanceof AbstractHorse horse) ||
+            !Horses.MONITORED_TYPES.contains(horse.getType()) ||
             !(event.getEntity() instanceof Player player))
             return;
 

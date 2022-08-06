@@ -38,8 +38,8 @@ class SelectorToolListener implements Listener
     public void onSelect(EntityDamageByEntityEvent event)
     {
         if (!(event.getDamager() instanceof Player player) ||
-            !(Horses.MONITORED_TYPES.contains(event.getEntity().getType())) ||
-            !(event.getEntity() instanceof AbstractHorse horse))
+            !(event.getEntity() instanceof AbstractHorse horse) ||
+            !(Horses.MONITORED_TYPES.contains(horse.getType())))
             return;
 
         if (!selectorToolUtil.isSelectorTool(player.getInventory().getItemInMainHand()))
