@@ -13,8 +13,10 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Singleton
 public class Config implements IReloadable
@@ -39,6 +41,8 @@ public class Config implements IReloadable
     private boolean alternativeBabyGrowth = true;
     private boolean teleportHorses = true;
     private boolean restrictLeads = true;
+    private boolean allowFeeding = true;
+    private Set<Material> foodItems = Collections.emptySet();
     private Map<Material, Float> babyFoodMap = Collections.emptyMap();
 
     private final Path path;
@@ -88,6 +92,9 @@ public class Config implements IReloadable
 
         this.alternativeBabyGrowth = config.getBoolean("alternativeBabyGrowth", true);
         this.babyFoodMap = parseBabyFoodMap(config);
+
+        this.allowFeeding = config.getBoolean("allowFeeding", true);
+        this.foodItems = parseFoodItems(config);
     }
 
     private int parseInt(FileConfiguration configuration, String optionName, int fallback)
@@ -185,6 +192,24 @@ public class Config implements IReloadable
         return Collections.unmodifiableMap(ret);
     }
 
+    private Set<Material> parseFoodItems(FileConfiguration config)
+    {
+        final Set<Material> ret = new HashSet<>();
+        final String values = config.getString("foodItems", "APPLE;WHEAT");
+        final String[] names = values.split(";");
+        for (final String name : names)
+        {
+            final @Nullable Material mat = Material.getMaterial(name);
+            if (mat == null)
+            {
+                javaPlugin.getLogger().severe("Invalid material name '" + name + "'!");
+                continue;
+            }
+            ret.add(mat);
+        }
+        return ret;
+    }
+
     private void ensureFileExists()
     {
         if (Files.exists(this.path))
@@ -275,5 +300,15 @@ public class Config implements IReloadable
     public boolean restrictLeads()
     {
         return restrictLeads;
+    }
+
+    public boolean allowFeeding()
+    {
+        return allowFeeding;
+    }
+
+    public Set<Material> getFoodItems()
+    {
+        return foodItems;
     }
 }

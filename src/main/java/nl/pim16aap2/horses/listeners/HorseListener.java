@@ -26,7 +26,6 @@ import org.bukkit.event.entity.EntityBreedEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
@@ -164,21 +163,6 @@ class HorseListener implements Listener
             horseEditor.ensureHorseManaged(horse);
         else
             babyHandler.newBaby(horse, null, null);
-    }
-
-    @EventHandler(ignoreCancelled = true)
-    public void onFeed(PlayerInteractEntityEvent event)
-    {
-        if (!(event.getRightClicked() instanceof AbstractHorse horse) ||
-            !Horses.MONITORED_TYPES.contains(horse.getType()))
-            return;
-
-        final ItemStack item = event.getPlayer().getInventory().getItem(event.getHand());
-        if (!babyHandler.hijackInteraction(horse, item.getType()))
-            return;
-
-        event.setCancelled(true);
-        babyHandler.feedBaby(event.getPlayer(), horse, item);
     }
 
     @EventHandler(ignoreCancelled = true)

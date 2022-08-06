@@ -17,6 +17,7 @@ import javax.inject.Singleton;
 @Singleton
 public class ListenerManager implements IReloadable
 {
+    private final FeedListener feedListener;
     private final LeadRestrictionListener leadRestrictionListener;
     private final TeleportListener teleportListener;
     private final SelectorToolListener selectorToolListener;
@@ -29,6 +30,7 @@ public class ListenerManager implements IReloadable
 
     @Inject ListenerManager
         (
+            FeedListener feedListener,
             LeadRestrictionListener leadRestrictionListener,
             TeleportListener teleportListener,
             SelectorToolListener selectorToolListener,
@@ -40,6 +42,7 @@ public class ListenerManager implements IReloadable
             Horses plugin
         )
     {
+        this.feedListener = feedListener;
         this.leadRestrictionListener = leadRestrictionListener;
         this.teleportListener = teleportListener;
         this.selectorToolListener = selectorToolListener;
@@ -56,6 +59,7 @@ public class ListenerManager implements IReloadable
     public void onEnable()
     {
         registerAll(
+            feedListener,
             horseListener,
             selectorToolListener);
         if (config.disableMountedSpeedPotionBuff())
@@ -71,6 +75,7 @@ public class ListenerManager implements IReloadable
     public void onDisable()
     {
         unregisterAll(
+            feedListener,
             leadRestrictionListener,
             horseListener,
             potionListener,

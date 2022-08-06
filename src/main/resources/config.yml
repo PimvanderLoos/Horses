@@ -61,3 +61,11 @@ teleportHorses: true
 
 # Restrict leads so players cannot attach leads to horses owned by other players.
 restrictLeads: true
+
+# Whether to allow feeding adult horses, no matter their health.
+allowFeeding: true
+
+# The items you can feed to adult horses. Does nothing if 'allowFeeding' is disabled.
+# The format is a list of materials separated by ';', e.g.: APPLE:GOLDEN_APPLE
+# Breeding items (i.e. golden apples/carrots) are ignored and are handled as normal.
+foodItems: APPLE;WHEAT

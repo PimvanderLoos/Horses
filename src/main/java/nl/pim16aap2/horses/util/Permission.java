@@ -11,12 +11,14 @@ public enum Permission
     ADMIN_SEE_INFO_MENU("horses.admin.see_info_menu"),
     ADMIN_MOUNT("horses.admin.mount"),
     ADMIN_LEAD("horses.admin.lead"),
+    ADMIN_FEED_ADULT("horses.admin.feed_adult"),
 
     USER_SEE_STAMINA_BAR("horses.user.see_stamina_bar"),
     USER_MAKE_GELDING(ADMIN_MAKE_GELDING, "horses.user.make_gelding"),
     USER_SEE_INFO_MENU(ADMIN_SEE_INFO_MENU, "horses.user.see_info_menu"),
     USER_MOUNT(ADMIN_MOUNT, "horses.user.mount"),
     USER_LEAD(ADMIN_LEAD, "horses.user.lead"),
+    USER_FEED_ADULT(ADMIN_FEED_ADULT, "horses.user.feed_adult"),
     ;
 
     private final @Nullable Permission adminVariant;
