@@ -100,34 +100,29 @@ public class BabyHandler
     }
 
     /**
-     * Checks if this plugin should hijack interactions of items on a horse.
+     * Attempts to feed and grow a baby.
      *
+     * @param player
+     *     The player responsible for feeding the baby.
      * @param horse
-     *     The target horse.
-     * @param material
-     *     The material being used on the horse.
-     * @return True if this plugin should hijack the interaction.
+     *     The horse being fed.
+     * @param item
+     *     The item being fed to the horse.
+     * @return True if the baby was fed.
      */
-    public boolean hijackInteraction(AbstractHorse horse, Material material)
+    public boolean tryFeedBaby(Player player, AbstractHorse horse, ItemStack item)
     {
         if (horse.isAdult() || !horse.getAgeLock())
             return false;
-        return DEFAULT_FEED_MATERIALS.contains(material) || config.getBabyFoodMap().containsKey(material);
-    }
-
-    public void feedBaby(Player player, AbstractHorse horse, ItemStack item)
-    {
-        if (!horse.getAgeLock())
-            return;
 
         final @Nullable Float percentage = config.getBabyFoodMap().get(item.getType());
         if (percentage == null)
-            return;
+            return false;
 
         if (!Util.checkPlayerAccess(player, horse, Permission.ADMIN_FEED_BABY))
         {
             player.sendMessage(ChatColor.RED + localizer.get("notification.error.not_allowed_to_feed_baby"));
-            return;
+            return false;
         }
 
         // Baby animals start with an age of -24_000 ticks.
@@ -142,6 +137,7 @@ public class BabyHandler
             item.setAmount(item.getAmount() - 1);
 
         particlesOnFeed(horse, item);
+        return true;
     }
 
     private void particlesOnFeed(AbstractHorse horse, ItemStack itemStack)

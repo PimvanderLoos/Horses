@@ -24,14 +24,12 @@ import org.bukkit.inventory.ItemStack;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.Set;
+
+import static nl.pim16aap2.horses.baby.BabyHandler.DEFAULT_FEED_MATERIALS;
 
 @Singleton
 class FeedListener implements Listener
 {
-    private static final Set<Material> VANILLA_FOODS = Set.of(
-        Material.SUGAR, Material.WHEAT, Material.APPLE, Material.GOLDEN_CARROT, Material.GOLDEN_APPLE);
-
     private final Config config;
     private final BabyHandler babyHandler;
     private final Localizer localizer;
@@ -51,19 +49,26 @@ class FeedListener implements Listener
             return;
 
         final ItemStack item = event.getPlayer().getInventory().getItem(event.getHand());
-        event.setCancelled(horse.isAdult() ?
-                           processAdultFeed(horse, event.getPlayer(), item) :
-                           processFeedBaby(horse, event.getPlayer(), item));
-        if (event.isCancelled())
-            event.getPlayer().updateInventory();
+
+        if (processFeedBaby(horse, event.getPlayer(), item) ||
+            processGeneralFeed(horse, event.getPlayer(), item) ||
+            cancelFeedEvent(horse, event.getPlayer(), item))
+            event.setCancelled(true);
+    }
+
+    private boolean cancelFeedEvent(AbstractHorse horse, Player player, ItemStack item)
+    {
+        if ((!horse.isAdult()) && horse.getAgeLock())
+            return DEFAULT_FEED_MATERIALS.contains(item.getType());
+        return false;
     }
 
     /**
-     * Attempts to feed an adult horse.
+     * Attempts to feed a horse without any side effects like growing up.
      *
      * @return True if the plugin manages the feeding process, and the vanilla event can be cancelled.
      */
-    private boolean processAdultFeed(AbstractHorse horse, Player player, ItemStack item)
+    private boolean processGeneralFeed(AbstractHorse horse, Player player, ItemStack item)
     {
         final FoodType foodType = isFoodItem(item);
         if (foodType == FoodType.NOT_FOOD)
@@ -80,27 +85,28 @@ class FeedListener implements Listener
             return true;
         }
 
-        if (foodType == FoodType.BREEDING_FOOD)
+        // We do not want to interfere with breeding horses.
+        if (horse.isAdult() && foodType == FoodType.BREEDING_FOOD)
             return false;
 
         if (!config.allowFeeding())
             return true;
 
-        if (foodType == FoodType.VANILLA_FOOD)
-            return false;
-
-        playFeedingAdultEffects(horse.getWorld(), horse);
+        playFeedingEffects(horse.getWorld(), horse);
         item.setAmount(item.getAmount() - 1);
         return true;
     }
 
-    private void playFeedingAdultEffects(World world, AbstractHorse horse)
+    private void playFeedingEffects(World world, AbstractHorse horse)
     {
         final Location loc = horse.getLocation().add(0D, 1.7D, 0D);
         // Spawn the particles slightly offset in front of the horse.
         loc.add(loc.getDirection().normalize().multiply(0.6));
 
-        playEatingSound(horse, 1F, 1F);
+        if (horse.isAdult())
+            playEatingSound(horse, 1F, 1F);
+        else
+            playBabyEatingSound(horse);
         world.spawnParticle(Particle.VILLAGER_HAPPY, loc, 7, 0.35, 0.5, 0.35);
     }
 
@@ -111,12 +117,15 @@ class FeedListener implements Listener
      */
     private boolean processFeedBaby(AbstractHorse horse, Player player, ItemStack item)
     {
-        if (!babyHandler.hijackInteraction(horse, item.getType()))
-            return false;
+        final boolean result = babyHandler.tryFeedBaby(player, horse, item);
+        if (result)
+            playBabyEatingSound(horse);
+        return result;
+    }
 
-        babyHandler.feedBaby(player, horse, item);
-        playEatingSound(horse, 0.85F, 1.8F);
-        return true;
+    private void playBabyEatingSound(AbstractHorse horse)
+    {
+        playEatingSound(horse, 0.9F, 1.85F);
     }
 
     private void playEatingSound(AbstractHorse horse, float volume, float pitch)
@@ -139,7 +148,7 @@ class FeedListener implements Listener
             item.getType() == Material.GOLDEN_APPLE ||
             item.getType() == Material.ENCHANTED_GOLDEN_APPLE)
             return FoodType.BREEDING_FOOD;
-        if (VANILLA_FOODS.contains(item.getType()))
+        if (DEFAULT_FEED_MATERIALS.contains(item.getType()))
             return FoodType.VANILLA_FOOD;
         return FoodType.NOT_FOOD;
     }
