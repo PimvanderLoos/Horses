@@ -32,6 +32,19 @@ public record Parent(UUID uuid, String name)
         return entity.getName();
     }
 
+    /**
+     * Checks if the current name set for this parent is the same as the current name of the entity.
+     *
+     * @return True if the current name of this parent is up-to-date with the entity it represents.
+     */
+    public boolean isNameUpToDate()
+    {
+        final @Nullable AbstractHorse entity = getEntity();
+        if (entity == null)
+            return true;
+        return name.equals(entity.getName());
+    }
+
     public boolean isAlive()
     {
         final @Nullable AbstractHorse horse = getEntity();

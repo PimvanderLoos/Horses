@@ -4,6 +4,7 @@ import nl.pim16aap2.horses.baby.Parent;
 import nl.pim16aap2.horses.baby.ParentFactory;
 import nl.pim16aap2.horses.baby.Parents;
 import nl.pim16aap2.horses.baby.ParentsTagType;
+import nl.pim16aap2.horses.util.Mutable;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
@@ -261,14 +262,45 @@ public final class HorseEditor
         setParents(child, getParents(child).withMother(null));
     }
 
-    public Parents getParents(AbstractHorse horse)
+    public Parents getParents(AbstractHorse child)
     {
-        ensureHorseManaged(horse);
+        ensureHorseManaged(child);
 
-        final @Nullable Parents parents = horse.getPersistentDataContainer().get(keyParents, parentsTagType);
+        final @Nullable Parents parents = child.getPersistentDataContainer().get(keyParents, parentsTagType);
         if (parents == null)
             return new Parents(null, null);
-        return parents;
+        return ensureUpdatedParentNames(child, parents);
+    }
+
+    private Parents ensureUpdatedParentNames(AbstractHorse child, Parents currentParents)
+    {
+        final Mutable<@Nullable Parent> father = new Mutable<>(currentParents.father());
+        final Mutable<@Nullable Parent> mother = new Mutable<>(currentParents.mother());
+
+        final boolean updated = ensureParentUpdated(father) || ensureParentUpdated(mother);
+        final Parents newParents = new Parents(father.getVal(), mother.getVal());
+
+        if (updated)
+            setParents(child, newParents);
+        return newParents;
+    }
+
+    /**
+     * Ensures a parent is up-to-date.
+     *
+     * @param mutParent
+     *     A mutable wrapper of a parent. If needed, this will be updated.
+     * @return True if the parent was updated.
+     */
+    @SuppressWarnings("NullAway") // NullAway doesn't work with generics
+    private boolean ensureParentUpdated(Mutable<@Nullable Parent> mutParent)
+    {
+        final @Nullable Parent parent = mutParent.getVal();
+        if (parent == null || parent.isNameUpToDate())
+            return false;
+
+        mutParent.setVal(new Parent(parent.uuid(), parent.getUpToDateName()));
+        return true;
     }
 
     public void setParents(AbstractHorse child, AbstractHorse horseA, AbstractHorse horseB)
