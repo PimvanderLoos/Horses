@@ -14,19 +14,19 @@
 
         <dependency.version.spigot>1.17.1-R0.1-SNAPSHOT</dependency.version.spigot>
 
-        <dependency.version.annotations>23.0.0</dependency.version.annotations>
-        <dependency.version.errorprone>2.14.0</dependency.version.errorprone>
+        <dependency.version.annotations>24.0.1</dependency.version.annotations>
+        <dependency.version.errorprone>2.21.1</dependency.version.errorprone>
         <dependency.version.nullaway>0.9.8</dependency.version.nullaway>
-        <dependency.version.dagger>2.42</dependency.version.dagger>
-        <dependency.version.checker-framework>3.22.2</dependency.version.checker-framework>
-        <dependency.version.checkstyle>10.3.1</dependency.version.checkstyle>
-        <dependency.version.maven-checkstyle>3.1.2</dependency.version.maven-checkstyle>
-        <dependency.version.pmd>3.17.0</dependency.version.pmd>
-        <dependency.version.mockito>4.6.1</dependency.version.mockito>
-        <dependency.version.junit>5.8.2</dependency.version.junit>
-        <dependency.version.surefire>3.0.0-M7</dependency.version.surefire>
-        <dependency.version.maven-compiler>3.10.1</dependency.version.maven-compiler>
-        <dependency.version.maven-shade>3.3.0</dependency.version.maven-shade>
+        <dependency.version.dagger>2.47</dependency.version.dagger>
+        <dependency.version.checker-framework>3.37.0</dependency.version.checker-framework>
+        <dependency.version.checkstyle>10.12.2</dependency.version.checkstyle>
+        <dependency.version.maven-checkstyle>3.3.0</dependency.version.maven-checkstyle>
+        <dependency.version.pmd>3.21.0</dependency.version.pmd>
+        <dependency.version.mockito>5.4.0</dependency.version.mockito>
+        <dependency.version.junit>5.10.0</dependency.version.junit>
+        <dependency.version.surefire>3.1.2</dependency.version.surefire>
+        <dependency.version.maven-compiler>3.11.0</dependency.version.maven-compiler>
+        <dependency.version.maven-shade>3.5.0</dependency.version.maven-shade>
     </properties>
 
     <repositories>
@@ -219,7 +219,6 @@
                         <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
                     </sourceDirectories>
                     <configLocation>${user.dir}/rules/checkstyle.xml</configLocation>
-                    <encoding>UTF-8</encoding>
                     <consoleOutput>true</consoleOutput>
                     <failsOnError>true</failsOnError>
                     <linkXRef>true</linkXRef>
