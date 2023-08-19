@@ -1,5 +1,6 @@
 package nl.pim16aap2.horses.staminabar;
 
+import nl.pim16aap2.horses.Config;
 import nl.pim16aap2.horses.util.Localizer;
 import nl.pim16aap2.horses.util.Permission;
 import org.bukkit.entity.Player;
@@ -15,15 +16,20 @@ public class StaminaNotifierManager
 {
     private final Map<Player, IStaminaNotifier> notifierMap = new HashMap<>();
     private final Localizer localizer;
+    private final Config config;
 
     @Inject
-    public StaminaNotifierManager(Localizer localizer)
+    public StaminaNotifierManager(Localizer localizer, Config config)
     {
         this.localizer = localizer;
+        this.config = config;
     }
 
     public @Nullable IStaminaNotifier getNewNotifier(Player player, double staminaPercentage, boolean exhausted)
     {
+        if (!config.enableStaminaBar())
+            return null;
+
         if (!Permission.USER_SEE_STAMINA_BAR.isSetFor(player))
             return null;
 
