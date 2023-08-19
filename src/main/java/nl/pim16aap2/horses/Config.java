@@ -31,6 +31,7 @@ public class Config implements IReloadable
     private Gaits gaits;
     private int defaultGait = 100;
     private int resetGait = -1;
+    private boolean enableStaminaBar;
     private int exhaustionPenalty = 35;
     private int energyDrainTime = 5;
     private int energyRecoveryTime = 7;
@@ -75,6 +76,7 @@ public class Config implements IReloadable
         this.defaultGait = parseInt(config, "defaultGait", 100);
         this.resetGait = parseInt(config, "resetGait", 100);
 
+        this.enableStaminaBar = config.getBoolean("enableStaminaBar", true);
         this.exhaustionPenalty = parseInt(config, "exhaustionPenalty", 25);
         this.energyDrainTime = parseInt(config, "energyDrainTime", 5);
         this.energyRecoveryTime = parseInt(config, "energyRecoveryTime", 7);
@@ -245,6 +247,11 @@ public class Config implements IReloadable
     public int getResetGait()
     {
         return resetGait;
+    }
+
+    public boolean enableStaminaBar()
+    {
+        return enableStaminaBar;
     }
 
     public int getExhaustionPenalty()

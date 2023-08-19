@@ -20,6 +20,10 @@ resetGait: -1
 # The amount of time (in seconds) you get to select a horse before the process times out.
 selectorTimeOut: 60
 
+# Whether to show the stamina bar while riding a horse.
+# This can be controller per user with the "horses.user.see_stamina_bar" permission node.
+enableStaminaBar: true
+
 # The speed penalty (percentage) to give when a horse is exhausted. Use a value of 0 to disable this feature.
 exhaustionPenalty: 35
 
