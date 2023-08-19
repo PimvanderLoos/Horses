@@ -9,10 +9,10 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <maven.compiler.source>16</maven.compiler.source>
-        <maven.compiler.target>16</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
 
-        <dependency.version.spigot>1.17.1-R0.1-SNAPSHOT</dependency.version.spigot>
+        <dependency.version.spigot>1.20.1-R0.1-SNAPSHOT</dependency.version.spigot>
 
         <dependency.version.annotations>24.0.1</dependency.version.annotations>
         <dependency.version.errorprone>2.21.1</dependency.version.errorprone>
