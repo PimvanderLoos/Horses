@@ -15,6 +15,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,6 +24,7 @@ import javax.inject.Singleton;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.UUID;
 
 import static nl.pim16aap2.horses.commands.ModifiableAttribute.ExecutionResult;
@@ -69,6 +71,12 @@ public class CommandListener implements CommandExecutor
             if (args.length != 1)
                 return false;
             handleGetHorseInfo(sender, args[0]);
+            return true;
+        }
+
+        if (command.getName().equalsIgnoreCase("ListHorseTypes"))
+        {
+            sendHorseTypes(sender);
             return true;
         }
 
@@ -125,6 +133,47 @@ public class CommandListener implements CommandExecutor
         return false;
     }
 
+    @SuppressWarnings("deprecation")
+    private static int compareEntityTypes(EntityType a, EntityType b)
+    {
+        final @Nullable String aName = a.getName();
+        if (aName == null)
+            return -1;
+        final @Nullable String bName = b.getName();
+        if (bName == null)
+            return 1;
+        return aName.compareTo(bName);
+    }
+
+    private void sendHorseTypes(CommandSender sender)
+    {
+        final boolean isPlayer = sender instanceof Player;
+        final String blue = isPlayer ? ChatColor.AQUA.toString() : "";
+        final String green = isPlayer ? ChatColor.GREEN.toString() : "";
+        final String red = isPlayer ? ChatColor.RED.toString() : "";
+
+        final String prefixPositive = green + " + ";
+        final String prefixNegative = red + " - ";
+
+        final StringBuilder typeList = new StringBuilder();
+        Util.getSupportedEntityTypes().stream()
+            .sorted(CommandListener::compareEntityTypes)
+            .forEach(
+                type ->
+                {
+                    final boolean isMonitored = config.getMonitoredTypes().contains(type);
+                    final String prefix = isMonitored ? prefixPositive : prefixNegative;
+
+                    //noinspection deprecation
+                    final String typeName = Objects.requireNonNull(
+                        type.getName(), "Entity type name must not be null (type: " + type + ")");
+
+                    typeList.append('\n').append(prefix).append(typeName).append(blue);
+                });
+
+        sender.sendMessage(blue + localizer.get("commands.success.monitored_types", typeList.toString()));
+    }
+
     private void handleGetHorseInfo(CommandSender sender, String input)
     {
         final @Nullable UUID uuid = Util.parseUUID(input);
@@ -150,7 +199,7 @@ public class CommandListener implements CommandExecutor
         return "horses.editattribute." + attributeName;
     }
 
-    public static void sendSuccessMessage(
+    static void sendSuccessMessage(
         AttributeMapper attributeMapper, Localizer localizer, Player player, ModifiableAttribute attribute)
     {
         final String attributeName =
