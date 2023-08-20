@@ -7,6 +7,9 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -14,6 +17,9 @@ import java.util.UUID;
 
 public final class Util
 {
+    private static final Set<EntityType> SUPPORTED_ENTITY_TYPES =
+        Collections.unmodifiableSet(findSupportedEntityTypes());
+
     private Util()
     {
         // Utility class
@@ -126,5 +132,27 @@ public final class Util
             ret.add(riddenHorse);
         }
         return ret;
+    }
+
+    /**
+     * Gets a list of all supported entity types on the current version of Minecraft.
+     *
+     * @return A list of possible entity types.
+     */
+    public static Set<EntityType> getSupportedEntityTypes()
+    {
+        return SUPPORTED_ENTITY_TYPES;
+    }
+
+    private static Set<EntityType> findSupportedEntityTypes()
+    {
+        final Set<EntityType> tmp = new HashSet<>();
+        for (final var entityType : EntityType.values())
+        {
+            final @Nullable Class<?> entityClass = entityType.getEntityClass();
+            if (entityClass != null && AbstractHorse.class.isAssignableFrom(entityType.getEntityClass()))
+                tmp.add(entityType);
+        }
+        return EnumSet.copyOf(tmp);
     }
 }
