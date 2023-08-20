@@ -1,6 +1,6 @@
 package nl.pim16aap2.horses.listeners;
 
-import nl.pim16aap2.horses.Horses;
+import nl.pim16aap2.horses.Config;
 import nl.pim16aap2.horses.util.Util;
 import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.Player;
@@ -17,15 +17,18 @@ import javax.inject.Singleton;
 @Singleton
 class PotionListener implements Listener
 {
-    @Inject PotionListener()
+    private final Config config;
+
+    @Inject PotionListener(Config config)
     {
+        this.config = config;
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onMount(EntityMountEvent event)
     {
         if (!(event.getMount() instanceof AbstractHorse horse) ||
-            !Horses.MONITORED_TYPES.contains(horse.getType()) ||
+            !config.getMonitoredTypes().contains(horse.getType()) ||
             !(event.getEntity() instanceof Player player))
             return;
 
@@ -40,7 +43,7 @@ class PotionListener implements Listener
             return;
 
         if (event.getEntity() instanceof Player player && Util.getHorseRiddenByPlayer(player) != null ||
-            Horses.MONITORED_TYPES.contains(event.getEntity().getType()))
+            config.getMonitoredTypes().contains(event.getEntity().getType()))
             event.setCancelled(true);
     }
 }

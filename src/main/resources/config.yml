@@ -73,3 +73,11 @@ allowFeeding: true
 # The format is a list of materials separated by ';', e.g.: APPLE:GOLDEN_APPLE
 # Breeding items (i.e. golden apples/carrots) are ignored and are handled as normal.
 foodItems: APPLE;WHEAT
+
+# A list of all the types of entities that should be monitored by this plugin.
+# All types in this list will be affected by the plugin's features.
+# Use the command "/ListHorseTypes" to get a list of all possible types.
+monitoredTypes:
+  - donkey
+  - horse
+  - mule

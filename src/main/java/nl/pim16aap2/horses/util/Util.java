@@ -2,16 +2,24 @@ package nl.pim16aap2.horses.util;
 
 import nl.pim16aap2.horses.Horses;
 import org.bukkit.entity.AbstractHorse;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.UUID;
 
 public final class Util
 {
+    private static final Set<EntityType> SUPPORTED_ENTITY_TYPES =
+        Collections.unmodifiableSet(findSupportedEntityTypes());
+
     private Util()
     {
         // Utility class
@@ -32,7 +40,7 @@ public final class Util
     public static @Nullable AbstractHorse getHorseRiddenByPlayer(Player player)
     {
         if (player.getVehicle() != null &&
-            Horses.MONITORED_TYPES.contains(player.getVehicle().getType()) &&
+            getMonitoredTypes().contains(player.getVehicle().getType()) &&
             player.getVehicle() instanceof AbstractHorse horse)
             return horse;
         return null;
@@ -97,11 +105,16 @@ public final class Util
     public static List<AbstractHorse> getLeadHorses(Player player, int range)
     {
         return player.getNearbyEntities(range, range, range).stream()
-                     .filter(entity -> Horses.MONITORED_TYPES.contains(entity.getType()))
+                     .filter(entity -> getMonitoredTypes().contains(entity.getType()))
                      .map(AbstractHorse.class::cast)
                      .filter(AbstractHorse::isLeashed)
                      .filter(horse -> player.equals(horse.getLeashHolder()))
                      .toList();
+    }
+
+    private static Set<EntityType> getMonitoredTypes()
+    {
+        return Horses.instance().getHorsesComponent().getConfig().getMonitoredTypes();
     }
 
     public static List<AbstractHorse> getLeadAndRiddenHorses(Player player)
@@ -119,5 +132,27 @@ public final class Util
             ret.add(riddenHorse);
         }
         return ret;
+    }
+
+    /**
+     * Gets a list of all supported entity types on the current version of Minecraft.
+     *
+     * @return A list of possible entity types.
+     */
+    public static Set<EntityType> getSupportedEntityTypes()
+    {
+        return SUPPORTED_ENTITY_TYPES;
+    }
+
+    private static Set<EntityType> findSupportedEntityTypes()
+    {
+        final Set<EntityType> tmp = new HashSet<>();
+        for (final var entityType : EntityType.values())
+        {
+            final @Nullable Class<?> entityClass = entityType.getEntityClass();
+            if (entityClass != null && AbstractHorse.class.isAssignableFrom(entityType.getEntityClass()))
+                tmp.add(entityType);
+        }
+        return EnumSet.copyOf(tmp);
     }
 }

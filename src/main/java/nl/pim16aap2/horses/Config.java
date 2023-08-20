@@ -1,8 +1,10 @@
 package nl.pim16aap2.horses;
 
 import nl.pim16aap2.horses.util.IReloadable;
+import nl.pim16aap2.horses.util.Util;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -22,6 +25,9 @@ import java.util.Set;
 public class Config implements IReloadable
 {
     private static final String DEFAULT_GAITS = "0,25,35,50,75,100";
+
+    private static final Set<EntityType> DEFAULT_MONITORED_TYPES =
+        EnumSet.of(EntityType.HORSE, EntityType.MULE, EntityType.DONKEY);
 
     private final JavaPlugin javaPlugin;
 
@@ -45,6 +51,7 @@ public class Config implements IReloadable
     private boolean allowFeeding = true;
     private Set<Material> foodItems = Collections.emptySet();
     private Map<Material, Float> babyFoodMap = Collections.emptyMap();
+    private Set<EntityType> monitoredTypes = Collections.unmodifiableSet(DEFAULT_MONITORED_TYPES);
 
     private final Path path;
 
@@ -97,6 +104,8 @@ public class Config implements IReloadable
 
         this.allowFeeding = config.getBoolean("allowFeeding", true);
         this.foodItems = parseFoodItems(config);
+
+        this.monitoredTypes = Collections.unmodifiableSet(parseMonitoredTypes(config));
     }
 
     private int parseInt(FileConfiguration configuration, String optionName, int fallback)
@@ -212,6 +221,32 @@ public class Config implements IReloadable
         return ret;
     }
 
+    private Set<EntityType> parseMonitoredTypes(FileConfiguration config)
+    {
+        if (!config.contains("monitoredTypes"))
+            return DEFAULT_MONITORED_TYPES;
+
+        final Set<EntityType> ret = new HashSet<>();
+        for (final String line : config.getStringList("monitoredTypes"))
+        {
+            @SuppressWarnings("deprecation") final @Nullable EntityType type = EntityType.fromName(line);
+            if (type == null)
+            {
+                javaPlugin.getLogger().severe("Invalid entity type '" + line + "'!");
+                continue;
+            }
+            if (!Util.getSupportedEntityTypes().contains(type))
+            {
+                javaPlugin.getLogger().severe("Unsupported entity type '" + line + "'!");
+                continue;
+            }
+            //noinspection deprecation
+            javaPlugin.getLogger().info("Monitoring entity type '" + type.getName() + "'");
+            ret.add(type);
+        }
+        return Collections.unmodifiableSet(ret);
+    }
+
     private void ensureFileExists()
     {
         if (Files.exists(this.path))
@@ -317,5 +352,15 @@ public class Config implements IReloadable
     public Set<Material> getFoodItems()
     {
         return foodItems;
+    }
+
+    /**
+     * All the entity types that are configured to be monitored by the plugin.
+     *
+     * @return An unmodifiable set of entity types.
+     */
+    public Set<EntityType> getMonitoredTypes()
+    {
+        return monitoredTypes;
     }
 }

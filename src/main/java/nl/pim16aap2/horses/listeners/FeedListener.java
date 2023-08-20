@@ -1,7 +1,6 @@
 package nl.pim16aap2.horses.listeners;
 
 import nl.pim16aap2.horses.Config;
-import nl.pim16aap2.horses.Horses;
 import nl.pim16aap2.horses.baby.BabyHandler;
 import nl.pim16aap2.horses.util.Localizer;
 import nl.pim16aap2.horses.util.Permission;
@@ -45,7 +44,7 @@ class FeedListener implements Listener
     public void onFeed(PlayerInteractEntityEvent event)
     {
         if (!(event.getRightClicked() instanceof AbstractHorse horse) ||
-            !Horses.MONITORED_TYPES.contains(horse.getType()))
+            !config.getMonitoredTypes().contains(horse.getType()))
             return;
 
         final ItemStack item = event.getPlayer().getInventory().getItem(event.getHand());

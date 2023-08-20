@@ -1,6 +1,6 @@
 package nl.pim16aap2.horses.listeners;
 
-import nl.pim16aap2.horses.Horses;
+import nl.pim16aap2.horses.Config;
 import nl.pim16aap2.horses.horseselector.HorseSelectorManager;
 import nl.pim16aap2.horses.horseselector.SelectorToolUtil;
 import org.bukkit.entity.AbstractHorse;
@@ -27,11 +27,15 @@ class SelectorToolListener implements Listener
 {
     private final SelectorToolUtil selectorToolUtil;
     private final HorseSelectorManager horseSelectorManager;
+    private final Config config;
 
-    @Inject SelectorToolListener(SelectorToolUtil selectorToolUtil, HorseSelectorManager horseSelectorManager)
+    @Inject SelectorToolListener(
+        SelectorToolUtil selectorToolUtil, HorseSelectorManager horseSelectorManager,
+        Config config)
     {
         this.selectorToolUtil = selectorToolUtil;
         this.horseSelectorManager = horseSelectorManager;
+        this.config = config;
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
@@ -39,7 +43,7 @@ class SelectorToolListener implements Listener
     {
         if (!(event.getDamager() instanceof Player player) ||
             !(event.getEntity() instanceof AbstractHorse horse) ||
-            !(Horses.MONITORED_TYPES.contains(horse.getType())))
+            !(config.getMonitoredTypes().contains(horse.getType())))
             return;
 
         if (!selectorToolUtil.isSelectorTool(player.getInventory().getItemInMainHand()))

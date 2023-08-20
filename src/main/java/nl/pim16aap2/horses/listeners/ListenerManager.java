@@ -106,6 +106,7 @@ public class ListenerManager implements IReloadable
     {
         initCommands(
             "ReloadHorses",
+            "ListHorseTypes",
             "GetHorseInfo");
         initCommand("EditHorse", tabCompleter);
     }
