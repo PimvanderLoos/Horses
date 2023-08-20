@@ -5,7 +5,6 @@ import nl.pim16aap2.horses.Communicator;
 import nl.pim16aap2.horses.Config;
 import nl.pim16aap2.horses.HorseEditor;
 import nl.pim16aap2.horses.HorseGender;
-import nl.pim16aap2.horses.Horses;
 import nl.pim16aap2.horses.baby.BabyHandler;
 import nl.pim16aap2.horses.horseselector.SelectorToolUtil;
 import nl.pim16aap2.horses.horsetracker.HorseTracker;
@@ -75,7 +74,7 @@ class HorseListener implements Listener
     {
         if (!(event.getDamager() instanceof Player player) ||
             !(event.getEntity() instanceof AbstractHorse horse) ||
-            !(Horses.MONITORED_TYPES.contains(horse.getType())))
+            !(config.getMonitoredTypes().contains(horse.getType())))
             return;
 
         if (player.getInventory().getItemInMainHand().getType() != Material.SHEARS)
@@ -125,7 +124,7 @@ class HorseListener implements Listener
     private boolean processInfoClick(Player player, Entity target)
     {
         if (!(target instanceof AbstractHorse horse) ||
-            !(Horses.MONITORED_TYPES.contains(target.getType())))
+            !(config.getMonitoredTypes().contains(target.getType())))
             return false;
 
         final ItemStack holding = player.getInventory().getItemInMainHand();
@@ -156,7 +155,7 @@ class HorseListener implements Listener
     public void onSpawn(EntitySpawnEvent event)
     {
         if (!(event.getEntity() instanceof AbstractHorse horse) ||
-            !Horses.MONITORED_TYPES.contains(horse.getType()))
+            !config.getMonitoredTypes().contains(horse.getType()))
             return;
 
         if (horse.isAdult())
@@ -169,9 +168,9 @@ class HorseListener implements Listener
     public void onBreed(EntityBreedEvent event)
     {
         if (!(event.getFather() instanceof AbstractHorse father) ||
-            !Horses.MONITORED_TYPES.contains(father.getType()) ||
+            !config.getMonitoredTypes().contains(father.getType()) ||
             !(event.getMother() instanceof AbstractHorse mother) ||
-            !Horses.MONITORED_TYPES.contains(mother.getType()) ||
+            !config.getMonitoredTypes().contains(mother.getType()) ||
             !(event.getEntity() instanceof AbstractHorse child))
             return;
         event.setCancelled(!babyHandler.newBaby(child, father, mother));
@@ -180,7 +179,7 @@ class HorseListener implements Listener
     @EventHandler(ignoreCancelled = true)
     public void onDeath(EntityDeathEvent event)
     {
-        if (!Horses.MONITORED_TYPES.contains(event.getEntityType()))
+        if (!config.getMonitoredTypes().contains(event.getEntityType()))
             return;
         event.getDrops().removeIf(itemStack -> itemStack.getType().equals(Material.LEATHER));
     }
@@ -189,7 +188,7 @@ class HorseListener implements Listener
     public void onDismount(EntityDismountEvent event)
     {
         if (!(event.getDismounted() instanceof AbstractHorse horse) ||
-            !Horses.MONITORED_TYPES.contains(horse.getType()))
+            !config.getMonitoredTypes().contains(horse.getType()))
             return;
 
         if (config.getResetGait() >= 0)
@@ -209,7 +208,7 @@ class HorseListener implements Listener
     public void onMount(EntityMountEvent event)
     {
         if (!(event.getMount() instanceof AbstractHorse horse) ||
-            !Horses.MONITORED_TYPES.contains(horse.getType()) ||
+            !config.getMonitoredTypes().contains(horse.getType()) ||
             !(event.getEntity() instanceof Player player))
             return;
 

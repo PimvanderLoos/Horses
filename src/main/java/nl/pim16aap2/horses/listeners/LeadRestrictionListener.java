@@ -1,6 +1,6 @@
 package nl.pim16aap2.horses.listeners;
 
-import nl.pim16aap2.horses.Horses;
+import nl.pim16aap2.horses.Config;
 import nl.pim16aap2.horses.util.Localizer;
 import nl.pim16aap2.horses.util.Permission;
 import nl.pim16aap2.horses.util.Util;
@@ -19,17 +19,19 @@ import javax.inject.Singleton;
 public class LeadRestrictionListener implements Listener
 {
     private final Localizer localizer;
+    private final Config config;
 
-    @Inject LeadRestrictionListener(Localizer localizer)
+    @Inject LeadRestrictionListener(Localizer localizer, Config config)
     {
         this.localizer = localizer;
+        this.config = config;
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onLeadAttach(PlayerLeashEntityEvent event)
     {
         if (!(event.getEntity() instanceof AbstractHorse horse) ||
-            !Horses.MONITORED_TYPES.contains(horse.getType()))
+            !config.getMonitoredTypes().contains(horse.getType()))
             return;
 
         final Player player = event.getPlayer();

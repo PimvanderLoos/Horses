@@ -1,6 +1,7 @@
 package nl.pim16aap2.horses.commands;
 
 import nl.pim16aap2.horses.Communicator;
+import nl.pim16aap2.horses.Config;
 import nl.pim16aap2.horses.HorseEditor;
 import nl.pim16aap2.horses.Horses;
 import nl.pim16aap2.horses.util.IReloadable;
@@ -34,17 +35,22 @@ public class CommandListener implements CommandExecutor
     private final Localizer localizer;
     private final AttributeMapper attributeMapper;
     private final Communicator communicator;
+    private final Config config;
 
-    @Inject
-    public CommandListener(
-        Horses horses, HorseEditor horseEditor, Localizer localizer, AttributeMapper attributeMapper,
-        Communicator communicator)
+    @Inject CommandListener(
+        Horses horses,
+        HorseEditor horseEditor,
+        Localizer localizer,
+        AttributeMapper attributeMapper,
+        Communicator communicator,
+        Config config)
     {
         this.horses = horses;
         this.horseEditor = horseEditor;
         this.localizer = localizer;
         this.attributeMapper = attributeMapper;
         this.communicator = communicator;
+        this.config = config;
     }
 
     @Override
@@ -130,7 +136,7 @@ public class CommandListener implements CommandExecutor
 
         final @Nullable Entity entity = Bukkit.getEntity(uuid);
         if (!(entity instanceof AbstractHorse horse) ||
-            !Horses.MONITORED_TYPES.contains(horse.getType()))
+            !config.getMonitoredTypes().contains(horse.getType()))
         {
             sender.sendMessage(localizer.get("commands.error.no_horses_found", uuid.toString()));
             return;

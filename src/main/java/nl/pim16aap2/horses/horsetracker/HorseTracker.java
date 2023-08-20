@@ -130,7 +130,7 @@ public class HorseTracker
         {
             final @Nullable Entity vehicle = player.getVehicle();
             if (vehicle != null &&
-                Horses.MONITORED_TYPES.contains(vehicle.getType()) &&
+                config.getMonitoredTypes().contains(vehicle.getType()) &&
                 vehicle instanceof AbstractHorse horse)
                 trackHorse(player, horse);
         }

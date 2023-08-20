@@ -2,12 +2,14 @@ package nl.pim16aap2.horses.util;
 
 import nl.pim16aap2.horses.Horses;
 import org.bukkit.entity.AbstractHorse;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.UUID;
 
 public final class Util
@@ -32,7 +34,7 @@ public final class Util
     public static @Nullable AbstractHorse getHorseRiddenByPlayer(Player player)
     {
         if (player.getVehicle() != null &&
-            Horses.MONITORED_TYPES.contains(player.getVehicle().getType()) &&
+            getMonitoredTypes().contains(player.getVehicle().getType()) &&
             player.getVehicle() instanceof AbstractHorse horse)
             return horse;
         return null;
@@ -97,11 +99,16 @@ public final class Util
     public static List<AbstractHorse> getLeadHorses(Player player, int range)
     {
         return player.getNearbyEntities(range, range, range).stream()
-                     .filter(entity -> Horses.MONITORED_TYPES.contains(entity.getType()))
+                     .filter(entity -> getMonitoredTypes().contains(entity.getType()))
                      .map(AbstractHorse.class::cast)
                      .filter(AbstractHorse::isLeashed)
                      .filter(horse -> player.equals(horse.getLeashHolder()))
                      .toList();
+    }
+
+    private static Set<EntityType> getMonitoredTypes()
+    {
+        return Horses.instance().getHorsesComponent().getConfig().getMonitoredTypes();
     }
 
     public static List<AbstractHorse> getLeadAndRiddenHorses(Player player)
