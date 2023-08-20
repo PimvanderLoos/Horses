@@ -18,8 +18,8 @@ final class TrackedHorse
     private final int maxEnergy;
     private final int drainStep;
     private final int recoveryStep;
-    private final @Nullable IStaminaNotifier notifier;
 
+    private @Nullable IStaminaNotifier notifier;
     private @Nullable TrackingExhaustionParticles trackingExhaustionParticles;
     private int energy;
 
@@ -49,6 +49,33 @@ final class TrackedHorse
 
         stopParticles();
         setEnergyPercentage(other.getEnergyPercentage());
+    }
+
+    /**
+     * Creates a new {@link TrackedHorse} instance based on the state of this object, but with updated values where
+     * needed.
+     *
+     * @param horseEditor
+     *     The {@link HorseEditor} instance to use.
+     * @param horse
+     *     The {@link AbstractHorse} instance to use.
+     * @param notifier
+     *     The {@link IStaminaNotifier} instance to use.
+     * @param config
+     *     The {@link Config} instance to use.
+     * @return The new {@link TrackedHorse} instance.
+     */
+    TrackedHorse updated(
+        HorseEditor horseEditor,
+        AbstractHorse horse,
+        @Nullable IStaminaNotifier notifier,
+        Config config)
+    {
+        final var result = new TrackedHorse(horseEditor, horse, notifier, config);
+        result.trackingExhaustionParticles = this.trackingExhaustionParticles;
+        result.setEnergyPercentage(this.getEnergyPercentage());
+        result.setExhausted(this.isExhausted());
+        return result;
     }
 
     public float getEnergyPercentage()
@@ -148,6 +175,11 @@ final class TrackedHorse
         return horse;
     }
 
+    public void setNotifier(@Nullable IStaminaNotifier notifier)
+    {
+        this.notifier = notifier;
+    }
+
     @Override
     public boolean equals(@Nullable Object o)
     {
@@ -155,13 +187,16 @@ final class TrackedHorse
             return true;
         if (!(o instanceof TrackedHorse other))
             return false;
-        return energy == other.energy && horse.equals(other.horse);
+        return maxEnergy == other.maxEnergy &&
+            drainStep == other.drainStep &&
+            recoveryStep == other.recoveryStep &&
+            horse.equals(other.horse);
     }
 
     @Override
     public int hashCode()
     {
-        return Objects.hash(horse, energy);
+        return Objects.hash(horse, maxEnergy, drainStep, recoveryStep);
     }
 
     @Override
@@ -173,6 +208,7 @@ final class TrackedHorse
             ", drainStep=" + drainStep +
             ", recoveryStep=" + recoveryStep +
             ", energy=" + energy +
+            ", exhausted=" + exhausted +
             '}';
     }
 }
